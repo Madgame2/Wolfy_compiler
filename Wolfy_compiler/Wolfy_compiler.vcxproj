@@ -138,21 +138,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Error.cpp" />
-    <ClCompile Include="in.cpp" />
-    <ClCompile Include="Params.cpp" />
-    <ClCompile Include="test_main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Error.h" />
-    <ClInclude Include="in.h" />
-    <ClInclude Include="Params.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="File1.wolf" />
-    <None Include="File2.wolf" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

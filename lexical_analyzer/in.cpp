@@ -94,6 +94,7 @@ IN in::get_IN(Param::Params param)
 
 			case IN::I:
 
+				index++;
 				break;
 
 			case IN::F:
@@ -126,7 +127,8 @@ IN in::get_IN(Param::Params param)
 		code[index] = '\0';
 
 		std::wstring sorce_code(code);
-		
+		std::wcout << sorce_code;
+
 		new_in.FILES[i].file_name = in.data[i];
 		new_in.FILES[i].source_code = sorce_code;
 		new_in.FILES[i].size = index+1;

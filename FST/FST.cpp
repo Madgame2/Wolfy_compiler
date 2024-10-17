@@ -1,17 +1,21 @@
 #include"FST.h"
 
 
-
-fst::fst::fst(short states_count, NODE node, ...)
+fst::FST::FST(short states_count, NODE node, ...)
 {
 	this->nstates = states_count;
 	this->nodes = new NODE[nstates];
 
-	NODE* p = &node;
-	for (int i = 0; i < nstates; i++) {
-		nodes[i] = *p;
-		p++;
+	nodes[0] = node;
+
+	va_list args;
+	va_start(args, node);
+
+	for (int i = 1; i < states_count; i++) {
+		this->nodes[i] = va_arg(args, NODE);
 	}
+
+	va_end(args);
 }
 
 fst::NODE::NODE()
@@ -23,73 +27,131 @@ fst::NODE::NODE(short count_ralations, RELATION rel, ...)
 	this->count_relations = count_ralations;
 	this->relations = new RELATION[count_ralations];
 
-	RELATION* p = &rel;
+	relations[0] = rel;
 
-	for (int i = 0; i < count_ralations; i++) {
-		relations[i] = *p;
-		p++;
+	va_list args;
+	va_start(args, rel);
+
+	for (int i = 1; i < count_ralations; ++i) {
+		relations[i] = va_arg(args, RELATION); // »звлекаем следующий аргумент типа RELATION
 	}
+
+	va_end(args);
 }
 
-fst::RELATION::RELATION(short next_node, wchar_t symbol)
+fst::RELATION::RELATION(wchar_t symbol, short next_node)
 {
 	this->nex_node = next_node;
 	this->symbol = symbol;
 }
 
 
-void build_ailable_statests(unsigned short& size, short* arr, fst::fst fst ) {
+short* build_ailable_statests(unsigned short& size, short* arr, fst::FST fst) {
 
-	//добавлем доступные NODE
-	std::vector<short> available_states;
+	// используем unordered_set дл€ быстрого поиска доступных состо€ний
+	std::unordered_set<short> available_states;
+
+	// добавл€ем доступные NODE из исходного массива
 	for (int i = 0; i < size; i++) {
-		available_states.push_back(arr[i]);
+		available_states.insert(arr[i]);
 	}
 
-	//ѕробегаемс€ по каждой доступной NODE
-	for (int i = 0; i < available_states.size(); i++) {
-		fst::NODE curent = fst.nodes[available_states[i]];
+	// ѕробегаемс€ по каждой доступной NODE
+	std::vector<short> states_queue(available_states.begin(), available_states.end());
 
-		for (int j = 0; j < curent.count_relations; j++) {
-			fst::RELATION rel = available_states[j];
+	for (int i = 0; i < states_queue.size(); i++) {
+		fst::NODE current = fst.nodes[states_queue[i]];
 
-			if (rel.symbol == ZERO_TRANSITION) {
+		// ѕровер€ем все св€зи из текущего узла
+		for (int j = 0; j < current.count_relations; j++) {
+			fst::RELATION rel = current.relations[j];
 
-				if (std::find(available_states.begin(), available_states.end(), rel.nex_node) == available_states.end()) {
-					available_states.push_back(rel.nex_node);
+			if (rel.symbol == ZERO_TRANSITION) { // ≈сли это "нулевой переход"
+
+				// ≈сли узел ещЄ не добавлен в список доступных состо€ний
+				if (available_states.find(rel.nex_node) == available_states.end()) {
+					available_states.insert(rel.nex_node);
+					states_queue.push_back(rel.nex_node); // ƒобавл€ем в очередь
 				}
-
 			}
 		}
 	}
 
+	// ќбновл€ем размер и пересоздаем массив arr
 	size = available_states.size();
-	delete[] arr;
-	arr = new short[size];
-
-	for (int i = 0; i < size; i++) {
-		arr[i] = available_states[i];
+	if (arr != nullptr) {
+		delete[] arr;
 	}
+	short* new_arr = new short[size];
+
+	//  опируем элементы в массив
+	int index = 0;
+	for (short state : available_states) {
+
+		new_arr[index] = state;
+		index++;
+	}
+	return new_arr;
 }
 
-bool fst::execute(std::wstring string, fst fst)
+
+bool fst::execute(std::wstring string, FST fst)
 {
 	short* curent = new short[fst.nstates];
 	short* next = new short[fst.nstates];
 
+	for (int i = 0; i < fst.nstates; i++) {
+		i == 0 ? curent[i] = 0 : curent[i] = -1;
+		next[i] = -1;
+	}
 
 	//ќпредел€ем начальное состо€ние 
-	short* available_states = new short;
-	*available_states = 0;
+	short* available_states = new short[1];
+	available_states[0] = 0;
 	unsigned short available_statest_count = 1;
 
-	for (int i = 0; i < string.size();) {
+	for (int i = 0; i < string.size();i++) {
 
-		build_ailable_statests(available_statest_count, available_states, fst);
+		//available_states = build_ailable_statests(available_statest_count, available_states, fst);
+	
+		std::vector<short> new_available_states;
+
+		for (int j = 0; j < available_statest_count; j++) {
+			NODE curent_node = fst.nodes[available_states[j]];
+
+			for (int p = 0; p < curent_node.count_relations; p++) {
+				if (curent_node.relations[p].symbol == string[i]) {
+					new_available_states.push_back(curent_node.relations[p].nex_node);
+					curent[curent_node.relations[p].nex_node] = i + 1;
+				}
+			}
+		}
+
+		short* temp = curent;
+		curent = next;
+		next = temp;
+
+
+		delete[]available_states;
+		available_statest_count = new_available_states.size();
+		available_states = new short[available_statest_count];
+		for (int j = 0; j < available_statest_count; j++) {
+			available_states[j] = new_available_states[j];
+		}
 		
+		if (new_available_states.size() == 0&&i!= string.size()-1) return false;
+
+
 	}
 
 	delete[] curent;
-	delete[] next;
+	curent = next;
+	if (curent[fst.nstates - 1] == string.size()) {
+
+		delete[] curent;
+		return true;
+	}
+
+	//delete[] curent;
 	return false;
 }
