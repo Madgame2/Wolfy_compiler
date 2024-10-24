@@ -1,2 +1,9 @@
-int a = 25; 
+int a                               = 25; 
 void func(a,b);
+
+string str = "hello world";
+
+
+/*dsfdsfsdf
+fsdfdsdfsdf
+*/

@@ -63,7 +63,7 @@ IN in::get_IN(Param::Params param)
 					while (file.get(curent) && curent != '\n');
 
 					//buffer = NULL;
-					code[index] = new_in.alphabet[curent];
+					code[++index] = new_in.alphabet[curent];
 					line++;
 					characte = 0;
 					index++;

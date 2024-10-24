@@ -1,22 +1,58 @@
+
+#define LEXEMA_SIZE 1
+#define LEX_LET "l"
+
 #pragma once
 #include<iostream>
 #include<string>
-
+#include<cstdarg>
+#include"Rules.h"
 #include"Error.h"
-#define LEXEMA_SIZE 1
+
+
+
+
+namespace key_words {
+
+	struct Key_words_table {
+	private:
+		RULE::key::Elemet* table = nullptr;
+		unsigned int size = 0;
+
+		int hash(std::wstring str);
+		int hash(std::wstring str, int ofset);
+		void add(std::wstring new_key_word,char lexema[LEXEMA_SIZE+1]);
+	public:
+		int find(std::wstring key_word);
+		RULE::key::Elemet get_element(int id);
+		void Delete();
+
+		static void create_table(Key_words_table& table, int size, RULE::key::Elemet first, ...);
+		static void create_table(Key_words_table& table);
+	};
+}
 
 namespace LT {
+
+	struct Entry {
+		char lexema[LEXEMA_SIZE+1];
+		unsigned int source_code_line = 0;
+		unsigned int IT_index = -1;
+
+
+		Entry() {
+			lexema[0] = '\0';
+		}
+	};
+
 	struct Lexem_table {
 
 		unsigned int size = 0;
 		unsigned int max_size = 0;
 		Entry* table = nullptr;
-	};
+		//key_words::Key_words_table key_words;
 
-	struct Entry {
-		char lexema[LEXEMA_SIZE];
-		unsigned int source_code_line = 0;
-		unsigned int IT_index = -1;
+		//Lexem_table(){}
 	};
 
 
@@ -27,16 +63,3 @@ namespace LT {
 	Entry getEntry(Lexem_table& table, int id);
 }
 
-namespace key_words {
-	struct Key_words_table {
-	private:
-		std::wstring* table = nullptr;
-		unsigned int size = 0;
-
-		int hash(std::wstring str);
-		int hash(std::wstring str, int ofset);
-		void add(std::wstring new_key_word);
-	public:
-		bool find(std::wstring key_word);
-	};
-}

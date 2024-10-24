@@ -112,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -143,13 +143,17 @@
     <ClCompile Include="in.cpp" />
     <ClCompile Include="Lexem_table.cpp" />
     <ClCompile Include="Params.cpp" />
-    <ClCompile Include="test_main.cpp" />
+    <ClCompile Include="Rule.cpp" />
+    <ClCompile Include="test_main.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EnableAllWarnings</WarningLevel>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.h" />
     <ClInclude Include="in.h" />
     <ClInclude Include="Lexem_table.h" />
     <ClInclude Include="Params.h" />
+    <ClInclude Include="Rules.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="File1.wolf" />

@@ -1,8 +1,5 @@
 #include"Params.h"
 
-//УДАЛИТЬ
-
-
 using namespace Param;
 
 void Read_new_key(wchar_t* argv, int& mode) {
@@ -66,7 +63,10 @@ Params Param::getParams(int argc, wchar_t* argv[])
 		case 0:
 
 			//Проверяем а не находятся ли данные в том же слове что и кллюч(в будушем можно разделить на функцию)
-			if (argv[i][0] == '-') {
+
+			//ОШИБКА ТУТ ИСПРАВИТЬ КОГДА ЕСТЬ ПРОБЕЛ ОН НЕ НАХОДИТ ФАЙЛ
+
+			if (argv[i][0] == '-' && argv[i][wcslen(argv[i] - 1)] != L':') {
 				wchar_t* end_of_key = wcschr(argv[i], L':');
 
 				if (end_of_key != nullptr) {
