@@ -3,23 +3,21 @@
 //#include"Lexem_table.h"
 #include<string>
 
-#define LEXEMA_SIZE 1
+#include"Lexem.h"
+
+//#define LEXEMA_SIZE 1
 
 namespace RULE {
 	namespace key {
 
 		struct Elemet {
 			std::wstring str;
-			char lexem[LEXEMA_SIZE + 1];  // ћассив лексем с местом дл€ завершающего нул€
+			char lexem[LEXEMA_SIZE + 1];
 
 			//  онструктор с инициализацией
 			Elemet(const std::wstring& str, const char* lexem) {
 				this->str = str;
-
-				// Ѕезопасное копирование строки в массив lexem
 				memcpy_s(this->lexem, sizeof(this->lexem), lexem, LEXEMA_SIZE);
-
-				// ƒобавл€ем завершающий ноль вручную
 				this->lexem[LEXEMA_SIZE] = '\0';
 			}
 

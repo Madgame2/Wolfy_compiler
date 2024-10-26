@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="Error.h" />
     <ClInclude Include="in.h" />
+    <ClInclude Include="Lexem.h" />
     <ClInclude Include="Lexem_table.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Rules.h" />

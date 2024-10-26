@@ -1,7 +1,3 @@
-
-#define LEXEMA_SIZE 1
-#define LEX_LET "l"
-
 #pragma once
 #include<iostream>
 #include<string>

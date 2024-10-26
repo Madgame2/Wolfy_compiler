@@ -4,6 +4,10 @@ void func(a,b);
 string str = "hello world";
 
 
+new functoin(){
+int a = 25;
+}
+
 /*dsfdsfsdf
 fsdfdsdfsdf
 */

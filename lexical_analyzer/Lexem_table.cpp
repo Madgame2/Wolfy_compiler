@@ -151,10 +151,11 @@ void key_words::Key_words_table::create_table(Key_words_table& table, int size, 
 
 void key_words::Key_words_table::create_table(Key_words_table& table)
 {
-	//table.size = RULE::key::key_words.size();
-	//table.table = new RULE::key::Elemet[table.size];
+	table.size = RULE::key::key_words.size();
+	table.table = new RULE::key::Elemet[table.size];
 
-	//for (auto elem : RULE::key::key_words){
-	//}
+	for (auto elem : RULE::key::key_words){
+		table.add(elem.str, elem.lexem);
+	}
 
 }
