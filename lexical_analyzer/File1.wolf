@@ -1,5 +1,5 @@
 int a                               = 25; 
-void func(a,b);
+void function func(a,b);
 
 string str = "hello world";
 

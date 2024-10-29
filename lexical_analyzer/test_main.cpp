@@ -1,10 +1,14 @@
 #include<iostream>
-#include"Params.h"
-#include"in.h"
-#include"Lexem_table.h"
 #include<list>
 #include<map>
 #include<unordered_set>
+#include<stack>
+
+#include"Params.h"
+#include"in.h"
+#include"Lexem_table.h"
+#include"Identification_table.h"
+#include"Identification_table.h"
 
 using namespace std;
 
@@ -74,6 +78,26 @@ bool is_only_digit(wstring str) {
 }
 
 
+void getContext(ID::Entry& entry,stack<wstring> context, key_words::Key_words_table table) {
+	while (!context.empty())
+	{
+		if (int id = table.find(context.top()) != -1) {
+
+
+			RULE::key::Elemet elem = table.get_element(id);
+			if (elem.type != DataType::Type::None) {
+				entry.d_type = elem.type;
+			}
+			else if (elem.extra != extra::Type::None) {
+				entry.extras.push_back(elem.extra);
+			}
+		}
+
+		context.pop();
+	}
+}
+
+
 void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 
@@ -87,6 +111,7 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 
 	std::map<wstring, LT::Lexem_table> LT_files;
+	std::map<wstring, ID::ID_table> ID_files;
 	for (int i = 0; i < in_files.file_count; i++) {
 
 		//LT_files[in_files.FILES->file_name] = LT::Lexem_table();				//Создаем новую таблицу лексем для нового файла 
@@ -95,6 +120,12 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 		LT::Lexem_table new_table;
 		LT::create_Lexem_table(new_table, words.size());
 		LT_files[in_files.FILES->file_name] = new_table;
+
+		ID::ID_table new_id_table;
+		ID_files[in_files.FILES->file_name] = new_id_table;
+
+		stack<wstring> context_stack;
+		stack<wstring> function_context;
 
 		bool is_word_leteral = false;
 		wstring file_name = in_files.FILES->file_name;
@@ -165,6 +196,23 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 							continue;
 
 							break;
+						case ';':
+							{
+							LT::Entry new_entry;
+
+							new_entry.lexema[0] = word[0];
+							new_entry.lexema[1] = '\0';
+
+							LT::add(LT_files[file_name], new_entry);
+
+							while (!context_stack.empty())
+							{
+								context_stack.pop();
+							}
+
+							cout << new_entry.lexema;
+							}
+							break;
 						default:
 
 							LT::Entry new_entry;
@@ -186,6 +234,22 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 						memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)LEX_ID, sizeof(new_entry.lexema) - 1);
 						new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
+
+
+						//Таблица индефикаторов 
+						int id;
+						if ((id = ID::isId(ID_files[file_name], word, function_context.empty() ? L"" : function_context.top())) == -1) {
+
+							ID::Entry new_ID;
+							new_ID.name = word;
+							new_ID.area = function_context.empty() ? L"" : function_context.top();
+
+							ID::add(ID_files[file_name], new_ID);
+						}
+						else {
+							new_entry.IT_index=id;
+						}
+
 
 						LT::add(LT_files[file_name], new_entry);
 
@@ -221,7 +285,6 @@ int wmain(int argc, wchar_t* argv[]) {
 
 
 	parse(input_files, key_words);
-
 
 
 	Param::delete_all(param);

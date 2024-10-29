@@ -1,11 +1,8 @@
 #pragma once
 #include<list>
-//#include"Lexem_table.h"
 #include<string>
+#include"comon.h"
 
-#include"Lexem.h"
-
-//#define LEXEMA_SIZE 1
 
 namespace RULE {
 	namespace key {
@@ -13,15 +10,33 @@ namespace RULE {
 		struct Elemet {
 			std::wstring str;
 			char lexem[LEXEMA_SIZE + 1];
+			DataType::Type type = DataType::Type::None;
+			extra::Type extra = extra::Type::None;
 
-			// Конструктор с инициализацией
 			Elemet(const std::wstring& str, const char* lexem) {
+
 				this->str = str;
 				memcpy_s(this->lexem, sizeof(this->lexem), lexem, LEXEMA_SIZE);
 				this->lexem[LEXEMA_SIZE] = '\0';
+
+			}
+			Elemet(const std::wstring& str, const char* lexem, DataType::Type type) {
+
+				this->str = str;
+				memcpy_s(this->lexem, sizeof(this->lexem), lexem, LEXEMA_SIZE);
+				this->lexem[LEXEMA_SIZE] = '\0';
+
+				this->type = type;
+			}
+			Elemet(const std::wstring& str, const char* lexem, extra::Type extra) {
+
+				this->str = str;
+				memcpy_s(this->lexem, sizeof(this->lexem), lexem, LEXEMA_SIZE);
+				this->lexem[LEXEMA_SIZE] = '\0';
+
+				this->extra = extra;
 			}
 
-			// Конструктор по умолчанию
 			Elemet() {
 				lexem[0] = '\0';
 			}

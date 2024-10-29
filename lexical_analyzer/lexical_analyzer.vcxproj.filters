@@ -33,6 +33,9 @@
     <ClCompile Include="Rule.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Identification_table.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.h">
@@ -50,7 +53,10 @@
     <ClInclude Include="Rules.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Lexem.h">
+    <ClInclude Include="comon.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Identification_table.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

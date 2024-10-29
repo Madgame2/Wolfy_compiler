@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Error.cpp" />
+    <ClCompile Include="Identification_table.cpp" />
     <ClCompile Include="in.cpp" />
     <ClCompile Include="Lexem_table.cpp" />
     <ClCompile Include="Params.cpp" />
@@ -150,8 +151,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.h" />
+    <ClInclude Include="Identification_table.h" />
     <ClInclude Include="in.h" />
-    <ClInclude Include="Lexem.h" />
+    <ClInclude Include="comon.h" />
     <ClInclude Include="Lexem_table.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Rules.h" />
