@@ -72,13 +72,13 @@ int key_words::Key_words_table::hash(std::wstring str, int ofset)
 	return hash_code;
 }
 
-void key_words::Key_words_table::add(std::wstring new_key_word,char lexema[LEXEMA_SIZE+1])
+void key_words::Key_words_table::add(RULE::key::Elemet elem)
 {
-	int  hash_code = hash(new_key_word);
+	int  hash_code = hash(elem.str);
 
 	if (!table[hash_code].str.empty()) {
 		for (int i = 1; i < size; i++) {
-			hash_code = hash(new_key_word, i);
+			hash_code = hash(elem.str, i);
 
 			if (table[hash_code].str.empty()) {
 				break;
@@ -86,12 +86,12 @@ void key_words::Key_words_table::add(std::wstring new_key_word,char lexema[LEXEM
 		}
 	}
 
-	RULE::key::Elemet new_element;
-	memcpy_s(new_element.lexem,sizeof(new_element.lexem), lexema, LEXEMA_SIZE);
-	new_element.lexem[LEXEMA_SIZE] = '\0';
-	new_element.str = new_key_word;
+	//RULE::key::Elemet new_element;
+	//memcpy_s(new_element.lexem,sizeof(new_element.lexem), lexema, LEXEMA_SIZE);
+	//new_element.lexem[LEXEMA_SIZE] = '\0';
+	//new_element.str = new_key_word;
 
-	this->table[hash_code] = new_element;
+	this->table[hash_code] = elem;
 }
 
 int key_words::Key_words_table::find(std::wstring key_word)
@@ -155,7 +155,7 @@ void key_words::Key_words_table::create_table(Key_words_table& table)
 	table.table = new RULE::key::Elemet[table.size];
 
 	for (auto elem : RULE::key::key_words){
-		table.add(elem.str, elem.lexem);
+		table.add(elem);
 	}
 
 }

@@ -17,7 +17,7 @@ namespace key_words {
 
 		int hash(std::wstring str);
 		int hash(std::wstring str, int ofset);
-		void add(std::wstring new_key_word,char lexema[LEXEMA_SIZE+1]);
+		void add(RULE::key::Elemet elem);
 	public:
 		int find(std::wstring key_word);
 		RULE::key::Elemet get_element(int id);

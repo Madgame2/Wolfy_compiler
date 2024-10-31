@@ -9,7 +9,7 @@ namespace ID {
         table.size++;
     }
 
-    Entry getEntry(ID_table& table, int id)
+    Entry& getEntry(ID_table& table, int id)
     {
         if (id < 0 || id >= table.size) throw Error::get_error(7);
 

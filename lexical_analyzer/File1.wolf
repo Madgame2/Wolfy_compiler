@@ -1,13 +1,2 @@
-int a                               = 25; 
-void function func(a,b);
-
-string str = "hello world";
-
-
-new functoin(){
-int a = 25;
-}
-
-/*dsfdsfsdf
-fsdfdsdfsdf
-*/
+int a;
+int a;

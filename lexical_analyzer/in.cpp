@@ -57,7 +57,7 @@ IN in::get_IN(Param::Params param)
 				}
 				//Обработка коментариев
 				else if (buffer == '/' && curent == '/') {
-					//code[index - 1] = ' ';
+					code[index - 1] = ' ';
 					index--;
 
 					while (file.get(curent) && curent != '\n');

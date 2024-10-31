@@ -9,8 +9,10 @@ namespace ID {
     struct Entry {
         std::wstring name;
         std::wstring area;
-        DataType::Type d_type;
-        IDType::Type id_type;
+        DataType::Type d_type = DataType::Type::None;
+        IDType::Type id_type = IDType::Type::None;
+
+        bool is_array = false;
 
         std::list<extra::Type> extras;
     };
@@ -22,7 +24,7 @@ namespace ID {
     };
 
     void add(ID_table& table ,Entry entry);
-    Entry getEntry(ID_table& table, int  id);
+    Entry& getEntry(ID_table& table, int  id);
     int isId(ID_table& table, std::wstring name, std::wstring function_name);
 
 }
