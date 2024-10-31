@@ -10,6 +10,8 @@
 #include"Identification_table.h"
 #include"Identification_table.h"
 
+#define DEBUG
+
 using namespace std;
 
 list<wstring> divid_str(wstring source_code) {
@@ -128,6 +130,43 @@ void check_redefinition(ID::Entry& entry, stack<wstring> context, key_words::Key
 }
 
 
+void clear_context(stack<wstring>& context) {
+	while (!context.empty())
+	{
+		context.pop();
+	}
+}
+
+void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line) {
+	LT::Entry new_entry;
+	memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)lexem, sizeof(new_entry.lexema) - 1);
+	new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
+	new_entry.source_code_line = line;
+
+	LT::add(table, new_entry);
+
+#ifdef DEBUG
+	cout << new_entry.lexema;
+#endif // DEBUG
+
+}
+
+void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
+	LT::Entry new_entry;
+
+	new_entry.lexema[0] = lexem;
+	new_entry.lexema[1] = '\0';
+
+	LT::add(table, new_entry);
+
+
+#ifdef DEBUG
+	cout << new_entry.lexema;
+#endif // DEBUG
+
+}
+
+
 void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 
@@ -144,7 +183,7 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 	std::map<wstring, ID::ID_table> ID_files;
 	for (int i = 0; i < in_files.file_count; i++) {
 
-		//LT_files[in_files.FILES->file_name] = LT::Lexem_table();				//Создаем новую таблицу лексем для нового файла 
+
 		list<wstring> words = divid_str(in_files.FILES[i].source_code);			//Разбиваем файл на список слов и смволов 
 		
 		LT::Lexem_table new_table;
@@ -177,16 +216,9 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 				if (word.size() == 1 && (word[0] == L'"' || word[0] == L'\'')) {
 					//Добавляем ЛИТЕРАЛ строки
 
-					LT::Entry new_entry;
-					memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)LEX_LET, sizeof(new_entry.lexema)-1);
-					new_entry.lexema[sizeof(new_entry.lexema)-1] = '\0';
-					new_entry.source_code_line = line;
-
-					LT::add(LT_files[file_name], new_entry);
+					create_LexT_element(LT_files[file_name], LEX_LET,line);
 
 					is_word_leteral = false;
-
-					cout << LEX_LET;
 				}
 			}
 			else {
@@ -203,27 +235,16 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 						context_stack.push(word);
 
-						LT::Entry new_entry;
+						create_LexT_element(LT_files[file_name], key_words.get_element(id).lexem, line);
 
-						memcpy_s( new_entry.lexema, sizeof(new_entry.lexema),  key_words.get_element(id).lexem, sizeof(new_entry.lexema)-1);
-						new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
-
-						LT::add(LT_files[file_name], new_entry);
-
-						cout << new_entry.lexema;
 					}
 					else if(is_only_digit(word)) {
 						//Вставки лексемы литерала 
 						
 						if (!is_joint) {
-							LT::Entry new_entry;
 
-							memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)LEX_LET, sizeof(new_entry.lexema) - 1);
-							new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
+							create_LexT_element(LT_files[file_name], LEX_LET, line);
 
-							LT::add(LT_files[file_name], new_entry);
-
-							cout << new_entry.lexema;
 							context_stack.push(word);
 						}
 						else
@@ -285,14 +306,7 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 							break;
 						case L';':
-							{
-
-							while (!context_stack.empty())
-							{
-								context_stack.pop();
-							}
-
-							}
+							clear_context(context_stack);
 							break;
 						case L'.': 
 						{
@@ -308,50 +322,28 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 								ID::getEntry(ID_files[file_name], last_ID_id).id_type = IDType::Type::Func;
 							}
 
-
-							while (!context_stack.empty())
+							clear_context(context_stack);
+							}
+							break;
+						case '[':
 							{
-								context_stack.pop();
-							}
-						}
-							   break;
-						case '[': {
 
-							if (new_ID_created && (ID::getEntry(ID_files[file_name], last_ID_id).id_type != IDType::Type::Func)) {
-								ID::getEntry(ID_files[file_name], last_ID_id).is_array = true;
+								if (new_ID_created && (ID::getEntry(ID_files[file_name], last_ID_id).id_type != IDType::Type::Func)) 
+								{
+									ID::getEntry(ID_files[file_name], last_ID_id).is_array = true;
+								}
 							}
-						}
-
 
 							break;
 
-						case '{': {
-
-							while (!context_stack.empty())
-							{
-								context_stack.pop();
-							}
-
-						}
+						case '{': 
+							clear_context(context_stack);
 							break;
 						case',':
-						{
-							while (!context_stack.empty())
-							{
-								context_stack.pop();
-							}
-						}
+							clear_context(context_stack);
 							break;
 						}
-
-						LT::Entry new_entry;
-
-						new_entry.lexema[0] = word[0];
-						new_entry.lexema[1] = '\0';
-
-						LT::add(LT_files[file_name], new_entry);
-
-						cout << new_entry.lexema;
+						create_LexT_element(LT_files[file_name], word[0], line);
 
 						context_stack.push(word);
 					}
@@ -434,3 +426,8 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	Param::delete_all(param);
 }
+
+
+//ДОБАВИТЬ ОБРАБОТКУ ОШИБОК:
+//*Обработать точку с  запятой
+//*Обработать коментарии 
