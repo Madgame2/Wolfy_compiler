@@ -9,6 +9,10 @@
 #include"Lexem_table.h"
 #include"Identification_table.h"
 #include"Identification_table.h"
+#include"Litetral_table.h"
+
+#define LIT_KEY 1
+#define ID_KEY 2
 
 #define DEBUG
 
@@ -150,6 +154,27 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line) {
 #endif // DEBUG
 
 }
+void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, int id, int key) {
+	LT::Entry new_entry;
+	memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)lexem, sizeof(new_entry.lexema) - 1);
+	new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
+	new_entry.source_code_line = line;
+
+	if (key == LIT_KEY) {
+		new_entry.Lit_index = id;
+	}
+	else if (key == ID_KEY) {
+		new_entry.IT_index = id;
+	}
+
+
+	LT::add(table, new_entry);
+
+#ifdef DEBUG
+	cout << new_entry.lexema;
+#endif // DEBUG
+
+}
 void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
 	LT::Entry new_entry;
 
@@ -163,6 +188,15 @@ void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
 	cout << new_entry.lexema;
 #endif // DEBUG
 
+}
+
+void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType::Type type) {
+	Lit_table::Element elem;
+	elem.d_type = type;
+	elem.value = value;
+
+	table.table.push_back(elem);
+	table.size++;
 }
 
 
@@ -180,6 +214,7 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 	std::map<wstring, LT::Lexem_table> LT_files;
 	std::map<wstring, ID::ID_table> ID_files;
+	std::map<wstring, Lit_table::Literal_table> Lit_files;
 	for (int i = 0; i < in_files.file_count; i++) {
 
 
@@ -192,6 +227,9 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 		ID::ID_table new_id_table;
 		ID_files[in_files.FILES[i].file_name] = new_id_table;
 
+		Lit_table::Literal_table new_lit_table;
+		Lit_files[in_files.FILES[i].file_name] = new_lit_table;
+
 		stack<wstring> context_stack;						//стек последних слов; (обнуляется при встече ; )
 		stack<wstring> function_context;					//стек вложенных функций
 
@@ -202,7 +240,9 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 		bool is_joint = false;
 		bool is_params = false;
 		int last_ID_id=-1;
+		int last_lit_id = -1;
 		wstring file_name = in_files.FILES[i].file_name;
+		wstring lit_buffer;
 		unsigned int line = 0;
 		unsigned int word_index = -1;
 		for (auto& word : words) {
@@ -214,10 +254,21 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 				if (word.size() == 1 && (word[0] == L'"' || word[0] == L'\'')) {
 					//Добавляем ЛИТЕРАЛ строки
+					last_lit_id++;
 
-					create_LexT_element(LT_files[file_name], LEX_LET,line);
+					create_LitT_lement(Lit_files[file_name], lit_buffer, DataType::Type::String);
+					create_LexT_element(LT_files[file_name], LEX_LET,line,last_lit_id,LIT_KEY);
 
+					lit_buffer.clear();
 					is_word_leteral = false;
+				}
+				else {
+					if (lit_buffer.empty()) {
+						lit_buffer += word;
+					}
+					else {
+						lit_buffer += L' ' + word;
+					}
 				}
 			}
 			else {
@@ -241,15 +292,20 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 						//Вставки лексемы литерала 
 						
 						if (!is_joint) {
+							last_lit_id++;
 
-							create_LexT_element(LT_files[file_name], LEX_LET, line);
+							create_LitT_lement(Lit_files[file_name], word, DataType::Type::Int);
+							create_LexT_element(LT_files[file_name], LEX_LET, line,last_lit_id, LIT_KEY);
 
-							context_stack.push(word);
 						}
 						else
 						{
+							Lit_table::find(Lit_files[file_name], last_lit_id).value += context_stack.top() + word;
+							Lit_table::find(Lit_files[file_name], last_lit_id).d_type = DataType::Type::Float;
+
 							is_joint = false;
 						}
+						context_stack.push(word);
 					}
 					else if (word.size() == 1 && (specialChars.find(word[0]) != specialChars.end())) {
 						wchar_t buffer = word[0];
@@ -310,6 +366,7 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 						case L'.': 
 						{
 							if (is_only_digit(context_stack.top())) {
+								//lit_buffer += word;
 								is_joint=true;
 								break;
 							}

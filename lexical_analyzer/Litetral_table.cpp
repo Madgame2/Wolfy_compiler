@@ -15,6 +15,7 @@ namespace Lit_table {
 		int index = 0;
 		for (auto& elem : table.table) {
 			if (index == id) return elem;
+			index++;
 		}
 	}
 }
