@@ -150,7 +150,6 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line) {
 #endif // DEBUG
 
 }
-
 void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
 	LT::Entry new_entry;
 

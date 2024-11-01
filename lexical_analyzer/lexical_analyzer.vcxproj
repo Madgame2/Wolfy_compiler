@@ -143,6 +143,7 @@
     <ClCompile Include="Identification_table.cpp" />
     <ClCompile Include="in.cpp" />
     <ClCompile Include="Lexem_table.cpp" />
+    <ClCompile Include="Litetral_table.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="Rule.cpp" />
     <ClCompile Include="test_main.cpp">
@@ -155,6 +156,7 @@
     <ClInclude Include="in.h" />
     <ClInclude Include="comon.h" />
     <ClInclude Include="Lexem_table.h" />
+    <ClInclude Include="Litetral_table.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Rules.h" />
   </ItemGroup>
