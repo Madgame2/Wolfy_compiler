@@ -146,7 +146,7 @@
     <ClCompile Include="Litetral_table.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="Rule.cpp" />
-    <ClCompile Include="test_main.cpp">
+    <ClCompile Include="Lexer.cpp">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EnableAllWarnings</WarningLevel>
     </ClCompile>
   </ItemGroup>
@@ -156,6 +156,7 @@
     <ClInclude Include="in.h" />
     <ClInclude Include="comon.h" />
     <ClInclude Include="Lexem_table.h" />
+    <ClInclude Include="Lexer.h" />
     <ClInclude Include="Litetral_table.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Rules.h" />

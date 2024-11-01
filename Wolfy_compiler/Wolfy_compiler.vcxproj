@@ -18,6 +18,31 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Error.cpp" />
+    <ClCompile Include="Identification_table.cpp" />
+    <ClCompile Include="in.cpp" />
+    <ClCompile Include="Lexem_table.cpp" />
+    <ClCompile Include="Lexer.cpp" />
+    <ClCompile Include="Litetral_table.cpp" />
+    <ClCompile Include="Params.cpp" />
+    <ClCompile Include="Rule.cpp" />
+    <ClCompile Include="Wolfy.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="comon.h" />
+    <ClInclude Include="Error.h" />
+    <ClInclude Include="Identification_table.h" />
+    <ClInclude Include="in.h" />
+    <ClInclude Include="Lexem_table.h" />
+    <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Litetral_table.h" />
+    <ClInclude Include="Params.h" />
+    <ClInclude Include="Rules.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="File.wolf" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

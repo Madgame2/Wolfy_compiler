@@ -1,15 +1,4 @@
-#include<iostream>
-#include<list>
-#include<map>
-#include<unordered_set>
-#include<stack>
-
-#include"Params.h"
-#include"in.h"
-#include"Lexem_table.h"
-#include"Identification_table.h"
-#include"Identification_table.h"
-#include"Litetral_table.h"
+#include"Lexer.h"
 
 #define LIT_KEY 1
 #define ID_KEY 2
@@ -200,7 +189,7 @@ void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType
 }
 
 
-void parse(in::IN in_files, key_words::Key_words_table& key_words) {
+void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 
 	std::unordered_set<wchar_t> specialChars = {
@@ -456,33 +445,33 @@ void parse(in::IN in_files, key_words::Key_words_table& key_words) {
 	}
 }
 
-
-
-int wmain(int argc, wchar_t* argv[]) {
-
-	Param::Params param = Param::getParams(argc, argv);
-	Param::checking_in_params(param);
-
-	for (int i = 0; i < param.in.size; i++) {
-		wcout << param.in.data[i] << endl;
-	}
-
-	in::IN input_files = in::get_IN(param);
-
-
-
-	key_words::Key_words_table key_words;
-	key_words::Key_words_table::create_table(key_words);
-
-	cout << '\n';
-
-
-	parse(input_files, key_words);
-
-
-	Param::delete_all(param);
-}
-
+//
+//
+//int wmain(int argc, wchar_t* argv[]) {
+//
+//	Param::Params param = Param::getParams(argc, argv);
+//	Param::checking_in_params(param);
+//
+//	for (int i = 0; i < param.in.size; i++) {
+//		wcout << param.in.data[i] << endl;
+//	}
+//
+//	in::IN input_files = in::get_IN(param);
+//
+//
+//
+//	key_words::Key_words_table key_words;
+//	key_words::Key_words_table::create_table(key_words);
+//
+//	cout << '\n';
+//
+//
+//	parse(input_files, key_words);
+//
+//
+//	Param::delete_all(param);
+//}
+//
 
 //ÄÎÁÀÂÈÒÜ ÎÁÐÀÁÎÒÊÓ ÎØÈÁÎÊ:
 //*Îáðàáîòàòü òî÷êó ñ  çàïÿòîé
