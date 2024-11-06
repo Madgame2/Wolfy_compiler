@@ -1,8 +1,13 @@
 #pragma once
 #include<list>
 #include<string>
+#include<cstdarg>
 #include"comon.h"
 
+
+#define GRB_ERROR 600
+#define NS(n) Rule::N(n)
+#define TS(n) Rule::T(n)
 
 namespace RULE {
 	namespace key {
@@ -36,12 +41,74 @@ namespace RULE {
 
 				this->extra = extra;
 			}
-
 			Elemet() {
 				lexem[0] = '\0';
 			}
 		};
 
 		extern std::list <Elemet> key_words;
+	}
+
+	namespace GRB {
+
+		typedef short GRBALPHABET;  ///<0 - Íåòåðìèíàë >0 - òåðìèíàë
+		struct Rule {
+			
+			struct Chain;
+
+			GRBALPHABET start_symbol;
+			int size = 0;
+			int error_id;
+			std::list<Chain> chains;
+		
+		
+			struct Chain {
+				std::list<GRBALPHABET> elements;
+				int size = 0;
+
+				Chain(unsigned int size, GRBALPHABET first, ...) {
+					va_list args;
+					va_start(args, first);
+
+					elements.push_back(first);
+
+					for (int i = 1; i < size; i++) {
+						elements.push_back(va_arg(args, GRBALPHABET));
+					}
+
+					va_end(args);
+				}
+			};
+
+
+			Rule() {
+				start_symbol = 0;
+				error_id = GRB_ERROR;
+			}
+			Rule(GRBALPHABET start_symbol,int error_id, std::list<Chain> chains) {
+				this->error_id = error_id;
+				this->start_symbol = start_symbol;
+				this->chains = chains;
+				this->size = chains.size();
+			}
+
+			static GRBALPHABET N(const char lexem[LEXEMA_SIZE]) {
+				GRBALPHABET sum = 0;
+				for (int i = 0; i < LEXEMA_SIZE || lexem[i] != '\0'; i++) {
+					sum += lexem[i];
+				}
+				return -sum;
+			}
+			static GRBALPHABET T(const char lexem[LEXEMA_SIZE]) {
+				GRBALPHABET sum = 0;
+				for (int i = 0; i < LEXEMA_SIZE || lexem[i] != '\0'; i++) {
+					sum += lexem[i];
+				}
+				return sum;
+			}
+		};
+
+
+		extern std::list<Rule> general_rules;
 	}
 }

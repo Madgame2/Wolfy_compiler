@@ -5,9 +5,11 @@ VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Wolfy_compiler", "Wolfy_compiler\Wolfy_compiler.vcxproj", "{052D47D6-F541-4267-87A3-275FD827C06C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexical_analyzer", "lexical_analyzer\lexical_analyzer.vcxproj", "{FB7AF26A-334F-42E7-A228-922BB136E0A8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tes_area", "lexical_analyzer\lexical_analyzer.vcxproj", "{FB7AF26A-334F-42E7-A228-922BB136E0A8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FST", "FST\FST.vcxproj", "{D564C642-A317-4E7B-B30D-F2E8C5DC2501}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser", "parser\parser.vcxproj", "{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{D564C642-A317-4E7B-B30D-F2E8C5DC2501}.Release|x64.Build.0 = Release|x64
 		{D564C642-A317-4E7B-B30D-F2E8C5DC2501}.Release|x86.ActiveCfg = Release|Win32
 		{D564C642-A317-4E7B-B30D-F2E8C5DC2501}.Release|x86.Build.0 = Release|Win32
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Debug|x64.ActiveCfg = Debug|x64
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Debug|x64.Build.0 = Debug|x64
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Debug|x86.ActiveCfg = Debug|Win32
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Debug|x86.Build.0 = Debug|Win32
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Release|x64.ActiveCfg = Release|x64
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Release|x64.Build.0 = Release|x64
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Release|x86.ActiveCfg = Release|Win32
+		{BD4B5CEA-341C-4F35-8F7B-2AE1738222C5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,4 +10,15 @@ namespace RULE {
             Elemet(L"unsigned","e")
         };
     }
+    namespace GRB {
+        //Правила Грейбаха
+
+        std::list<Rule> general_rules = {
+            Rule(NS("N"), GRB_ERROR+1,
+                {
+                    Rule::Chain(3,TS("t"),TS("i"),TS(";")),
+                    Rule::Chain(3,TS("t"),TS("i"),TS("="),NS("N"),TS(";"))
+                })
+        };
+    }
 }

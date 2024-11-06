@@ -189,7 +189,10 @@ void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType
 }
 
 
-void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words) {
+void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
+	std::map<wstring, LT::Lexem_table>& LT_files,
+	std::map<wstring, ID::ID_table>& ID_files,
+	std::map<wstring, Lit_table::Literal_table>& Lit_files) {
 
 
 	std::unordered_set<wchar_t> specialChars = {
@@ -200,10 +203,6 @@ void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words) {
 	L'~', L'?', L'\\', L'.', L'\"', L'\''
 	};
 
-
-	std::map<wstring, LT::Lexem_table> LT_files;
-	std::map<wstring, ID::ID_table> ID_files;
-	std::map<wstring, Lit_table::Literal_table> Lit_files;
 	for (int i = 0; i < in_files.file_count; i++) {
 
 
@@ -403,7 +402,7 @@ void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words) {
 
 						//Таблица индефикаторов 
 						
-						int curent_ID;
+						//int curent_ID;
 						//if ((curent_ID = ID::isId(ID_files[file_name], word, function_context.empty() ? L"" : function_context.top())) == -1) {
 
 							ID::Entry new_ID;
