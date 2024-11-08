@@ -146,6 +146,7 @@
     <ClCompile Include="in.cpp" />
     <ClCompile Include="Lexem_table.cpp" />
     <ClCompile Include="Litetral_table.cpp" />
+    <ClCompile Include="MFST.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Rule.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Lexem_table.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="Litetral_table.h" />
+    <ClInclude Include="MFST.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Rules.h" />
