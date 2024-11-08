@@ -14,8 +14,8 @@ namespace GRB {
 
 	struct Greibach {
 
-		GRBALPHABET Start;					//Стартоввый символ
-		GRBALPHABET end;					//Дно стека
+		GRBALPHABET Start=0;					//Стартоввый символ
+		GRBALPHABET end=0;					//Дно стека
 		std::map<GRBALPHABET, Rule> rules;
 
 
