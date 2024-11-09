@@ -14,6 +14,11 @@ namespace GRB {
         return ch<0;
     }
 
+    Rule Greibach::getRule(GRBALPHABET N)
+    {
+        return this->rules[N];
+    }
+
     Rule::Chain Greibach::getChain(GRBALPHABET N, int rulle_index)
     {
         if (rulle_index < 0 || rulle_index >= this->rules[N].chains.size()) throw Error::get_error(7);

@@ -14,10 +14,10 @@ namespace RULE {
         //Правила Грейбаха
 
         std::list<Rule> general_rules = {
-            Rule(NS("N"), GRB_ERROR+1,
+            Rule(NS("S"), GRB_ERROR+1,
                 {
                     Rule::Chain(3,TS("t"),TS("i"),TS(";")),
-                    Rule::Chain(3,TS("t"),TS("i"),TS("="),NS("N"),TS(";"))
+                    Rule::Chain(5,TS("t"),TS("i"),TS("="),NS("N"),TS(";"))
                 })
         };
     }

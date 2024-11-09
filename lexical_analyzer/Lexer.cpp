@@ -139,6 +139,7 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line) {
 	new_entry.source_code_line = line;
 
 	LT::add(table, new_entry);
+	//table.size++;
 
 #ifdef DEBUG
 	cout << new_entry.lexema;
@@ -160,6 +161,7 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, in
 
 
 	LT::add(table, new_entry);
+	//table.size++;
 
 #ifdef DEBUG
 	cout << new_entry.lexema;
@@ -173,6 +175,7 @@ void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
 	new_entry.lexema[1] = '\0';
 
 	LT::add(table, new_entry);
+	//table.size++;
 
 
 #ifdef DEBUG
@@ -190,8 +193,10 @@ void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType
 	table.size++;
 }
 
-
-void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words) {
+void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
+	std::map<wstring, LT::Lexem_table>& LT_files,
+	std::map<wstring, ID::ID_table>& ID_files,
+	std::map<wstring, Lit_table::Literal_table>& Lit_files) {
 
 
 	std::unordered_set<wchar_t> specialChars = {
@@ -202,10 +207,6 @@ void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words) {
 	L'~', L'?', L'\\', L'.', L'\"', L'\''
 	};
 
-
-	std::map<wstring, LT::Lexem_table> LT_files;
-	std::map<wstring, ID::ID_table> ID_files;
-	std::map<wstring, Lit_table::Literal_table> Lit_files;
 	for (int i = 0; i < in_files.file_count; i++) {
 
 
@@ -460,15 +461,18 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	in::IN input_files = in::get_IN(param);
 
-
+	cout << '\n';
 
 	key_words::Key_words_table key_words;
 	key_words::Key_words_table::create_table(key_words);
 
-	cout << '\n';
+	map<wstring, LT::Lexem_table> LT_files;				//файл -> таблица лексем
+	map<wstring, ID::ID_table> ID_files;				//файл -> таблица индефикаторов
+	map<wstring, Lit_table::Literal_table> Lit_files;	//файл -> таблица литералов
 
-
-	lexer::parse(input_files, key_words);
+	lexer::parse(input_files, key_words, LT_files, ID_files, Lit_files);
+	cout << "\n";
+	parser::Parse(LT_files[L"File1.wolf"]);
 
 
 	Param::delete_all(param);

@@ -17,6 +17,10 @@ void push_to_stack(std::stack<GRBALPHABET>& stack, RULE::GRB::Rule::Chain chain)
 
 namespace MFST {
 
+	namespace save {
+		std::stack<save::saves> saves_stack;
+	}
+
 	void create_MFST(MFST& mfst, LT::Lexem_table table, GRB::Greibach grb)
 	{
 		mfst.lenta_size = table.size;
@@ -30,16 +34,37 @@ namespace MFST {
 		mfst.buffer.push(grb.end);
 		mfst.buffer.push(grb.Start);
 	}
-	Results MFST::step()
+	Results MFST::step(int& error_code)
 	{
+
+		if (lenta_position == lenta_size) {
+			if (buffer.top() == grb.end) {
+				return Results::LENTA_END_GOOD;
+			}
+			else {
+				return Results::FRONG_SYMBOL;
+			}
+		}
+		else if(buffer.top() == grb.end) {
+			return Results::FRONG_SYMBOL;
+		}
+
+
 		if (GRB::Greibach::isN(this->buffer.top())) {
 
 			try
 			{
 				RULE::GRB::Rule::Chain chain = grb.getChain(this->buffer.top(), this->lenta[0], chain_id);
 
+				error_code = grb.getRule(this->buffer.top()).error_id;
+				make_save(this->lenta_position, this->buffer);
+
+				buffer.pop();
 				push_to_stack(this->buffer, chain);
+
+
 				chain_id = 0;
+				return Results::FIND_RULE;
 			}
 			catch (...) {
 				//Вернуть что нету парвила 
@@ -55,6 +80,7 @@ namespace MFST {
 				buffer.pop();
 				lenta_position++;
 
+				return Results::OK_RESUULT;
 				//достаем из стека
 				//Двишаем ленту 
 			}
@@ -86,5 +112,18 @@ namespace MFST {
 		new_save.n_rule_cnain = n_chain;
 
 		save::saves_stack.push(new_save);
+	}
+	void MFST::get_last_save()
+	{
+
+		if (save::saves_stack.empty()) throw;
+
+
+		save::saves elem = save::saves_stack.top();
+		save::saves_stack.pop();
+
+		this->buffer = elem.buffer;
+		this->chain_id = elem.n_rule_cnain;
+		this->lenta_position = elem.lenta_position;
 	}
 }
