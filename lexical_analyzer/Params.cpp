@@ -70,7 +70,7 @@ Params Param::getParams(int argc, wchar_t* argv[])
 				wchar_t* end_of_key = wcschr(argv[i], L':');
 
 				if (end_of_key != nullptr) {
-					wchar_t* argv = end_of_key+1; //new wchar_t[size+1];
+					wchar_t* argv = end_of_key + 1; //new wchar_t[size+1];
 
 					in.push_back(argv);
 
@@ -85,8 +85,9 @@ Params Param::getParams(int argc, wchar_t* argv[])
 
 			break;
 		}
-		
+
 	}
+
 
 	std::wstring* in_str = new std::wstring[in.size()];
 	for (size_t i = 0; i < in.size(); i++) {

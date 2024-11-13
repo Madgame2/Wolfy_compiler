@@ -2,6 +2,15 @@
 
 using namespace Param;
 
+void to_lowercase(wchar_t* str) {
+	for (size_t i = 0; str[i] != L'\0'; ++i) {
+		str[i] = std::towlower(str[i]);
+	}
+}
+void to_lowercase(std::wstring& str) {
+	std::transform(str.begin(), str.end(), str.begin(), std::towlower);
+}
+
 void Read_new_key(wchar_t* argv, int& mode) {
 	mode = -1;//—брасываем режим
 	wchar_t* end_of_key = wcschr(argv, L':');
@@ -89,6 +98,19 @@ Params Param::getParams(int argc, wchar_t* argv[])
 		}
 		
 	}
+
+	int count_main = 0;
+	for (int i = 0; i < in.size();i++) {
+		std::wstring temp = std::wstring(in[i]);
+		to_lowercase(temp);
+		if (temp == L"main.wolf") {
+			count_main++;
+		}
+
+	}
+
+	if (count_main < 1) throw Error::get_error(104);
+	else if (count_main > 1) throw Error::get_error(103);
 
 	std::wstring* in_str = new std::wstring[in.size()];
 	for (size_t i = 0; i < in.size(); i++) {

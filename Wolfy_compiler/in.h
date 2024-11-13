@@ -32,6 +32,7 @@ namespace in {
 		std::wstring file_name;
 		std::wstring source_code;
 		unsigned int size = 0;
+		bool is_main = false;
 	};
 
 

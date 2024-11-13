@@ -3,6 +3,8 @@
 #include<cwchar>
 #include<string>
 #include<vector>
+#include <cwctype>    // Для std::towlower
+#include <algorithm>  // Для std::transform
 
 #define IN_FILE_TYPE L".wolf"
 

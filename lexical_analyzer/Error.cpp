@@ -23,8 +23,8 @@ namespace Error {
 		ERROR_ENTRY(100,"param -in must be specified"),
 		ERROR_ENTRY(101,"param -in alredy defined"),
 		ERROR_ENTRY(102,"param -in is empty"),
-		ERROR_ENTRY(103,"error in param struct (example: -in:main.cpp)"),
-		ERROR_ENTRY(104,"input parameter length exceeded"),
+		ERROR_ENTRY(103,"file main must be unique"),
+		ERROR_ENTRY(104,"file main must be difended"),
 		ERROR_ENTRY(105,"<-uncknow param"),
 		ERROR_ENTRY(106,"param -out alredy defined"),
 		ERROR_ENTRY(107,"param -out is empty"),
@@ -43,8 +43,8 @@ namespace Error {
 		ERROR_ENTRY(601,"Operator error"),
 		ERROR_ENTRY(602,"error in expression"),
 		ERROR_ENTRY(603,"function params error"),
-		ERROR_ENTRY(604,"params error in caled function")
-		,ERROR_ENTRY_NODEF100(700),ERROR_ENTRY_NODEF100(800),ERROR_ENTRY_NODEF100(900)
+		ERROR_ENTRY(604,"params error in caled function"),
+		ERROR_ENTRY_NODEF100(700),ERROR_ENTRY_NODEF100(800),ERROR_ENTRY_NODEF100(900)
 	};
 
 	ERROR get_error(int id) {
