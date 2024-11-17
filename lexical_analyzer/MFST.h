@@ -26,7 +26,7 @@ namespace MFST {
 
 		GRB::Greibach grb;
 
-		Results step(int& error_code);
+		Results step(int& error_code, int& chain_size);
 
 		void make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer);
 		void make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer, unsigned int n_chain);

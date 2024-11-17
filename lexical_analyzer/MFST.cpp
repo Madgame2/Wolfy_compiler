@@ -34,7 +34,7 @@ namespace MFST {
 		mfst.buffer.push(grb.end);
 		mfst.buffer.push(grb.Start);
 	}
-	Results MFST::step(int& error_code)
+	Results MFST::step(int& error_code, int& chain_size)
 	{
 
 		if (lenta_size == 0) return Results::FILE_EMPTY;
@@ -58,7 +58,7 @@ namespace MFST {
 			try
 			{
 				 chain = grb.getChain(this->buffer.top(), this->lenta[lenta_position], chain_id);
-
+				 
 
 				
 			}
@@ -84,6 +84,7 @@ namespace MFST {
 				}
 			};
 
+			chain_size = chain.elements.size();
 			error_code = grb.getRule(this->buffer.top()).error_id;
 			make_save(this->lenta_position, this->buffer, chain_id);
 
