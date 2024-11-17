@@ -150,6 +150,7 @@
     <ClCompile Include="MFST.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Polish_entry.cpp" />
     <ClCompile Include="Rule.cpp" />
     <ClCompile Include="Lexer.cpp">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EnableAllWarnings</WarningLevel>
@@ -168,6 +169,7 @@
     <ClInclude Include="MFST.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Parser.h" />
+    <ClInclude Include="Polish_entry.h" />
     <ClInclude Include="Rules.h" />
   </ItemGroup>
   <ItemGroup>
