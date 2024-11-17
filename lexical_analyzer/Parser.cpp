@@ -96,9 +96,14 @@ namespace parser {
 			case MFST::Results::OK_RESUULT:
 
 				//к текушей ноде AST добавлем новый лист
+
+				
 				struct_stack.top().curent_node->links.push_back(create_new_leaf(table.table[data.index]));
 				struct_stack.top().count_rules--;
-
+				
+					if (struct_stack.top().count_rules <= 1) {
+						struct_stack.pop();
+					}
 
 				data.index++;
 
@@ -124,7 +129,8 @@ namespace parser {
 
 				break;
 			case MFST::Results::FIND_RULE:
-				
+
+				if(chain_size>0)
 				struct_stack.push(AST_info(create_new_NT(GRB_buffer), chain_size));
 
 				//Просто продолжаем

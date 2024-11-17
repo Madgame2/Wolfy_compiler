@@ -61,8 +61,8 @@ namespace RULE {
             }),
             Rule(NS("B"),GRB_ERROR + 3,{
                 Rule::Chain(),
-                Rule::Chain(4,TS("t"),TS("i"),TS(";"),NS("M")),
-                Rule::Chain(6,TS("t"),TS("i"),TS("="),NS("E"),TS(";"),NS("M")),
+                Rule::Chain(4,TS("t"),TS("i"),TS(";"),NS("B")),
+                Rule::Chain(6,TS("t"),TS("i"),TS("="),NS("E"),TS(";"),NS("B")),
             })
         };
     }
