@@ -169,7 +169,7 @@
     <ClInclude Include="Rules.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="File1.wolf" />
+    <None Include="MAIN.wolf" />
     <None Include="File2.wolf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -20,10 +20,10 @@ namespace parser {
 		info_saves.pop();
 	}
 
-	void Parse(LT::Lexem_table table)
+	void Parse(LT::Lexem_table table, std::list<Rule> rules)
 	{
 		GRB::Greibach grb;
-		GRB::get_GRB(grb, NS("S"), TS("$"), GENERAl);
+		GRB::get_GRB(grb, NS("S"), TS("$"), rules);
 
 		MFST::MFST mfst;
 		MFST::create_MFST(mfst, table, grb);
@@ -37,7 +37,7 @@ namespace parser {
 			}
 
 			auto buffer_temp = mfst.buffer;
-
+			//ќ“ладка
 			while (!buffer_temp.empty()) {
 				std::cout << (grb.isT(buffer_temp.top()) ? (char)buffer_temp.top() : (char)(-(buffer_temp.top())));
 				buffer_temp.pop();
@@ -90,6 +90,11 @@ namespace parser {
 			case MFST::Results::LENTA_END_GOOD:
 
 				return;
+				break;
+
+			case MFST::Results::FILE_EMPTY:
+
+					return;
 				break;
 			}
 

@@ -25,5 +25,45 @@ namespace RULE {
                     Rule::Chain(5,TS("t"),TS("i"),TS("="),NS("N"),TS(";"))
                 })
         };
+
+        std::list<Rule> main_rules = {
+            Rule(NS("S"),GRB_ERROR,{
+                Rule::Chain(2,TS("g"),NS("M")),
+                Rule::Chain(1,NS("M"))
+            }),
+            Rule(NS("M"),GRB_ERROR,{
+                Rule::Chain(4,TS("t"),TS("i"),TS(";"),NS("M")),
+                Rule::Chain(6,TS("t"),TS("i"),TS("="),NS("E"),TS(";"),NS("M")),
+                Rule::Chain(8,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS("{"),NS("B"),TS("}")),
+                Rule::Chain(9,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS("{"),NS("B"),TS("}")),
+                Rule::Chain(8,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS("{"),TS("}")),
+                Rule::Chain(7,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS("{"),TS("}"))
+            }),
+            Rule(NS("E"),GRB_ERROR + 2,{
+                    Rule::Chain(1,TS("l")),
+                    Rule::Chain(1,TS("i")),
+                    Rule::Chain(3,TS("("),NS("E"),TS(")")),
+                    Rule::Chain(4,TS("("),NS("E"),TS(")"),NS("O")),
+                    Rule::Chain(3,NS("E"),NS("O"),NS("E")),
+
+            }),
+            Rule(NS("O"),GRB_ERROR + 1,{
+                    Rule::Chain(1,TS("+")),
+                    Rule::Chain(1,TS("-")),
+                    Rule::Chain(1,TS("/")),
+                    Rule::Chain(1,TS("*")),
+                    Rule::Chain(1,NS("%")),
+
+            }),
+            Rule(NS("P"),GRB_ERROR + 3,{
+                    Rule::Chain(2,TS("t"),TS("i")),
+                    Rule::Chain(4,TS("t"),TS("i"),TS(","),NS("P")),
+            }),
+            Rule(NS("B"),GRB_ERROR + 3,{
+                Rule::Chain(),
+                Rule::Chain(4,TS("t"),TS("i"),TS(";"),NS("M")),
+                Rule::Chain(6,TS("t"),TS("i"),TS("="),NS("E"),TS(";"),NS("M")),
+            })
+        };
     }
 }

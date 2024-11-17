@@ -6,5 +6,5 @@
 #include"MFST.h"
 
 namespace parser {
-	void Parse(LT::Lexem_table table);
+	void Parse(LT::Lexem_table table, std::list<Rule>);
 }

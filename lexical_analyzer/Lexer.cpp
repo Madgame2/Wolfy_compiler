@@ -27,7 +27,7 @@ list<wstring> divid_str(wstring source_code) {
 		char buffer = source_code[index];
 
 		//проверяем символ или число
-		if (isalpha(buffer) || isdigit(buffer)) {
+		if (isalpha(buffer) || isdigit(buffer)||buffer==L'_') {
 			if (word_beg == -1) {
 				word_beg = index;
 			}
@@ -212,15 +212,29 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 		list<wstring> words = divid_str(in_files.FILES[i].source_code);			//Разбиваем файл на список слов и смволов 
 		
+		//for (auto&  elem: words) {
+		//	wcout << elem << endl;
+		//}
+
+		wstring file_name;
+		if (in_files.FILES[i].is_main) {
+			file_name = L"MAIN";
+		}
+		else {
+			file_name = in_files.FILES[i].file_name;
+		}
+
 		LT::Lexem_table new_table;
 		LT::create_Lexem_table(new_table, words.size());
-		LT_files[in_files.FILES[i].file_name] = new_table;
+		LT_files[file_name] = new_table;
+
 
 		ID::ID_table new_id_table;
-		ID_files[in_files.FILES[i].file_name] = new_id_table;
+		ID_files[file_name] = new_id_table;
 
 		Lit_table::Literal_table new_lit_table;
-		Lit_files[in_files.FILES[i].file_name] = new_lit_table;
+		Lit_files[file_name] = new_lit_table;
+
 
 		stack<wstring> context_stack;						//стек последних слов; (обнуляется при встече ; )
 		stack<wstring> function_context;					//стек вложенных функций
@@ -233,7 +247,6 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 		bool is_params = false;
 		int last_ID_id=-1;
 		int last_lit_id = -1;
-		wstring file_name = in_files.FILES[i].file_name;
 		wstring lit_buffer;
 		unsigned int line = 0;
 		unsigned int word_index = -1;
@@ -472,7 +485,17 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	lexer::parse(input_files, key_words, LT_files, ID_files, Lit_files);
 	cout << "\n";
-	parser::Parse(LT_files[L"File1.wolf"]);
+	//parser::Parse(LT_files[L"file1.wolf"]);
+
+
+	for (auto& elem : LT_files) {
+		if (elem.first == L"MAIN") {
+			parser::Parse(elem.second, MAIN);
+		}
+		else {
+			parser::Parse(elem.second, GENERAl);
+		}
+	}
 
 
 	Param::delete_all(param);

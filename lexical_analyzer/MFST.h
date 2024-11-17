@@ -13,7 +13,8 @@ namespace MFST {
 		FIND_RULE,
 		NO_RULE,
 		FATAL_ERRROR,
-		LENTA_END_GOOD
+		LENTA_END_GOOD,
+		FILE_EMPTY
 	};
 
 	struct MFST {

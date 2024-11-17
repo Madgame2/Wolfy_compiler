@@ -41,8 +41,8 @@
     <ClInclude Include="Rules.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="File.wolf" />
-    <None Include="Main.wolf" />
+    <None Include="file.wolf" />
+    <None Include="MAin.wolf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -4,6 +4,12 @@
 
 using namespace in;
 
+std::wstring to_lowercase(std::wstring str) {
+	std::transform(str.begin(), str.end(), str.begin(), std::towlower);
+
+	return str;
+}
+
 int get_file_size(std::ifstream& file) {
 	if (!file.is_open()) return -1;
 
@@ -132,6 +138,11 @@ IN in::get_IN(Param::Params param)
 		new_in.FILES[i].file_name = in.data[i];
 		new_in.FILES[i].source_code = sorce_code;
 		new_in.FILES[i].size = index+1;
+
+
+		if (to_lowercase(new_in.FILES[i].file_name) == L"main.wolf") {
+			new_in.FILES[i].is_main = true;
+		}
 
 		delete[] code; //œŒ“ŒÃ ”ƒ¿À»“‹
 		file.close();

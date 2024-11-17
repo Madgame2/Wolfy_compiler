@@ -1,7 +1,0 @@
-int a = 25;
-float num = 2+2;
-string str = "hello wolrds";
-
-void  function(){
-	
-}

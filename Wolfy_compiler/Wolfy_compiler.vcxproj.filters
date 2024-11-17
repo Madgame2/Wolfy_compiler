@@ -73,10 +73,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="File.wolf">
+    <None Include="file.wolf">
       <Filter>Файлы ресурсов</Filter>
     </None>
-    <None Include="Main.wolf">
+    <None Include="MAin.wolf">
       <Filter>Файлы ресурсов</Filter>
     </None>
   </ItemGroup>

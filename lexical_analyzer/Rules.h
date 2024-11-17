@@ -65,7 +65,7 @@ namespace RULE {
 			struct Chain {
 				std::list<GRBALPHABET> elements;
 				int size = 0;
-
+				bool empty = false;
 				Chain(unsigned int size, GRBALPHABET first, ...) {
 					va_list args;
 					va_start(args, first);
@@ -78,6 +78,7 @@ namespace RULE {
 
 					va_end(args);
 				}
+				Chain() { empty = true; }
 			};
 
 
@@ -110,5 +111,6 @@ namespace RULE {
 
 
 		extern std::list<Rule> general_rules;
+		extern std::list<Rule> main_rules;
 	}
 }

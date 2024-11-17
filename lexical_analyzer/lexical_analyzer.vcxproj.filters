@@ -88,7 +88,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="File1.wolf">
+    <None Include="MAIN.wolf">
       <Filter>Файлы ресурсов</Filter>
     </None>
     <None Include="File2.wolf">

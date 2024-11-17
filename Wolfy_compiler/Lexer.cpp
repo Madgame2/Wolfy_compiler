@@ -25,7 +25,7 @@ list<wstring> divid_str(wstring source_code) {
 		char buffer = source_code[index];
 
 		//проверяем символ или число
-		if (isalpha(buffer) || isdigit(buffer)) {
+		if (isalpha(buffer) || isdigit(buffer||buffer==L'_')) {
 			if (word_beg == -1) {
 				word_beg = index;
 			}
@@ -210,13 +210,28 @@ void lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 		
 		LT::Lexem_table new_table;
 		LT::create_Lexem_table(new_table, words.size());
-		LT_files[in_files.FILES[i].file_name] = new_table;
+		if (in_files.FILES[i].is_main) {
+			LT_files[L"MAIN"] = new_table;
+		}
+		else {
+			LT_files[in_files.FILES[i].file_name] = new_table;
+		}
 
 		ID::ID_table new_id_table;
-		ID_files[in_files.FILES[i].file_name] = new_id_table;
+		if (in_files.FILES[i].is_main) {
+			ID_files[L"MAIN"] = new_id_table;
+		}
+		else {
+			ID_files[in_files.FILES[i].file_name] = new_id_table;
+		}
 
 		Lit_table::Literal_table new_lit_table;
-		Lit_files[in_files.FILES[i].file_name] = new_lit_table;
+		if (in_files.FILES[i].is_main) {
+			Lit_files[L"MAIN"] = new_lit_table;
+		}
+		else {
+			Lit_files[in_files.FILES[i].file_name] = new_lit_table;
+		}
 
 		stack<wstring> context_stack;						//стек последних слов; (обнуляется при встече ; )
 		stack<wstring> function_context;					//стек вложенных функций

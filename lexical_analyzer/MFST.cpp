@@ -37,6 +37,8 @@ namespace MFST {
 	Results MFST::step(int& error_code)
 	{
 
+		if (lenta_size == 0) return Results::FILE_EMPTY;
+
 		if (lenta_position == lenta_size) {
 			if (buffer.top() == grb.end) {
 				return Results::LENTA_END_GOOD;
@@ -52,27 +54,44 @@ namespace MFST {
 
 		if (GRB::Greibach::isN(this->buffer.top())) {
 
+			RULE::GRB::Rule::Chain chain;
 			try
 			{
-				RULE::GRB::Rule::Chain chain = grb.getChain(this->buffer.top(), this->lenta[0], chain_id);
-
-				error_code = grb.getRule(this->buffer.top()).error_id;
-				make_save(this->lenta_position, this->buffer);
-
-				buffer.pop();
-				push_to_stack(this->buffer, chain);
+				 chain = grb.getChain(this->buffer.top(), this->lenta[lenta_position], chain_id);
 
 
-				chain_id = 0;
-				return Results::FIND_RULE;
+				
 			}
 			catch (...) {
-				//Вернуть что нету парвила 
+				//Попробовать найти первый попавшийся нетерминальнй символ
+				chain_id = 0;
 
-				return Results::NO_RULE;
+
+				try {
+					chain = grb.getChain_firstN(this->buffer.top(), chain_id);
+				}
+				catch (...) {
+					//Возможно допустимо пустой переход 
+
+					try {
+
+						chain = grb.getChain_empty(this->buffer.top());
+					}
+					catch(...) {
+
+						return Results::NO_RULE;
+					}
+				}
 			};
 
-			
+			error_code = grb.getRule(this->buffer.top()).error_id;
+			make_save(this->lenta_position, this->buffer, chain_id);
+
+			buffer.pop();
+			push_to_stack(this->buffer, chain);
+
+			chain_id = 0;
+			return Results::FIND_RULE;
 		}
 		else if (GRB::Greibach::isT(this->buffer.top())) {
 			if (lenta[lenta_position] == buffer.top()) {

@@ -4,6 +4,7 @@
 #include"Error.h"
 
 #define GENERAl RULE::GRB::general_rules
+#define MAIN RULE::GRB::main_rules
 
 typedef short GRBALPHABET;  ///<0 - Íåòåðìèíàë >0 - òåðìèíàë
 
@@ -26,6 +27,8 @@ namespace GRB {
 		Rule getRule(GRBALPHABET N);
 		Rule::Chain getChain(GRBALPHABET N,int rulle_index);
 		Rule::Chain getChain(GRBALPHABET N, GRBALPHABET first_T, int offset);
+		Rule::Chain getChain_firstN(GRBALPHABET N, int offset);
+		Rule::Chain getChain_empty(GRBALPHABET N);
 	};
 
 	void get_GRB(Greibach& GRB, GRBALPHABET start, GRBALPHABET stack_end, std::list<Rule> rules);

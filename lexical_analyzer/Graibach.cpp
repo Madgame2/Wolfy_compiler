@@ -25,7 +25,7 @@ namespace GRB {
 
         int index = 0;
         for (auto& elem : this->rules[N].chains) {
-            if (index == rulle_index)
+            if (!elem.empty && index == rulle_index)
             {
                 return elem;
             }
@@ -39,7 +39,7 @@ namespace GRB {
 
 
         for (auto& elem : this->rules[N].chains) {
-            if (elem.elements.front() == first_T) {
+            if (!elem.empty && elem.elements.front() == first_T) {
                 if (offset == 0) {
                     return elem;
                 }
@@ -48,7 +48,36 @@ namespace GRB {
 
         }
 
-        throw;
+        throw NULL;
+    }
+
+    Rule::Chain Greibach::getChain_firstN(GRBALPHABET N, int offset)
+    {
+        if (offset < 0 || offset >= this->rules[N].chains.size()) throw Error::get_error(7);
+
+
+        for (auto& elem : this->rules[N].chains) {
+            if (!elem.empty && isN(elem.elements.front()) ) {
+                if (offset == 0) {
+                    return elem;
+                }
+                offset--;
+            }
+
+        }
+
+        throw NULL;
+    }
+
+    Rule::Chain Greibach::getChain_empty(GRBALPHABET N)
+    {
+        for (auto& elem : this->rules[N].chains) {
+            if (elem.empty) {
+                return elem;
+            }
+        }
+
+        throw NULL;
     }
 
     void get_GRB(Greibach& GRB, GRBALPHABET start, GRBALPHABET stack_end, std::list<Rule> rules)
