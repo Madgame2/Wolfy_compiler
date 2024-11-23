@@ -34,10 +34,12 @@ namespace RULE {
             Rule(NS("M"),GRB_ERROR,{
                 Rule::Chain(4,TS("t"),TS("i"),TS(";"),NS("M")),
                 Rule::Chain(6,TS("t"),TS("i"),TS("="),NS("E"),TS(";"),NS("M")),
-                Rule::Chain(8,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS("{"),NS("B"),TS("}")),
-                Rule::Chain(9,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS("{"),NS("B"),TS("}")),
-                Rule::Chain(8,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS("{"),TS("}")),
-                Rule::Chain(7,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS("{"),TS("}"))
+                Rule::Chain(9,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS("{"),NS("B"),TS("}"),NS("M")),
+                Rule::Chain(10,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS("{"),NS("B"),TS("}"),NS("M")),
+                Rule::Chain(9,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS("{"),TS("}"),NS("M")),
+                Rule::Chain(8,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS("{"),TS("}"),NS("M")),
+                Rule::Chain(3,NS("E"),TS(";"),NS("M")),
+                Rule::Chain()
             }),
             Rule(NS("E"),GRB_ERROR + 2,{
                     Rule::Chain(1,TS("l")),

@@ -7,6 +7,7 @@
 #include"Lexem_table.h"
 #include"MFST.h"
 #include"AST.h"
+#include"Polish_entry.h"
 
 namespace parser {
 	void Parse(LT::Lexem_table table, std::list<Rule>);

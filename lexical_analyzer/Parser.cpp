@@ -13,6 +13,7 @@ namespace parser {
 		AST::node* curent_node;
 		int count_rules;
 
+		int expression_lenght = -1;
 
 		AST_info(AST::node* curent, int count_rules) {
 			this->count_rules = count_rules;
@@ -68,7 +69,9 @@ namespace parser {
 		AST::create_ast(tree, NS("S"));
 
 
-
+		bool is_expresion = false;
+		std::stack<int>expression_lenght;
+		std::stack<std::list<LT::Entry>>expression;
 		while (true)
 		{
 			if (table.table[data.index].lexema == "|") {
@@ -89,7 +92,14 @@ namespace parser {
 			GRBALPHABET GRB_buffer = mfst.buffer.top();
 			MFST::Results res = mfst.step(data.error, chain_size);
 
-
+			if (GRB_buffer == NS("E")) {
+				if (expression_lenght.empty()||expression_lenght.top()==0) {
+					expression_lenght.push(chain_size);
+				}
+				else {
+					expression_lenght.push(expression_lenght.top() + chain_size-1);
+				}
+			}
 
 			switch (res)
 			{
@@ -103,6 +113,22 @@ namespace parser {
 				
 					if (struct_stack.top().count_rules <= 1) {
 						struct_stack.pop();
+
+						//while (!expression_lenght.empty()) expression_lenght.pop();
+
+
+						//while (!expression.empty()) expression.pop();
+					}
+
+
+					if (!expression_lenght.empty()) {
+						expression.top().push_back(table.table[info_saves.top().index]);
+
+						expression_lenght.top()--;
+						if (expression_lenght.top() == 0) {
+							//передаем алгоритму польской записи;
+							POL::build_tree(expression.top());
+						}
 					}
 
 				data.index++;
@@ -122,6 +148,13 @@ namespace parser {
 
 					AST::delete_node(struct_stack.top().curent_node);
 					struct_stack.pop();
+
+
+					if(!expression_lenght.empty())
+					expression_lenght.pop();
+
+					if (!expression.empty())
+					expression.pop();
 				}
 				catch(...) {
 					throw Error::get_error_in(data.error, data.line, data.index);
@@ -135,6 +168,19 @@ namespace parser {
 
 				//Просто продолжаем
 				info_saves.push(data);
+
+				//Если внутри вырожения
+				if (!expression_lenght.empty()) {
+
+					if (expression.empty()) {
+						std::list<LT::Entry> new_list;
+						expression.push(new_list);
+					}
+					else {
+						auto temp = expression.top();
+						expression.push(temp);
+					}
+				}
 
 				break;
 			case MFST::Results::NO_RULE:

@@ -31,3 +31,13 @@
             None
         };
     }
+
+    namespace operatoion_prioritet {
+        enum class operations {
+            PLUS = 1,
+            MINUS =1,
+            MULTIPLY =2,
+            DIV =2,
+            BRECKETS =4
+        };
+    }

@@ -7,6 +7,8 @@
 //float num = 2+2;
 //string str = "hello wolrds";
 
+3 + 4 * 2 / (1 - 5);
+
 void  function new_function(){
-	//int a;
+	int a;
 }
