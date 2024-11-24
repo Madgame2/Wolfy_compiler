@@ -5,9 +5,6 @@ namespace AST {
 	void create_ast(program_struct& tree, RULE::GRB::GRBALPHABET start)
 	{
 		tree.root = new node;
-
-		tree.root->symbol[0] = (char)-start;
-		tree.root->symbol[1] = '\0';
 	}
 
     void delete_node(node* current_node) {
@@ -27,6 +24,26 @@ namespace AST {
 
         
         delete current_node;
+    }
+
+
+    void delete_node(node* sorce, node* node) {
+        delete_node(node);
+
+        int i = get_node_id(sorce, node);
+
+        sorce->links.erase(sorce->links.begin() + i);
+    }
+
+    int get_node_id(node* sorce, node* node)
+    {
+        for (int i = 0; i < sorce->links.size(); i++) {
+            if (sorce->links[i] == node) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
 }

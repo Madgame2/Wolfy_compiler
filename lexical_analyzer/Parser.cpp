@@ -2,23 +2,34 @@
 
 namespace parser {
 
+	struct AST_node_info {
+		AST::node* curent_node;
+		int count_rules;
+
+		bool is_expression = false;
+		AST_node_info(AST::node* curent, int count_rules) {
+			this->count_rules = count_rules;
+			this->curent_node = curent;
+		}
+		AST_node_info(AST::node* curent, int count_rules, bool is_expresion) {
+			this->count_rules = count_rules;
+			this->curent_node = curent;
+			this->is_expression = is_expresion;
+		}
+	};
+	struct expression_data {
+		int begin = -1;
+		int end = -1;
+	};
 	struct info
 	{
 		int  index = 0;
 		int line = 0;
 		int error = 0;
-	};
+		AST::node* last_node = nullptr;
 
-	struct AST_info {
-		AST::node* curent_node;
-		int count_rules;
-
-		int expression_lenght = -1;
-
-		AST_info(AST::node* curent, int count_rules) {
-			this->count_rules = count_rules;
-			this->curent_node = curent;
-		}
+		std::stack<AST_node_info> NT_node_stuct;
+		std::map<AST::node*, expression_data>  expressions;
 	};
 
 	AST::node* create_new_leaf(LT::Entry elem) {
@@ -56,7 +67,7 @@ namespace parser {
 		info data;
 
 		std::stack<info> info_saves;
-		std::stack<AST_info> struct_stack;
+		std::stack<AST_node_info> NT_node_struct;						//Стек  вложенности нетерминальных символов 
 
 
 		GRB::Greibach grb;
@@ -66,95 +77,115 @@ namespace parser {
 		MFST::create_MFST(mfst, table, grb);
 
 		AST::program_struct tree;
-		AST::create_ast(tree, NS("S"));
+		//AST::create_ast(tree, NS("S"));
 
-
-		bool is_expresion = false;
-		std::stack<int>expression_lenght;
-		std::stack<std::list<LT::Entry>>expression;
-		while (true)
+		//std::map<AST::node*, expression_data>  expressions;
+		
+		bool is_active = true;
+		while (is_active)
 		{
 			if (table.table[data.index].lexema == "|") {
 				data.index++;
 				data.line++;
 			}
 
-			auto buffer_temp = mfst.buffer;
+			auto buffer_temp_mfst = mfst.buffer;
+
+
 			//ОТладка
-			while (!buffer_temp.empty()) {
-				std::cout << (grb.isT(buffer_temp.top()) ? (char)buffer_temp.top() : (char)(-(buffer_temp.top())));
-				buffer_temp.pop();
+			while (!buffer_temp_mfst.empty()) {
+				std::cout << (grb.isT(buffer_temp_mfst.top()) ? (char)buffer_temp_mfst.top() : (char)(-(buffer_temp_mfst.top())));
+				buffer_temp_mfst.pop();
 			}
 			std::cout << '\n';
 
-			
+			auto buffer_temp = NT_node_struct;
+			while (!buffer_temp.empty())
+			{
+				std::cout << buffer_temp.top().curent_node->symbol << ' ' << buffer_temp.top().count_rules<<" is_expression: "<< buffer_temp.top().is_expression << std::endl;
+				buffer_temp.pop();
+			}
+			std::cout << "---------------------------" << std::endl;
+
+
 			int chain_size;
 			GRBALPHABET GRB_buffer = mfst.buffer.top();
 			MFST::Results res = mfst.step(data.error, chain_size);
 
-			if (GRB_buffer == NS("E")) {
-				if (expression_lenght.empty()||expression_lenght.top()==0) {
-					expression_lenght.push(chain_size);
-				}
-				else {
-					expression_lenght.push(expression_lenght.top() + chain_size-1);
-				}
-			}
 
 			switch (res)
 			{
 			case MFST::Results::OK_RESUULT:
-
-				//к текушей ноде AST добавлем новый лист
-
 				
-				struct_stack.top().curent_node->links.push_back(create_new_leaf(table.table[data.index]));
-				struct_stack.top().count_rules--;
-				
-					if (struct_stack.top().count_rules <= 1) {
-						struct_stack.pop();
-
-						//while (!expression_lenght.empty()) expression_lenght.pop();
+			{
 
 
-						//while (!expression.empty()) expression.pop();
+				while (NT_node_struct.top().count_rules <= 0) {
+					bool buffer = NT_node_struct.top().is_expression;
+					AST::node* buffer_node = NT_node_struct.top().curent_node;
+					NT_node_struct.pop();
+
+
+					if (buffer == true && NT_node_struct.top().is_expression == false) {
+						//тут строим польскую запись
+						data.expressions[buffer_node].end = data.index;
+						
+
+						std::cout << "build poland" << std::endl;
+						std::cout << data.expressions[buffer_node].begin << " - " << data.expressions[buffer_node].end << std::endl;
 					}
+				}
+
+				if (!NT_node_struct.top().is_expression) {
+					AST::node* new_node = create_new_leaf(table.table[data.index]);
+
+					NT_node_struct.top().curent_node->links.push_back(new_node);
+				}
+
+				NT_node_struct.top().count_rules--;
+				if (NT_node_struct.top().count_rules <= 0) {
+					bool buffer = NT_node_struct.top().is_expression;
+					AST::node* buffer_node = NT_node_struct.top().curent_node;
+					NT_node_struct.pop();
 
 
-					if (!expression_lenght.empty()) {
-						expression.top().push_back(table.table[info_saves.top().index]);
+					if (buffer == true && NT_node_struct.top().is_expression == false) {
+						//тут строим польскую запись
+						data.expressions[buffer_node].end = data.index;
 
-						expression_lenght.top()--;
-						if (expression_lenght.top() == 0) {
-							//передаем алгоритму польской записи;
-							POL::build_tree(expression.top());
-						}
+
+						std::cout << "build poland" << std::endl;
+						std::cout << data.expressions[buffer_node].begin << " - " << data.expressions[buffer_node].end << std::endl;
 					}
+				}
 
 				data.index++;
-
+			}
 				break;
 			case MFST::Results::FRONG_SYMBOL:
 
 				//откатываемся на предыдушее сохранение 
 
 				try {
+
+
 					mfst.get_last_save();
 					mfst.chain_id++;
 
+					
+					AST::node* buffer = NT_node_struct.top().curent_node;
 
 					data = info_saves.top();
+					NT_node_struct = data.NT_node_stuct;
 					info_saves.pop();
 
-					AST::delete_node(struct_stack.top().curent_node);
-					struct_stack.pop();
+					//data.expressions.erase(buffer);
+					AST::delete_node(NT_node_struct.top().curent_node,data.last_node);
+					if(data.expressions.find(data.last_node)!=data.expressions.end())
+					{
+						data.expressions.erase(data.last_node);
+					}
 
-
-					if(!expression_lenght.empty())
-					expression_lenght.pop();
-
-					if (!expression.empty())
-					expression.pop();
 				}
 				catch(...) {
 					throw Error::get_error_in(data.error, data.line, data.index);
@@ -162,26 +193,43 @@ namespace parser {
 
 				break;
 			case MFST::Results::FIND_RULE:
+			{
 
-				if(chain_size>0)
-				struct_stack.push(AST_info(create_new_NT(GRB_buffer), chain_size));
+				data.NT_node_stuct = NT_node_struct;
+
+				if (!NT_node_struct.empty()) {
+					NT_node_struct.top().count_rules--;
+				}
+
+				if (chain_size >= 0) {
+					AST::node* new_node = create_new_NT(GRB_buffer);
+
+
+					if (!NT_node_struct.empty()) {
+
+						data.last_node = new_node;
+
+						NT_node_struct.top().curent_node->links.push_back(new_node);
+						NT_node_struct.push(AST_node_info(new_node, chain_size, NT_node_struct.top().is_expression));
+					}
+					else {
+						tree.root = new_node;
+						NT_node_struct.push(AST_node_info(new_node, chain_size));
+					}
+
+					if (GRB_buffer == NS("E")) {
+						if (NT_node_struct.top().is_expression == false) {
+							data.expressions[new_node].begin = data.index;
+						}
+
+						NT_node_struct.top().is_expression = true;
+					}
+				}
 
 				//Просто продолжаем
 				info_saves.push(data);
 
-				//Если внутри вырожения
-				if (!expression_lenght.empty()) {
-
-					if (expression.empty()) {
-						std::list<LT::Entry> new_list;
-						expression.push(new_list);
-					}
-					else {
-						auto temp = expression.top();
-						expression.push(temp);
-					}
-				}
-
+			}	
 				break;
 			case MFST::Results::NO_RULE:
 
@@ -200,7 +248,7 @@ namespace parser {
 				break;
 			case MFST::Results::LENTA_END_GOOD:
 
-				return;
+				is_active = false;
 				break;
 
 			case MFST::Results::FILE_EMPTY:
@@ -211,6 +259,23 @@ namespace parser {
 
 
 		}
+
+		std::cout << "------------------------------------------------------" << std::endl;
+		for (auto elem : data.expressions) {
+			std::cout << elem.first->symbol << std::endl;
+
+
+			std::list<LT::Entry> temp;
+			for (int i = elem.second.begin; i < elem.second.end; i++) {
+				std::cout << table.table[i].lexema;
+				temp.push_back(table.table[i]);
+			}
+			POL::build_tree(temp);
+			
+		}
+
 	}
+
+	
 
 }

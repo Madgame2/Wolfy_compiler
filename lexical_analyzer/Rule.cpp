@@ -45,7 +45,7 @@ namespace RULE {
                     Rule::Chain(1,TS("l")),
                     Rule::Chain(1,TS("i")),
                     Rule::Chain(3,TS("("),NS("E"),TS(")")),
-                    Rule::Chain(4,TS("("),NS("E"),TS(")"),NS("O")),
+                    Rule::Chain(5,TS("("),NS("E"),TS(")"),NS("O"),NS("E")),
                     Rule::Chain(3,NS("E"),NS("O"),NS("E")),
 
             }),

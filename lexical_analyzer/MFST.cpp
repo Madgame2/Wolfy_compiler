@@ -44,7 +44,16 @@ namespace MFST {
 				return Results::LENTA_END_GOOD;
 			}
 			else {
-				return Results::FRONG_SYMBOL;
+
+				try { 
+					grb.getChain_empty(buffer.top());
+					buffer.pop();
+					chain_size = -1;
+					return Results::FIND_RULE;
+				}
+				catch (...) {
+					return Results::FRONG_SYMBOL;
+				}
 			}
 		}
 		else if(buffer.top() == grb.end) {

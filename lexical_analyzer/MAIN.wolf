@@ -9,6 +9,6 @@
 
 3 + 4 * 2 / (1 - 5);
 
-void  function new_function(){
-	int a;
-}
+//void  function new_function(){
+//	int a;
+//}

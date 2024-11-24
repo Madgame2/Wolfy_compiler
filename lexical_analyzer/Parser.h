@@ -2,6 +2,7 @@
 #include<string.h>
 #include <cstring> // Для strcmp
 #include"Graibach.h"
+#include<map>
 #include"comon.h"
 #include"Rules.h"
 #include"Lexem_table.h"
