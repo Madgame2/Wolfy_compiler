@@ -155,6 +155,7 @@
     <ClCompile Include="Lexer.cpp">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EnableAllWarnings</WarningLevel>
     </ClCompile>
+    <ClCompile Include="Semantic_analysis.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AST.h" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Polish_entry.h" />
     <ClInclude Include="Rules.h" />
+    <ClInclude Include="Semantic_analysis.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MAIN.wolf" />

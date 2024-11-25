@@ -28,7 +28,7 @@ namespace RULE {
 
         std::list<Rule> main_rules = {
             Rule(NS("S"),GRB_ERROR,{
-                Rule::Chain(2,TS("g"),NS("M")),
+                Rule::Chain(4,TS("g"),TS("{"),TS("}"),NS("M")),
                 Rule::Chain(1,NS("M"))
             }),
             Rule(NS("M"),GRB_ERROR,{

@@ -128,7 +128,7 @@ namespace parser {
 
 					if (buffer == true && NT_node_struct.top().is_expression == false) {
 						//тут строим польскую запись
-						data.expressions[buffer_node].end = data.index;
+						data.expressions[buffer_node].end = data.index-1;
 						
 
 						std::cout << "build poland" << std::endl;
@@ -266,7 +266,7 @@ namespace parser {
 
 
 			std::list<LT::Entry> temp;
-			for (int i = elem.second.begin; i < elem.second.end; i++) {
+			for (int i = elem.second.begin; i <= elem.second.end; i++) {
 				std::cout << table.table[i].lexema;
 				temp.push_back(table.table[i]);
 			}
