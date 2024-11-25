@@ -62,7 +62,7 @@ namespace parser {
 		return new_node;
 	}
 
-	void Parse(LT::Lexem_table table, std::list<Rule> rules)
+	AST::program_struct Parse(LT::Lexem_table table, std::list<Rule> rules)
 	{
 		info data;
 
@@ -253,7 +253,7 @@ namespace parser {
 
 			case MFST::Results::FILE_EMPTY:
 
-					return;
+				return tree;
 				break;
 			}
 
@@ -274,8 +274,8 @@ namespace parser {
 			
 		}
 
-	}
 
-	
+		return tree;
+	}
 
 }

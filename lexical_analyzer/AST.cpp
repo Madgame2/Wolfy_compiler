@@ -46,4 +46,55 @@ namespace AST {
         return -1;
     }
 
+    void program_struct::Reset()
+    {
+        node* curent = root;
+
+        if (curent == nullptr) {
+
+        }
+
+        dfs::entry new_entry;
+        new_entry.node = curent;
+        new_entry.offset = 0;
+
+        DFS.stack.push(new_entry);
+    }
+    
+
+    node* program_struct::dfs::Step()
+    {
+        entry curent = stack.top();
+
+        if (curent.node->links.size()>0) {
+
+
+            if (curent.offset < curent.node->links.size()) {
+                entry new_entry;
+
+                new_entry.node = curent.node->links[curent.offset];
+                new_entry.offset = 0;
+
+                stack.push(new_entry);
+
+                curent = new_entry;
+            }
+            else {
+                stack.pop();
+                stack.top().offset++;
+
+                curent.node = Step();
+            }
+        }
+        else {
+            stack.pop();
+            stack.top().offset++;
+
+            curent.node = Step();
+        }
+
+        return  curent.node;
+    }
+
+
 }

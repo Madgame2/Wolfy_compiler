@@ -1,6 +1,7 @@
 #include"Lexer.h"
 
 #include"Parser.h"
+#include"Semantic_analysis.h"
 
 #define LIT_KEY 1
 #define ID_KEY 2
@@ -490,7 +491,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	for (auto& elem : LT_files) {
 		if (elem.first == L"MAIN") {
-			parser::Parse(elem.second, MAIN);
+			semantic::Parse( parser::Parse(elem.second, MAIN), ID_files[L"MAIN"], Lit_files[L"MAIN"]);
 		}
 		else {
 			parser::Parse(elem.second, GENERAl);

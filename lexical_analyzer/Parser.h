@@ -11,5 +11,5 @@
 #include"Polish_entry.h"
 
 namespace parser {
-	void Parse(LT::Lexem_table table, std::list<Rule>);
+	AST::program_struct Parse(LT::Lexem_table table, std::list<Rule>);
 }

@@ -1,7 +1,9 @@
 #pragma once
 #include<vector>
+#include<stack>
 #include"Rules.h"
 #include"comon.h"
+#include"Error.h"
 
 namespace AST {
 
@@ -30,6 +32,20 @@ namespace AST {
 	struct  program_struct
 	{
 		node* root = nullptr;
+
+		struct dfs {
+			struct entry {
+				int offset = 0;
+				node* node = nullptr;
+			};
+
+
+			std::stack<entry> stack;
+
+			
+			node* Step();
+		} DFS;
+		void Reset();
 	};
 
 	void create_ast(program_struct& tree, RULE::GRB::GRBALPHABET start);
