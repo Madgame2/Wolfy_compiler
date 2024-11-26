@@ -20,6 +20,8 @@ namespace parser {
 	struct expression_data {
 		int begin = -1;
 		int end = -1;
+
+		AST::node* prerent_node = nullptr;
 	};
 	struct info
 	{
@@ -219,6 +221,12 @@ namespace parser {
 
 					if (GRB_buffer == NS("E")) {
 						if (NT_node_struct.top().is_expression == false) {
+							AST_node_info temp = NT_node_struct.top();
+							NT_node_struct.pop();
+
+							data.expressions[new_node].prerent_node = NT_node_struct.top().curent_node;
+							NT_node_struct.push(temp);
+
 							data.expressions[new_node].begin = data.index;
 						}
 
@@ -261,7 +269,7 @@ namespace parser {
 		}
 
 		std::cout << "------------------------------------------------------" << std::endl;
-		for (auto elem : data.expressions) {
+		for (auto& elem : data.expressions) {
 			std::cout << elem.first->symbol << std::endl;
 
 
@@ -270,8 +278,10 @@ namespace parser {
 				std::cout << table.table[i].lexema;
 				temp.push_back(table.table[i]);
 			}
-			POL::build_tree(temp);
 			
+			AST::node** ref = AST::get_node_ref(elem.second.prerent_node, elem.first);
+			AST::delete_node(elem.first);
+			*ref = POL::build_tree(temp);
 		}
 
 

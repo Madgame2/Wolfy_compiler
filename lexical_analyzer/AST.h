@@ -52,4 +52,6 @@ namespace AST {
 	void delete_node(node* sorce,node* node);
 	void delete_node(node* node);
 	int get_node_id(node* sorce, node* node);
+
+	node** get_node_ref(node* from, node* to);
 }

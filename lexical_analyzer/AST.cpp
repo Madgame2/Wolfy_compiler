@@ -46,6 +46,17 @@ namespace AST {
         return -1;
     }
 
+    node** get_node_ref(node* from, node* to)
+    {
+        for (auto& elem : from->links) {
+            if (elem == to) {
+                return &elem;
+            }
+        }
+
+        return nullptr;
+    }
+
     void program_struct::Reset()
     {
         node* curent = root;
