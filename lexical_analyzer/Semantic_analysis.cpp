@@ -7,6 +7,17 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 
 	while (true)
 	{
-		std::cout << tree.DFS.Step()->symbol << std::endl;
+		AST::node* curent = tree.DFS.Step();
+
+		if (curent == nullptr) {
+
+			break;
+		}
+
+		std::cout << curent->symbol << std::endl;
+
+
+
+
 	}
 }

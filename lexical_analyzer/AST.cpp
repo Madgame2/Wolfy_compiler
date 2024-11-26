@@ -70,42 +70,63 @@ namespace AST {
         new_entry.offset = 0;
 
         DFS.stack.push(new_entry);
+        //DFS.queue.push(new_entry);
     }
     
 
     node* program_struct::dfs::Step()
     {
-        entry curent = stack.top();
+        // Если стек пуст, обход завершен
+        if (stack.empty()) return nullptr;
 
-        if (curent.node->links.size()>0) {
+        entry& current = stack.top();
 
-
-            if (curent.offset < curent.node->links.size()) {
-                entry new_entry;
-
-                new_entry.node = curent.node->links[curent.offset];
-                new_entry.offset = 0;
-
-                stack.push(new_entry);
-
-                curent = new_entry;
-            }
-            else {
-                stack.pop();
-                stack.top().offset++;
-
-                curent.node = Step();
-            }
-        }
-        else {
-            stack.pop();
-            stack.top().offset++;
-
-            curent.node = Step();
+        // Обработка текущего узла (первое посещение)
+        if (current.offset == 0) {
+            current.offset++; // Отмечаем, что текущий узел был обработан
+            return current.node; // Возвращаем узел
         }
 
-        return  curent.node;
+        // Переход к дочерним узлам
+        if (!current.node->links.empty() && current.offset - 1 < current.node->links.size()) {
+            entry new_entry;
+            new_entry.node = current.node->links[current.offset - 1]; // Переход к следующему дочернему узлу
+            new_entry.offset = 0;
+
+            stack.push(new_entry); // Добавляем дочерний узел в стек
+            return Step(); // Рекурсивно обрабатываем следующий узел
+        }
+
+        // Возврат к родителю, если все дочерние узлы обработаны
+        stack.pop(); // Удаляем текущий узел из стека
+        if (!stack.empty()) {
+            stack.top().offset++; // Увеличиваем смещение у родительского узла
+        }
+        return Step(); // Переходим к следующему узлу
     }
+
+
+    //node* program_struct::dfs::Step()
+    //{
+    //    entry curent = queue.front();
+
+    //    if (curent.node->symbol_type==AST::symbol_type::NonTerminal) {
+    //        this->queue.pop();
+
+    //        for (auto& elem : curent.node->links) {
+    //            entry new_entry;
+    //            new_entry.node = elem;
+    //            new_entry.offset = 0;
+    //            
+    //            this->queue.push(new_entry);
+    //        }
+    //    }
+    //    else {
+    //        this->queue.pop();
+    //    }
+
+    //    return curent.node;
+    //}
 
 
 }

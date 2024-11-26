@@ -1,6 +1,7 @@
 #pragma once
 #include<vector>
 #include<stack>
+#include<queue>
 #include"Rules.h"
 #include"comon.h"
 #include"Error.h"
@@ -41,6 +42,7 @@ namespace AST {
 
 
 			std::stack<entry> stack;
+			//std::queue<entry> queue;
 
 			
 			node* Step();

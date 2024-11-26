@@ -6,5 +6,5 @@ Global{
 //int a = 25;
 
 void function test(int a){
-	int b = a + 25; 
+	//int b = a + 25; 
 }
