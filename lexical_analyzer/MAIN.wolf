@@ -5,6 +5,10 @@ Global{
 
 //int a = 25;
 
-void function test(int a){
-	//int b = a + 25; 
+
+void function test2(){
+
+	if(true){
+		int a = 25;
+	}
 }

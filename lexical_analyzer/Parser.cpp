@@ -43,9 +43,12 @@ namespace parser {
 		
 		if (elem.IT_index != -1) {
 			new_node->type = AST::node_type::ID;
+			new_node->table_id = elem.IT_index;
 		}
 		else if (elem.Lit_index != -1) {
 			new_node->type = AST::node_type::Lit;
+			new_node->table_id = elem.Lit_index;
+
 		}
 		else {
 			new_node->type = AST::node_type::general;
@@ -167,6 +170,8 @@ namespace parser {
 			case MFST::Results::FRONG_SYMBOL:
 
 				//откатываемся на предыдушее сохранение 
+
+				if (chain_size<=0)  throw Error::get_error_in(data.error, data.line, data.index);
 
 				try {
 
