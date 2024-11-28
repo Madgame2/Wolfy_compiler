@@ -28,6 +28,8 @@ namespace AST {
 		symbol_type symbol_type = symbol_type::Terminal;
 
 		int table_id = -1;
+		int index=-1;
+		int line = -1;
 	};
 
 	struct  program_struct

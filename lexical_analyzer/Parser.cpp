@@ -37,6 +37,7 @@ namespace parser {
 	AST::node* create_new_leaf(LT::Entry elem) {
 		AST::node* new_node = new AST::node;
 
+		new_node->line = elem.source_code_line;
 
 		strncpy_s(new_node->symbol, elem.lexema, sizeof(new_node->symbol)-1);
 		new_node->symbol_type = AST::symbol_type::Terminal;
@@ -117,7 +118,7 @@ namespace parser {
 			GRBALPHABET GRB_buffer = mfst.buffer.top();
 			MFST::Results res = mfst.step(data.error, chain_size);
 
-
+			int error_count = 0;
 			switch (res)
 			{
 			case MFST::Results::OK_RESUULT:
@@ -143,6 +144,8 @@ namespace parser {
 
 				if (!NT_node_struct.top().is_expression) {
 					AST::node* new_node = create_new_leaf(table.table[data.index]);
+
+					new_node->index = data.index;
 
 					NT_node_struct.top().curent_node->links.push_back(new_node);
 				}
@@ -170,6 +173,8 @@ namespace parser {
 			case MFST::Results::FRONG_SYMBOL:
 
 				//откатываемся на предыдушее сохранение 
+
+				error_count++;
 
 				if (chain_size<=0)  throw Error::get_error_in(data.error, data.line, data.index);
 

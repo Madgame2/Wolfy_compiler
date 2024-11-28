@@ -29,6 +29,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 	//std::stack<std::wstring> context_stack;
 	scope::scope area_visibilyty;
 	AST::node* buffer = nullptr;
+	data::Func_sign* last_func = nullptr;
 	while (true)
 	{
 		
@@ -55,10 +56,6 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 			}
 
 
-			if ( true != true) {
-
-			}
-
 			break;
 		}
 		case AST::symbol_type::Terminal: {
@@ -67,7 +64,12 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 				area_visibilyty.add_new_scope(L"GLOBAL");
 			}
 			else if (strcmp(curent->symbol, "}") == 0) {
+				last_func = nullptr;
 				area_visibilyty.last_scope.pop();
+			}
+			else if (last_func!=nullptr&&strcmp(curent->symbol, ")") == 0) {
+				if (area_visibilyty.has_this_func_sign(last_func)) throw Error::get_error_in(301, curent->line, curent->index);
+				last_func = nullptr;
 			}
 			else if (strcmp(curent->symbol, "?") == 0) {
 				area_visibilyty.add_new_scope(L"IF");
@@ -78,12 +80,30 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 
 				if (id_type == IDType::Type::Func &&buffer&& strcmp(buffer->symbol, "f") == 0) {
 					//добавл€ем обь€вление функции к этой облости видемости
-					//создаем новую область видемости
 
 					int table_id = curent->table_id;
 					ID::Entry elem = ID::getEntry(id_table, table_id);
 
+
+					area_visibilyty.add_new_functoin(elem);
+					last_func = &area_visibilyty.last_scope.top()->objects.functions.back();
 					area_visibilyty.add_new_scope(elem.name);
+				}
+				else if (id_type == IDType::Type::Var && buffer && strcmp(buffer->symbol, "t") == 0) {
+
+					//к этой области видимости добовл€ем новуб переменную
+					int table_id = curent->table_id;
+					ID::Entry var = ID::getEntry(id_table, table_id);
+
+					if (area_visibilyty.has_this_var(var.name)) throw Error::get_error_in(300, curent->line, curent->index);
+
+					area_visibilyty.add_new_var(var);
+				}
+				else if (id_type == IDType::Type::Param) {
+					int table_id = curent->table_id;
+					ID::Entry param = ID::getEntry(id_table, table_id);
+
+					area_visibilyty.add_param_to_last_func(param, last_func);
 				}
 			}
 			break;
@@ -106,13 +126,86 @@ void semantic::scope::scope::add_new_scope(std::wstring name)
 		root = new_node;
 	}
 	else {
+		new_node->parent = last_scope.top();
 		last_scope.top()->childres.push_back(new_node);
 	}
 	last_scope.push(new_node);
 
 }
 
+void semantic::scope::scope::add_new_var(ID::Entry var)
+{
+	data::var new_var;
+
+	new_var.id_type = var.id_type;
+	new_var.d_type = var.d_type;
+	new_var.name = var.name;
+
+	new_var.is_array = var.is_array;
+
+	last_scope.top()->objects.vareiables.push_back(new_var);
+
+}
+
+void semantic::scope::scope::add_new_functoin(ID::Entry func)
+{
+	data::Func_sign new_function;
+
+	new_function.function_name = func.name;
+	new_function.returable_type = func.d_type;
+
+	last_scope.top()->objects.functions.push_back(new_function);
+}
+
+void semantic::scope::scope::add_param_to_last_func(ID::Entry param, data::Func_sign* function)
+{
+	function->params.push_back(param.d_type);
+}
+
 void semantic::scope::scope::pop_scope()
 {
 	last_scope.pop();
+}
+
+bool semantic::scope::scope::has_this_var(std::wstring name)
+{
+	std::list<data::var> list = last_scope.top()->objects.vareiables;
+
+	for (auto& elem : list) {
+		if (elem.name == name) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func)
+{
+	std::list<data::Func_sign> list = last_scope.top()->parent->objects.functions;
+
+	int index = 0;
+	for (auto& func : list) {
+		if (func.function_name == last_func->function_name) {
+
+			if (func.params.size() == last_func->params.size()) {
+
+				if (index != list.size()-1) {
+					if (func.params.empty()) return true;
+
+					int param_size = func.params.size();
+					for (int i = 0; i < param_size; i++) {
+						if (func.params[i] != last_func->params[i]) {
+							return false;
+						}
+					}
+				}
+				else {
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
 }

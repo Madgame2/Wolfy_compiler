@@ -8,6 +8,25 @@
 namespace semantic {
 	void Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table);
 
+	namespace data {
+		struct var {
+			std::wstring name;
+			DataType::Type d_type = DataType::Type::None;
+			IDType::Type id_type = IDType::Type::None;
+
+			bool is_array = false;
+
+			std::list<extra::Type> extras;
+		};
+
+		struct Func_sign {
+			std::wstring function_name;
+			DataType::Type returable_type = DataType::Type::None;
+
+
+			std::vector<DataType::Type> params;
+		};
+	}
 
 	namespace scope {
 
@@ -16,10 +35,11 @@ namespace semantic {
 			std::vector<node*> childres;
 			std::wstring node_name;
 
-			struct data
+			struct info
 			{
-
-			};
+				std::list<data::var> vareiables;
+				std::list<data::Func_sign> functions;
+			} objects;
 		};
 
 		struct scope {
@@ -28,8 +48,18 @@ namespace semantic {
 			std::stack<node* > last_scope;
 
 			void add_new_scope(std::wstring name);
+			void add_new_var(ID::Entry var);
+
+			void add_new_functoin(ID::Entry func);
+			void add_param_to_last_func(ID::Entry param, data::Func_sign* function);
+
 			void pop_scope();
+
+			bool has_this_var(std::wstring name);
+			bool has_this_func_sign(data::Func_sign* last_func);
 		};
 
 	}
+
+
 }

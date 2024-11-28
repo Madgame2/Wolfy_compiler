@@ -73,11 +73,17 @@ namespace MFST {
 			}
 			catch (...) {
 				//Попробовать найти первый попавшийся нетерминальнй символ
+
 				chain_id = 0;
 
 
 				try {
 					chain = grb.getChain_firstN(this->buffer.top(), chain_id);
+
+
+					if (buffer.top()==NS("E") && buffer.size() > lenta_size - lenta_position) {
+						return Results::NO_RULE;
+					}
 				}
 				catch (...) {
 					//Возможно допустимо пустой переход 
