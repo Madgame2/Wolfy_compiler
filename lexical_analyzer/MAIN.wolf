@@ -2,6 +2,7 @@
 int a = 25;
 string a2 = 25+10;
 
+a == 25;
 
 void function test2(){
 	

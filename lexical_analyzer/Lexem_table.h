@@ -36,6 +36,7 @@ namespace LT {
 		int IT_index = -1;
 		int Lit_index = -1;
 
+		bool is_double_oeration = false;
 
 		Entry() {
 			lexema[0] = '\0';

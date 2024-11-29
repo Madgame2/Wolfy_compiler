@@ -14,56 +14,70 @@ list<wstring> divid_str(wstring source_code) {
 	list<wstring> words;
 	unsigned int word_beg = -1;
 
-
 	std::unordered_set<wchar_t> specialChars = {
-	L'+', L'-', L'=', L'<', L'>', L'|',
-	L'&', L'/', L'*', L'%', L'!', L'^',
-	L';', L',', L'(', L')', L'{', L'}',
-	L'[', L']', L':', L'@', L'$', L'#',
-	L'~', L'?', L'\\', L'.', L'\"', L'\''
+		L'+', L'-', L'=', L'<', L'>', L'|',
+		L'&', L'/', L'*', L'%', L'!', L'^',
+		L';', L',', L'(', L')', L'{', L'}',
+		L'[', L']', L':', L'@', L'$', L'#',
+		L'~', L'?', L'\\', L'.', L'\"', L'\''
 	};
 
 	unsigned int index = 0;
-	while (source_code[index] != '\0') {
-		char buffer = source_code[index];
+	while (source_code[index] != L'\0') {
+		wchar_t current_char = source_code[index];
 
-		//проверяем символ или число
-		if (isalpha(buffer) || isdigit(buffer)||buffer==L'_') {
+		// Проверяем символ или число
+		if (isalpha(current_char) || isdigit(current_char) || current_char == L'_') {
 			if (word_beg == -1) {
 				word_beg = index;
 			}
 		}
 		else {
 
-			//нашли новое слово
+			// Нашли новое слово
 			if (word_beg != -1) {
-				unsigned int lenght = index - word_beg;
-				words.push_back(source_code.substr(word_beg, lenght));
+				unsigned int length = index - word_beg;
+				words.push_back(source_code.substr(word_beg, length));
 
 				word_beg = -1;
 				continue;
 			}
 
-
 			// Проверяем, является ли символ специальным
-			else if (specialChars.find(buffer)!= specialChars.end()) {
-				words.push_back(source_code.substr(index, 1)); // Добавляем специальный символ
+			else if (specialChars.find(current_char) != specialChars.end()) {
+
+				// Если текущий символ '=' и следующий тоже '=', то это "=="
+				if (current_char == L'=' && source_code[index + 1] == L'=') {
+					words.push_back(L"==");
+					index++; // Пропускаем следующий символ, так как он уже обработан
+				}
+				// Аналогично для <=, >=
+				else if (current_char == L'<' && source_code[index + 1] == L'=') {
+					words.push_back(L"<=");
+					index++; // Пропускаем следующий символ
+				}
+				else if (current_char == L'>' && source_code[index + 1] == L'=') {
+					words.push_back(L">=");
+					index++; // Пропускаем следующий символ
+				}
+				else {
+					words.push_back(source_code.substr(index, 1)); // Добавляем специальный символ
+				}
 			}
 		}
-
 
 		index++;
 	}
 
+	// Добавляем последнее слово, если оно есть
 	if (word_beg != -1) {
-		unsigned int lenght = index - word_beg;
-		words.push_back(source_code.substr(word_beg, lenght));
-
-		word_beg = -1;
+		unsigned int length = index - word_beg;
+		words.push_back(source_code.substr(word_beg, length));
 	}
 
-	//for (auto& elem : words) {
-	//	wcout << elem.c_str() << endl;
+	//for (auto elem : words) {
+	//	wcout << elem;
+	//	cout << '\n';
 	//}
 
 	return words;
@@ -313,7 +327,64 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						}
 						context_stack.push(word);
 					}
+					else if (word == L"==") {
+						// Обрабатываем оператор "=="
+						// Поднимите флаг для ==
+
+						LT::Entry new_entry;
+						
+
+						new_entry.lexema[0] = '=';
+						new_entry.lexema[1] = '\0';
+						new_entry.is_double_oeration = true;
+						new_entry.source_code_line = line;
+
+#ifdef DEBUG
+						cout << new_entry.lexema;
+#endif // DEBUG
+
+						LT::add(LT_files[file_name], new_entry);
+						
+					}
+					else if (word == L"<=") {
+						// Обрабатываем оператор "<="
+						// Поднимите флаг для <=
+
+						LT::Entry new_entry;
+
+
+						new_entry.lexema[0] = '<';
+						new_entry.lexema[1] = '\0';
+						new_entry.is_double_oeration = true;
+						new_entry.source_code_line = line;
+
+#ifdef DEBUG
+						cout << new_entry.lexema;
+#endif // DEBUG
+
+						LT::add(LT_files[file_name], new_entry);
+					}
+					else if (word == L">=") {
+						// Обрабатываем оператор ">="
+						// Поднимите флаг для >=
+
+
+						LT::Entry new_entry;
+
+
+						new_entry.lexema[0] = '>';
+						new_entry.lexema[1] = '\0';
+						new_entry.is_double_oeration = true;
+						new_entry.source_code_line = line;
+
+#ifdef DEBUG
+						cout << new_entry.lexema;
+#endif // DEBUG
+
+						LT::add(LT_files[file_name], new_entry);
+					}
 					else if (word.size() == 1 && (specialChars.find(word[0]) != specialChars.end())) {
+
 						wchar_t buffer = word[0];
 
 
