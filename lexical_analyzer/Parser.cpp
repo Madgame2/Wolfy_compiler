@@ -41,6 +41,7 @@ namespace parser {
 
 		strncpy_s(new_node->symbol, elem.lexema, sizeof(new_node->symbol)-1);
 		new_node->symbol_type = AST::symbol_type::Terminal;
+		new_node->is_double_operation = elem.is_double_oeration;
 		
 		if (elem.IT_index != -1) {
 			new_node->type = AST::node_type::ID;
@@ -64,6 +65,7 @@ namespace parser {
 		new_node->symbol_type = AST::symbol_type::NonTerminal;
 		new_node->symbol[0] = (char)-ch;
 		new_node->symbol[1] = '\0';
+
 
 		return new_node;
 	}

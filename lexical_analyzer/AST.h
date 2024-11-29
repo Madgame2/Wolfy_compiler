@@ -22,6 +22,8 @@ namespace AST {
 	struct node {
 		char symbol[LEXEMA_SIZE + 1] ={'\0'};
 
+		bool is_double_operation = false;
+
 		std::vector<node*> links;
 
 		node_type type = node_type::general;

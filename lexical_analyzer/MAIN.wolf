@@ -6,8 +6,6 @@ a == 25;
 
 void function test2(){
 	
-	if(int a = 25){
-		
-	}
+
 	
 }
