@@ -68,18 +68,19 @@ namespace MFST {
 			{
 				 chain = grb.getChain(this->buffer.top(), this->lenta[lenta_position], chain_id);
 				 
-
-				
 			}
 			catch (...) {
 				//Попробовать найти первый попавшийся нетерминальнй символ
+				if (is_notTerm == false) {
 
-				chain_id = 0;
+					chain_id = 0;
+					is_notTerm = true;
+				}
 
 
 				try {
 					chain = grb.getChain_firstN(this->buffer.top(), chain_id);
-
+					
 
 					if (buffer.top()==NS("E") && buffer.size() > lenta_size - lenta_position+1) {
 						std::cout << lenta_size << std::endl;
@@ -103,12 +104,13 @@ namespace MFST {
 
 			chain_size = chain.elements.size();
 			error_code = grb.getRule(this->buffer.top()).error_id;
-			make_save(this->lenta_position, this->buffer, chain_id);
+			make_save(this->lenta_position, this->buffer, chain_id,is_notTerm);
 
 			buffer.pop();
 			push_to_stack(this->buffer, chain);
 
 			chain_id = 0;
+			is_notTerm = false;
 			return Results::FIND_RULE;
 		}
 		else if (GRB::Greibach::isT(this->buffer.top())) {
@@ -140,13 +142,14 @@ namespace MFST {
 
 		save::saves_stack.push(new_save);
 	}
-	void MFST::make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer, unsigned int n_chain)
+	void MFST::make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer, unsigned int n_chain, bool mode)
 	{
 
 		save::saves new_save;
 		new_save.buffer = buffer;
 		new_save.lenta_position = lenta;
 		new_save.n_rule_cnain = n_chain;
+		new_save.is_not_term = mode;
 
 		save::saves_stack.push(new_save);
 	}
@@ -162,5 +165,6 @@ namespace MFST {
 		this->buffer = elem.buffer;
 		this->chain_id = elem.n_rule_cnain;
 		this->lenta_position = elem.lenta_position;
+		this->is_notTerm = elem.is_not_term;
 	}
 }

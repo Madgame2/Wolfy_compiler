@@ -26,10 +26,12 @@ namespace MFST {
 
 		GRB::Greibach grb;
 
+		bool is_notTerm = false;
+
 		Results step(int& error_code, int& chain_size);
 
 		void make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer);
-		void make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer, unsigned int n_chain);
+		void make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer, unsigned int n_chain, bool mode);
 
 		void get_last_save();
 	};
@@ -41,6 +43,7 @@ namespace MFST {
 		struct saves {
 			unsigned int lenta_position=0;
 			unsigned int n_rule_cnain=0;
+			bool is_not_term = false;
 			std::stack<GRBALPHABET> buffer;
 		};
 

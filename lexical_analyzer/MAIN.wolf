@@ -1,10 +1,12 @@
 
 int a = 25;
-string a2 = 25;
+string a2 = 25+10;
 
 
 void function test2(){
 	
+	if(int a = 25){
+		
+	}
 	
-	return 2+2;
 }

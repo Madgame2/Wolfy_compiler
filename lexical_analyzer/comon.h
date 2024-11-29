@@ -34,10 +34,10 @@
 
     namespace operatoion_prioritet {
         enum class operations {
-            PLUS = 1,
-            MINUS =1,
-            MULTIPLY =2,
-            DIV =2,
-            BRECKETS =4
+            PLUS = 2,
+            MINUS = 2,
+            MULTIPLY = 3,
+            DIV = 3,
+            EQUAL = 1, // Приоритет для ==
         };
     }

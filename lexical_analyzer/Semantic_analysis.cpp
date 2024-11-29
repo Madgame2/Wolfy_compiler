@@ -67,9 +67,16 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 			}
 			else if (strcmp(curent->symbol, "}") == 0) {
 
-				//if (control_flow_analyzer.is_active) {
-				//	control_flow_analyzer.analyze();
-				//}
+				if (control_flow_analyzer.is_active) {
+
+					if (control_flow_analyzer.curent == control_flow_analyzer.root) {
+
+						control_flow_analyzer.analyze();
+					}
+					else {
+						control_flow_analyzer.merge_last();
+					}
+				}
 
 				last_func = nullptr;
 				area_visibilyty.last_scope.pop();
@@ -80,6 +87,8 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 			}
 			else if (strcmp(curent->symbol, "?") == 0) {
 				area_visibilyty.add_new_scope(L"IF");
+
+				control_flow_analyzer.create_new_branch();
 			}
 			else {
 
@@ -95,6 +104,8 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 					area_visibilyty.add_new_functoin(elem);
 					last_func = &area_visibilyty.last_scope.top()->objects.functions.back();
 					area_visibilyty.add_new_scope(elem.name);
+
+
 
 					control_flow_analyzer.beign();
 				}
