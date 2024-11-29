@@ -1,14 +1,10 @@
 
-int a = 2+2;
-
-
 int a = 25;
 string a2 = 25;
 
 
 void function test2(){
-
-	if(int a = 25){
-		int a;
-	}
+	
+	
+	return 2+2;
 }

@@ -81,7 +81,9 @@ namespace MFST {
 					chain = grb.getChain_firstN(this->buffer.top(), chain_id);
 
 
-					if (buffer.top()==NS("E") && buffer.size() > lenta_size - lenta_position) {
+					if (buffer.top()==NS("E") && buffer.size() > lenta_size - lenta_position+1) {
+						std::cout << lenta_size << std::endl;
+						std::cout << lenta_position << std::endl;
 						return Results::NO_RULE;
 					}
 				}

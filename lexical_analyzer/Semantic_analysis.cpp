@@ -26,6 +26,8 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 {
 	tree.Reset();
 
+	Constrol_flow::Control_flow control_flow_analyzer;
+
 	//std::stack<std::wstring> context_stack;
 	scope::scope area_visibilyty;
 	AST::node* buffer = nullptr;
@@ -64,6 +66,11 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 				area_visibilyty.add_new_scope(L"GLOBAL");
 			}
 			else if (strcmp(curent->symbol, "}") == 0) {
+
+				//if (control_flow_analyzer.is_active) {
+				//	control_flow_analyzer.analyze();
+				//}
+
 				last_func = nullptr;
 				area_visibilyty.last_scope.pop();
 			}
@@ -88,6 +95,8 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 					area_visibilyty.add_new_functoin(elem);
 					last_func = &area_visibilyty.last_scope.top()->objects.functions.back();
 					area_visibilyty.add_new_scope(elem.name);
+
+					control_flow_analyzer.beign();
 				}
 				else if (id_type == IDType::Type::Var && buffer && strcmp(buffer->symbol, "t") == 0) {
 
@@ -98,6 +107,16 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 					if (area_visibilyty.has_this_var(var.name)) throw Error::get_error_in(300, curent->line, curent->index);
 
 					area_visibilyty.add_new_var(var);
+				}
+				else if (id_type == IDType::Type::Var && buffer && strcmp(buffer->symbol, "t") != 0) {
+
+					//к этой области видимости добовляем новуб переменную
+					int table_id = curent->table_id;
+					ID::Entry var = ID::getEntry(id_table, table_id);
+
+					if (!area_visibilyty.has_this_var(var.name)) {
+						throw Error::get_error_in(302, curent->line, curent->index);
+					}
 				}
 				else if (id_type == IDType::Type::Param) {
 					int table_id = curent->table_id;
@@ -205,6 +224,7 @@ bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func)
 				}
 			}
 		}
+		index++;
 	}
 
 	return true;
