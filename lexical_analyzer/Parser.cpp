@@ -85,9 +85,6 @@ namespace parser {
 		MFST::create_MFST(mfst, table, grb);
 
 		AST::program_struct tree;
-		//AST::create_ast(tree, NS("S"));
-
-		//std::map<AST::node*, expression_data>  expressions;
 		
 		bool is_active = true;
 		while (is_active)

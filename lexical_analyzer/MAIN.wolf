@@ -2,8 +2,11 @@
 int a;
 
 void function test2(){
+	
+	if((a == 25) ){
+	
+	}
 
 
-
-	retnun;
+	return;
 }

@@ -75,7 +75,7 @@ namespace RULE {
                 Rule::Chain(),
                 Rule::Chain(4,TS("t"),TS("i"),TS(";"),NS("B")),
                 Rule::Chain(6,TS("t"),TS("i"),TS("="),NS("E"),TS(";"),NS("B")),
-                Rule::Chain(4,TS("i"),TS(";"),NS("B")),
+                Rule::Chain(3,TS("i"),TS(";"),NS("B")),
                 Rule::Chain(5,TS("i"),TS("="),NS("E"),TS(";"),NS("B")),
                 Rule::Chain(11,TS("?"),TS("("),TS("t"),TS("i"),TS("="),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("B")),
                 Rule::Chain(8,TS("?"),TS("("),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("B")),

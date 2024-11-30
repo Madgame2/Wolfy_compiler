@@ -3,84 +3,93 @@
 
 namespace POL {
 
-	operatoion_prioritet::operations get_priorete(const std::string& lexem) {
-		if (lexem == "+")
+	operatoion_prioritet::operations get_priorete(char lexem) {
+		switch (lexem)
+		{
+		case'+':
 			return operatoion_prioritet::operations::PLUS;
-		else if (lexem == "-")
+			break;
+		case'-':
 			return operatoion_prioritet::operations::MINUS;
-		else if (lexem == "*")
+			break;
+		case'*':
 			return operatoion_prioritet::operations::MULTIPLY;
-		else if (lexem == "/")
+			break;
+		case'/':
 			return operatoion_prioritet::operations::DIV;
-		else if (lexem == "%")
+			break;
+		case'%':
 			return operatoion_prioritet::operations::DIV;
-		else if (lexem == "==")
-			return operatoion_prioritet::operations::EQUAL; // Добавляем операцию сравнения
-		else
-			throw std::invalid_argument("Unknown operator: " + lexem);
+
+		case'=':
+			return operatoion_prioritet::operations::EQUAL;
+			break;
+		}
 	}
 
 	std::list<LT::Entry> build_polish_entry(std::list<LT::Entry> expression) {
+
 		std::cout << "build polish entry:\n";
-		for (auto elem : expression) {
+		for (auto& elem : expression) {
 			std::cout << elem.lexema;
 		}
 		std::cout << '\n';
 
 		std::stack<LT::Entry> buffer;
 		std::list<LT::Entry> polish_entry;
+		for (auto& elem : expression) {
 
-		auto it = expression.begin();
-		while (it != expression.end()) {
-			auto& elem = *it;
-
-			// Обрабатываем оператор "==" как одну лексему
-			if (elem.lexema[0] == '=' && std::next(it) != expression.end() && std::next(it)->lexema[0] == '=') {
-				// Создаём лексему для "=="
-				LT::Entry combined_lexem;
-				combined_lexem.lexema[0] = '=';  // первый символ
-				combined_lexem.lexema[1] = '\0'; // завершающий нулевой символ для строки
-
-				// Мы добавляем правильную лексему с двумя символами
-				combined_lexem.lexema[1] = '=';
-
-				// Заменяем текущую лексему на "=="
-				elem = combined_lexem;
-
-				// Пропускаем второй знак "="
-				++it;
-			}
 
 			if (elem.IT_index != -1 || elem.Lit_index != -1) {
 				polish_entry.push_back(elem);
 			}
 			else {
+
 				char lexem = elem.lexema[0];
 				if (lexem == '(') {
+
 					buffer.push(elem);
 				}
 				else if (lexem == ')') {
-					while (!buffer.empty() && buffer.top().lexema[0] != '(') {
+					while (buffer.top().lexema[0] != '(')
+					{
 						polish_entry.push_back(buffer.top());
 						buffer.pop();
 					}
-					buffer.pop(); // Удаляем '(' из стека
+					buffer.pop();
 				}
 				else {
-					operatoion_prioritet::operations current_priority = get_priorete(elem.lexema);
+					operatoion_prioritet::operations curent_prioritet = get_priorete(lexem);
 
-					while (!buffer.empty() &&
-						get_priorete(buffer.top().lexema) >= current_priority) {
-						polish_entry.push_back(buffer.top());
-						buffer.pop();
+					if (!buffer.empty()) {
+						operatoion_prioritet::operations buffer_priorety = get_priorete(buffer.top().lexema[0]);
+
+						if (buffer.top().lexema[0] == '(') {
+							buffer.push(elem);
+						}
+						else if (buffer_priorety > curent_prioritet) {
+							polish_entry.push_back(elem);
+						}
+						else if (buffer_priorety == curent_prioritet) {
+							polish_entry.push_back(buffer.top());
+							buffer.pop();
+							buffer.push(elem);
+						}
+						else {
+							buffer.push(elem);
+						}
 					}
-					buffer.push(elem);
+					else {
+						buffer.push(elem);
+					}
+
+					//!buffer.empty() && get_priorete(buffer.top().lexema[0]) > prioritet ? polish_entry.push_back(elem) : buffer.push(elem);
+
 				}
+
 			}
-			++it;
 		}
 
-		// Очищаем стек, добавляя оставшиеся операторы
 		while (!buffer.empty()) {
 			polish_entry.push_back(buffer.top());
 			buffer.pop();
@@ -89,13 +98,11 @@ namespace POL {
 		return polish_entry;
 	}
 
-
-
 	std::list<AST::node*> refactor_list(std::list<LT::Entry> list) {
 
 		std::list<AST::node*> new_list;
 
-		for (auto elem : list) {
+		for (auto& elem : list) {
 			AST::node* new_node = new AST::node();
 			strcpy_s(new_node->symbol, sizeof(new_node->symbol), elem.lexema);
 			new_node->symbol_type = AST::symbol_type::Terminal;
@@ -104,7 +111,7 @@ namespace POL {
 				new_node->type = AST::node_type::ID;
 				new_node->table_id = elem.IT_index;
 			}
-			else if(elem.Lit_index != -1) {
+			else if (elem.Lit_index != -1) {
 				new_node->type = AST::node_type::Lit;
 				new_node->table_id = elem.IT_index;
 			}
@@ -114,6 +121,7 @@ namespace POL {
 
 		return new_list;
 	}
+
 
 	AST::node* build_tree(std::list<LT::Entry> expression)
 	{

@@ -204,7 +204,7 @@ bool semantic::scope::scope::has_this_var(std::wstring name)
 {
 	std::stack<node*> stack = last_scope;
 
-	for (int i = 0; i < stack.size(); i++) {
+	while(!stack.empty()) {
 
 		std::list<data::var> list = stack.top()->objects.vareiables;
 
