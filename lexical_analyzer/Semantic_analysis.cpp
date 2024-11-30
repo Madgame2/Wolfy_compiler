@@ -69,9 +69,9 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 
 				if (control_flow_analyzer.is_active) {
 
-					if (control_flow_analyzer.curent == control_flow_analyzer.root) {
+					if (control_flow_analyzer.curent->id== BRANCH_BEGIN_DEFOULT_ID) {
 
-						control_flow_analyzer.analyze();
+						control_flow_analyzer.analyze() ? NULL : throw Error::get_error_in(303, curent->line, curent->index);
 					}
 					else {
 						control_flow_analyzer.merge_last();
@@ -89,6 +89,9 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 				area_visibilyty.add_new_scope(L"IF");
 
 				control_flow_analyzer.create_new_branch();
+			}
+			else if (strcmp(curent->symbol, "r") == 0) {
+				control_flow_analyzer.set_returnable();
 			}
 			else {
 
@@ -199,14 +202,19 @@ void semantic::scope::scope::pop_scope()
 
 bool semantic::scope::scope::has_this_var(std::wstring name)
 {
-	std::list<data::var> list = last_scope.top()->objects.vareiables;
+	std::stack<node*> stack = last_scope;
 
-	for (auto& elem : list) {
-		if (elem.name == name) {
-			return true;
+	for (int i = 0; i < stack.size(); i++) {
+
+		std::list<data::var> list = stack.top()->objects.vareiables;
+
+		for (auto& elem : list) {
+			if (elem.name == name) {
+				return true;
+			}
 		}
+		stack.pop();
 	}
-
 	return false;
 }
 

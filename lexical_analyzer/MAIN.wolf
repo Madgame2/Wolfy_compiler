@@ -1,11 +1,9 @@
 
-int a = 25;
-string a2 = 25+10;
-
-a == 25;
+int a;
 
 void function test2(){
-	
 
-	
+
+
+	retnun;
 }

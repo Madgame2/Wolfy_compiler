@@ -38,6 +38,6 @@
             MINUS = 2,
             MULTIPLY = 3,
             DIV = 3,
-            EQUAL = 1, // Приоритет для ==
+            EQUAL = 1, 
         };
     }

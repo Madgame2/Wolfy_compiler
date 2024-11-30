@@ -449,6 +449,11 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							}
 						}
 						case'(': {
+							LT::Entry last_entry = LT::getEntry(LT_files[file_name], LT_files[file_name].size - 1);
+							int ID_index = last_entry.IT_index;
+
+
+							if(ID_index!=-1&&ID::getEntry(ID_files[file_name], ID_index).id_type==IDType::Type::Func)
 							is_params = true;
 
 							if (new_ID_created) {
