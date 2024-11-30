@@ -3,7 +3,7 @@ int a;
 
 void function test2(){
 	
-	if((a == 25) ){
+	if((a == 2.5.5)){
 	
 	}
 

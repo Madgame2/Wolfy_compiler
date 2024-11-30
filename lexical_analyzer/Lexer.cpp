@@ -443,9 +443,21 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						case L'.': 
 						{
 							if (is_only_digit(context_stack.top())) {
-								//lit_buffer += word;
-								is_joint=true;
+								LT::Entry latst_entry = LT::getEntry(LT_files[file_name], LT_files[file_name].size - 1);
+								int  last_lit_id = latst_entry.Lit_index;
+								if (last_lit_id != -1) {
+									Lit_table::Element lat_lit = Lit_table::find(Lit_files[file_name], last_lit_id);
+									if (lat_lit.d_type != DataType::Type::Float) {
+
+										is_joint = true;
+										continue;
+									}
+									else {
+										throw Error::get_error_in(8, line,word_index);
+									}
+								}
 								break;
+
 							}
 						}
 						case'(': {
@@ -577,8 +589,3 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	Param::delete_all(param);
 }
-
-
-//ДОБАВИТЬ ОБРАБОТКУ ОШИБОК:
-//*Обработать точку с  запятой
-//*Обработать коментарии 
