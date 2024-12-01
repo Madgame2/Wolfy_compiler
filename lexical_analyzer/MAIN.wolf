@@ -1,12 +1,14 @@
 
-int a;
+string a;
 
-void function test2(){
+a = 2+2;
+
+int function test2(){
 	
-	if((a == 2.5.5)){
-	
+	if((a == 255)){
+		return 25;
 	}
 
 
-	return;
+	return 25;
 }

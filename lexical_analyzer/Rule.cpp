@@ -19,7 +19,7 @@ namespace RULE {
         //Правила Грейбаха
 
         std::list<Rule> general_rules = {
-            Rule(NS("S"), GRB_ERROR+1,
+            Rule(NS("S"), GRB_ERROR + 1,
                 {
                     Rule::Chain(3,TS("t"),TS("i"),TS(";")),
                     Rule::Chain(5,TS("t"),TS("i"),TS("="),NS("N"),TS(";"))
@@ -84,5 +84,18 @@ namespace RULE {
 
             }),
         };
+    }
+
+
+    namespace convetable_dataType {
+
+        namespace save {
+
+            std::list<data_type> save_convertable = {
+                data_type(DataType::Type::Int, {}),
+                data_type(DataType::Type::Float, {}),
+                data_type(DataType::Type::String, {})
+            };
+        }
     }
 }

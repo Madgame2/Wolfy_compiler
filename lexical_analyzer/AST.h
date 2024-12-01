@@ -23,6 +23,7 @@ namespace AST {
 		char symbol[LEXEMA_SIZE + 1] ={'\0'};
 
 		bool is_double_operation = false;
+		bool is_expression = false;
 
 		std::vector<node*> links;
 

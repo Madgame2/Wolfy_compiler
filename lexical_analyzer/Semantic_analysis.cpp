@@ -22,6 +22,53 @@ IDType::Type get_terminal_context(AST::node* curent, ID::ID_table table) {
 	}
 }
 
+DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, semantic::scope::scope area_visibilyty, ID::ID_table id_table, Lit_table::Literal_table lit_table) {
+
+	
+
+	DataType::Type result;
+	DataType::Type buffer = DataType::Type::None;
+	DataType::Type curent_type = DataType::Type::None;
+	while (curent->is_expression)
+	{
+
+		if (strcmp(curent->symbol, "i") == 0 || strcmp(curent->symbol, "l") == 0) {
+
+
+
+
+
+
+			if (curent->type == AST::node_type::ID) {
+				ID::Entry  elem = ID::getEntry(id_table, curent->table_id);
+
+				if (!area_visibilyty.has_this_var(elem.name)) {
+					throw Error::get_error_in(302, curent->line, curent->index);
+				}
+
+				curent_type = elem.d_type;
+
+			}
+			else if (curent->type == AST::node_type::Lit) {
+				Lit_table::Element  elem = Lit_table::find(lit_table, curent->table_id);
+				curent_type = elem.d_type;
+			}
+		}
+
+		if (buffer != DataType::Type::None) {
+			if (buffer != curent_type) {
+				throw Error::get_error_in(302, curent->line, curent->index);
+			}
+		}
+
+		buffer = curent_type;
+
+		curent = tree.DFS.Step();
+	}
+
+	return buffer;
+}
+
 void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
 {
 	tree.Reset();
@@ -32,6 +79,8 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 	scope::scope area_visibilyty;
 	AST::node* buffer = nullptr;
 	data::Func_sign* last_func = nullptr;
+	DataType::Type retyrnable_type;
+	bool is_expresion = false;
 	while (true)
 	{
 		
@@ -44,6 +93,21 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 
 		std::cout << curent->symbol << std::endl;
 
+
+		if (curent->is_expression) {
+
+			DataType::Type expression = getExpressinType(tree, curent,area_visibilyty, id_table, lit_table);
+
+			if (buffer->type == AST::node_type::ID) {
+				ID::Entry elem = ID::getEntry(id_table,buffer->index);
+
+				data::var varr = area_visibilyty.getvar(elem.name);
+
+				if (varr.d_type != expression) {
+					throw Error::get_error_in(302, curent->line, curent->index);
+				}
+			}
+		}
 		
 		switch (curent->symbol_type)
 		{
@@ -78,11 +142,11 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 					}
 				}
 
-				last_func = nullptr;
 				area_visibilyty.last_scope.pop();
 			}
 			else if (last_func!=nullptr&&strcmp(curent->symbol, ")") == 0) {
 				if (area_visibilyty.has_this_func_sign(last_func)) throw Error::get_error_in(301, curent->line, curent->index);
+				retyrnable_type = last_func->returable_type;
 				last_func = nullptr;
 			}
 			else if (strcmp(curent->symbol, "?") == 0) {
@@ -138,11 +202,65 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 
 					area_visibilyty.add_param_to_last_func(param, last_func);
 				}
+				else if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation) {
+					continue;
+				}
+				else if ((strcmp(curent->symbol, "l") == 0) || (strcmp(curent->symbol, "i") == 0)) {
+					
+					if ((strcmp(buffer->symbol, "i") == 0)) {
+
+						std::wstring name = ID::getEntry(id_table, buffer->table_id).name;
+						data::var varyable = area_visibilyty.getvar(name);
+
+						int id = curent->table_id;
+						DataType::Type type;
+						if (curent->type == AST::node_type::ID) {
+							std::wstring name = ID::getEntry(id_table, curent->table_id).name;
+							type = area_visibilyty.getvar(name).d_type;
+						}
+						else {
+							type = Lit_table::find(lit_table, curent->table_id).d_type;
+						}
+
+
+						if (varyable.d_type != type) {
+							throw Error::get_error_in(304, curent->line, curent->index);
+						}
+					}
+					else if (strcmp(buffer->symbol, "r") == 0) {
+						
+						int id = curent->table_id;
+						DataType::Type type;
+						if (curent->type == AST::node_type::ID) {
+							std::wstring name = ID::getEntry(id_table, curent->table_id).name;
+							type = area_visibilyty.getvar(name).d_type;
+						}
+						else {
+							type = Lit_table::find(lit_table, curent->table_id).d_type;
+						}
+
+
+						if (retyrnable_type != type) {
+							throw Error::get_error_in(305, curent->line, curent->index);
+						}
+					}
+
+				}
+				else if(strcmp(curent->symbol, "+") == 0 ||
+						strcmp(curent->symbol, "-") == 0 ||
+						strcmp(curent->symbol, "*") == 0 ||
+						strcmp(curent->symbol, "/") == 0 ||
+						strcmp(curent->symbol, "%") == 0) {
+					is_expresion = true;
+				}
+
+				else if (strcmp(buffer->symbol, "r") == 0 && retyrnable_type != DataType::Type::None) {
+					throw Error::get_error_in(305, curent->line, curent->index);
+				}
+
 			}
 			break;
 		}
-		default:
-			break;
 		}
 
 		buffer = curent;
@@ -210,6 +328,7 @@ bool semantic::scope::scope::has_this_var(std::wstring name)
 
 		for (auto& elem : list) {
 			if (elem.name == name) {
+
 				return true;
 			}
 		}
@@ -248,3 +367,23 @@ bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func)
 
 	return true;
 }
+
+semantic::data::var semantic::scope::scope::getvar(std::wstring name)
+{
+	std::stack<node*> stack = last_scope;
+
+	while (!stack.empty()) {
+
+		std::list<data::var> list = stack.top()->objects.vareiables;
+
+		for (auto& elem : list) {
+			if (elem.name == name) {
+
+				return elem;
+			}
+		}
+		stack.pop();
+	}
+	return data::var();
+}
+

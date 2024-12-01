@@ -56,8 +56,12 @@ namespace semantic {
 
 			void pop_scope();
 
+			bool has_this_var(AST::node* name);
 			bool has_this_var(std::wstring name);
 			bool has_this_func_sign(data::Func_sign* last_func);
+
+			data::var getvar(std::wstring name);
+			data::Func_sign get_last_Func();
 		};
 
 	}

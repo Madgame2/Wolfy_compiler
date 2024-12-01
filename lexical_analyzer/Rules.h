@@ -113,4 +113,22 @@ namespace RULE {
 		extern std::list<Rule> general_rules;
 		extern std::list<Rule> main_rules;
 	}
+
+
+	namespace convetable_dataType {
+		struct data_type
+		{
+			DataType::Type dataType;
+			std::list<DataType::Type> converatable_types;
+
+			data_type(DataType::Type type, std::list<DataType::Type> types) {
+				dataType = type;
+				converatable_types = types;
+			}
+		};
+		namespace save {
+			extern  std::list<data_type> save_convertable;
+		}
+
+	}
 }

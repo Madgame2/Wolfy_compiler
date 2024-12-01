@@ -113,7 +113,7 @@ namespace POL {
 			}
 			else if (elem.Lit_index != -1) {
 				new_node->type = AST::node_type::Lit;
-				new_node->table_id = elem.IT_index;
+				new_node->table_id = elem.Lit_index;
 			}
 
 			new_list.push_back(new_node);
@@ -147,7 +147,11 @@ namespace POL {
 				AST::node* left = buffer.top();
 				buffer.pop();
 				
-
+				if (new_list.size() > 1) {
+					operation->is_expression = true;
+					right->is_expression = true;
+					left->is_expression = true;
+				}
 				operation->links.push_back(left);
 				operation->links.push_back(right);
 				
