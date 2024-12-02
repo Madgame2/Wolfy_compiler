@@ -48,6 +48,10 @@ namespace RULE {
             Rule(NS("E"),GRB_ERROR + 2,{
                     Rule::Chain(1,TS("l")),
                     Rule::Chain(1,TS("i")),
+                    Rule::Chain(2,TS("-"),TS("l")),
+                    Rule::Chain(2,TS("-"),TS("i")),
+                    Rule::Chain(2,TS("+"),TS("l")),
+                    Rule::Chain(2,TS("+"),TS("i")),
                     Rule::Chain(3,TS("("),NS("E"),TS(")")),
                     Rule::Chain(5,TS("("),NS("E"),TS(")"),NS("O"),NS("E")),
                     Rule::Chain(6,TS("("),NS("E"),TS(")"),NS("O"),TS("="),NS("E")),
@@ -97,5 +101,11 @@ namespace RULE {
                 data_type(DataType::Type::String, {})
             };
         }
+    }
+
+    namespace CODE {
+        std::list<templates> prefabs = {
+            templates("S","ASM_header.asm")
+        };
     }
 }

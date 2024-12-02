@@ -129,7 +129,6 @@ namespace MFST {
 			}
 		}
 
-
 		return Results::FATAL_ERRROR;
 	}
 	void MFST::make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer)

@@ -2,6 +2,7 @@
 
 #include"Parser.h"
 #include"Semantic_analysis.h"
+#include"Code_generator.h"
 
 #define LIT_KEY 1
 #define ID_KEY 2
@@ -82,7 +83,6 @@ list<wstring> divid_str(wstring source_code) {
 
 	return words;
 }
-
 bool is_only_digit(wstring str) {
 	for (int i = 0; i < str.size(); i++) {
 		if (!isdigit(str[i])) {
@@ -91,8 +91,6 @@ bool is_only_digit(wstring str) {
 	}
 	return true;
 }
-
-
 void getContext(ID::Entry& entry,stack<wstring> context, key_words::Key_words_table table) {
 	while (!context.empty())
 	{
@@ -138,15 +136,12 @@ void check_redefinition(ID::Entry& entry, stack<wstring> context, key_words::Key
 		context.pop();
 	}
 }
-
-
 void clear_context(stack<wstring>& context) {
 	while (!context.empty())
 	{
 		context.pop();
 	}
 }
-
 void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line) {
 	LT::Entry new_entry;
 	memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)lexem, sizeof(new_entry.lexema) - 1);
@@ -198,7 +193,6 @@ void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
 #endif // DEBUG
 
 }
-
 void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType::Type type) {
 	Lit_table::Element elem;
 	elem.d_type = type;
@@ -207,7 +201,6 @@ void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType
 	table.table.push_back(elem);
 	table.size++;
 }
-
 void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 	std::map<wstring, LT::Lexem_table>& LT_files,
 	std::map<wstring, ID::ID_table>& ID_files,
@@ -579,13 +572,15 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	for (auto& elem : LT_files) {
 		if (elem.first == L"MAIN") {
-			semantic::Parse( parser::Parse(elem.second, MAIN), ID_files[L"MAIN"], Lit_files[L"MAIN"]);
+
+			AST::program_struct tree = parser::Parse(elem.second, MAIN);
+			semantic::Parse(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
+			CODE::generate_code(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
 		}
 		else {
 			parser::Parse(elem.second, GENERAl);
 		}
-	}
-
+	}	
 
 	Param::delete_all(param);
 }

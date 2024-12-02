@@ -141,16 +141,24 @@ namespace POL {
 			}
 			else
 			{
+				AST::node* right = nullptr;
+				AST::node* left = nullptr;
+
 				AST::node* operation = elem;
-				AST::node* right = buffer.top();
-				buffer.pop();
-				AST::node* left = buffer.top();
-				buffer.pop();
-				
-				if (new_list.size() > 1) {
+				if (!buffer.empty()) {
+					right = buffer.top();
+					buffer.pop();
+				}
+
+				if (!buffer.empty()) {
+					left = buffer.top();
+					buffer.pop();
+				}
+
+				if (new_list.size() > 2) {
 					operation->is_expression = true;
-					right->is_expression = true;
-					left->is_expression = true;
+					right != nullptr ? right->is_expression = true : NULL;
+					left != nullptr ? left->is_expression = true : NULL;
 				}
 				operation->links.push_back(left);
 				operation->links.push_back(right);

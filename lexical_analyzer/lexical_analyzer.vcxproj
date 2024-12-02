@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AST.cpp" />
+    <ClCompile Include="Code_generator.cpp" />
     <ClCompile Include="Control_flow.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="Graibach.cpp" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AST.h" />
+    <ClInclude Include="Code_generator.h" />
     <ClInclude Include="Control_flow.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="Graibach.h" />
@@ -179,6 +181,8 @@
   <ItemGroup>
     <None Include="MAIN.wolf" />
     <None Include="File2.wolf" />
+    <None Include="x64_templates\ASM_header.asm" />
+    <None Include="x86_templates\ASM_header.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

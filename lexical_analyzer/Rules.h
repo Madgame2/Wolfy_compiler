@@ -131,4 +131,20 @@ namespace RULE {
 		}
 
 	}
+
+	namespace CODE {
+		struct templates {
+			std::string key;
+			std::string  path_to_tamplate;
+
+
+			templates(std::string key, std::string path) {
+
+				this->key = key;
+				path_to_tamplate = path;
+			}
+		};
+
+		extern std::list<templates> prefabs;
+	}
 }
