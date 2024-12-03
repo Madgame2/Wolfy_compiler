@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ASM_expresin.cpp" />
     <ClCompile Include="AST.cpp" />
     <ClCompile Include="Code_generator.cpp" />
     <ClCompile Include="Control_flow.cpp" />

@@ -66,16 +66,22 @@ namespace CODE {
 
 
 		size_t type_pos = source_code.find("<data_type>");
-		size_t var_name_pos = source_code.find("<var>");
 
 		if (type_pos != std::string::npos) {
 			delite_tag(source_code, "<data_type>", type_pos);
 			source_code.insert(type_pos, RULE::CODE::DataType_AsmCode[varr.d_type]);
 		}
 
+		size_t var_name_pos = source_code.find("<var>");
 		if (var_name_pos != std::string::npos) {
 			delite_tag(source_code, "<var>", var_name_pos);
 			source_code.insert(var_name_pos, wstring_to_string(varr.name));
+		}
+
+		size_t value_pos = source_code.find("<value>");
+		if (curent->is_expression && value_pos != std::string::npos) {
+			delite_tag(source_code, "<value>", value_pos);
+			source_code.insert(value_pos,"0");
 		}
 	}
 
@@ -88,7 +94,7 @@ namespace CODE {
 		}
 	}
 
-	void insert_value(std::string& source_code, AST::node* curent, ID::ID_table id_table,Lit_table::Literal_table table) {
+	void insert_value(std::string& source_code, AST::node* curent, bool negative , ID::ID_table id_table,Lit_table::Literal_table table) {
 
 		if (curent->type == AST::node_type::Lit) {
 
@@ -99,7 +105,13 @@ namespace CODE {
 
 			if (pos != std::string::npos) {
 				delite_tag(source_code, "<value>", pos);
-				source_code.insert(pos, wstring_to_string(lit.value));
+				if (negative) {
+					source_code.insert(pos, '-' + wstring_to_string(lit.value));
+				}
+				else
+				{
+					source_code.insert(pos, wstring_to_string(lit.value));
+				}
 			}
 		}
 		else if (curent->type == AST::node_type::ID) {
@@ -110,7 +122,13 @@ namespace CODE {
 
 			if (pos != std::string::npos) {
 				delite_tag(source_code, "<value>", pos);
-				source_code.insert(pos, wstring_to_string(id.name));
+				if (negative) {
+					source_code.insert(pos, '-' + wstring_to_string(id.name));
+				}
+				else {
+					source_code.insert(pos, wstring_to_string(id.name));
+
+				}
 			}
 		}
 	}
@@ -143,6 +161,7 @@ namespace CODE {
 		}
 
 		bool varr_init = false;
+		bool befor_minus = false;
 		while (true)
 		{
 
@@ -178,8 +197,11 @@ namespace CODE {
 						write_var_to_asm(asm_code, curent, id_table);
 
 						varr_init = true;
+
+
+						//МЫСЛИ: тут если вырожение добавить в секцию мейна вырожение 
 					}else{
-						insert_value(asm_code, curent, id_table, lit_table);
+						insert_value(asm_code, curent,befor_minus , id_table, lit_table);
 					}
 				}
 				case IDType::Type::Param: {
@@ -195,14 +217,23 @@ namespace CODE {
 
 			}
 			else if (curent->type == AST::node_type::Lit) {
-				insert_value(asm_code, curent,id_table, lit_table);
+				insert_value(asm_code, curent,befor_minus,id_table, lit_table);
 			}
-			else if(!varr_init &&strcmp(curent->symbol,"=")==0&& !curent->is_double_operation)
+			else if(strcmp(curent->symbol,"=")==0&& !curent->is_double_operation)
 			{
-				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
 
-				write_var_to_asm(asm_code, buffer, id_table);
+				if (!varr_init) {
+					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
 
+					write_var_to_asm(asm_code, buffer, id_table);
+				}
+				else {
+
+				}
+			}
+			else if (strcmp(curent->symbol, "-") == 0) {
+				befor_minus = true;
+				continue;
 			}
 			else {
 				buffer = curent;
@@ -210,6 +241,7 @@ namespace CODE {
 
 
 			std::cout << asm_code << std::endl;
+			befor_minus = false;
 		}
 
 		out_file.close();

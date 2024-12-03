@@ -1,1 +1,1 @@
-mov <var>, <value>
+mov <var>, <value> 

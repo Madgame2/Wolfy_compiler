@@ -1,11 +1,6 @@
 
-int a;
+int a = -2 +2;
 
-int b = 1;
-
-
-a = -2 + 2;
-b = a;
 
 int function test2(){
 	

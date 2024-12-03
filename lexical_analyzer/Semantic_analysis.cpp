@@ -251,6 +251,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 						strcmp(curent->symbol, "*") == 0 ||
 						strcmp(curent->symbol, "/") == 0 ||
 						strcmp(curent->symbol, "%") == 0) {
+					buffer->is_expression = curent->is_expression;
 					is_expresion = true;
 				}
 

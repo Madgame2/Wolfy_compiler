@@ -69,6 +69,9 @@
     <ClCompile Include="Code_generator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="ASM_expresin.cpp">
+      <Filter>Файлы ресурсов\x86</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.h">

@@ -140,7 +140,8 @@ namespace RULE {
 			PROGRAM_BEGIN,
 			VAR_delclarete,
 			MAIN_INIT,
-			ASSIGN_VALUE
+			ASSIGN_VALUE,
+			ASSIGN_EXPRESSION
 		};
 
 		struct templates {
