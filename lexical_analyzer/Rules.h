@@ -2,6 +2,8 @@
 #include<list>
 #include<string>
 #include<cstdarg>
+#include<vector>
+#include<map>
 #include"comon.h"
 
 
@@ -133,18 +135,36 @@ namespace RULE {
 	}
 
 	namespace CODE {
+
+		enum class comand {
+			PROGRAM_BEGIN,
+			VAR_delclarete,
+			MAIN_INIT,
+			ASSIGN_VALUE
+		};
+
 		struct templates {
-			std::string key;
+			comand key;
 			std::string  path_to_tamplate;
+			std::vector<std::string> tags;
+			templates() {
 
+			}
 
-			templates(std::string key, std::string path) {
+			templates(comand key, std::string path) {
 
 				this->key = key;
 				path_to_tamplate = path;
 			}
+			templates(comand key, std::string path, std::vector<std::string> tags) {
+
+				this->key = key;
+				path_to_tamplate = path;
+				this->tags = tags;
+			}
 		};
 
 		extern std::list<templates> prefabs;
+		extern std::map<DataType::Type, std::string> DataType_AsmCode;
 	}
 }

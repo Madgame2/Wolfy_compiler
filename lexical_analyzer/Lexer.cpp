@@ -575,7 +575,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
 			AST::program_struct tree = parser::Parse(elem.second, MAIN);
 			semantic::Parse(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
-			CODE::generate_code(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
+			CODE::generate_code(elem.first,tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
 		}
 		else {
 			parser::Parse(elem.second, GENERAl);

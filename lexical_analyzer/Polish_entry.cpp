@@ -106,6 +106,7 @@ namespace POL {
 			AST::node* new_node = new AST::node();
 			strcpy_s(new_node->symbol, sizeof(new_node->symbol), elem.lexema);
 			new_node->symbol_type = AST::symbol_type::Terminal;
+			new_node->is_double_operation = elem.is_double_oeration;
 
 			if (elem.IT_index != -1) {
 				new_node->type = AST::node_type::ID;
@@ -160,8 +161,8 @@ namespace POL {
 					right != nullptr ? right->is_expression = true : NULL;
 					left != nullptr ? left->is_expression = true : NULL;
 				}
-				operation->links.push_back(left);
-				operation->links.push_back(right);
+				if(left  != nullptr) operation->links.push_back(left);
+				if(right != nullptr) operation->links.push_back(right);
 				
 				buffer.push(operation);
 			}

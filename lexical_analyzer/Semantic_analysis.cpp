@@ -29,7 +29,7 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 	DataType::Type result;
 	DataType::Type buffer = DataType::Type::None;
 	DataType::Type curent_type = DataType::Type::None;
-	while (curent->is_expression)
+	while (curent!=nullptr &&curent->is_expression)
 	{
 
 		if (strcmp(curent->symbol, "i") == 0 || strcmp(curent->symbol, "l") == 0) {

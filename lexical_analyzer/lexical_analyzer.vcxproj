@@ -183,6 +183,9 @@
     <None Include="File2.wolf" />
     <None Include="x64_templates\ASM_header.asm" />
     <None Include="x86_templates\ASM_header.asm" />
+    <None Include="x86_templates\ASM_main.asm" />
+    <None Include="x86_templates\assign_a_value.asm" />
+    <None Include="x86_templates\var.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
