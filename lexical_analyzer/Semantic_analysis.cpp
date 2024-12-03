@@ -99,7 +99,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 			DataType::Type expression = getExpressinType(tree, curent,area_visibilyty, id_table, lit_table);
 
 			if (buffer->type == AST::node_type::ID) {
-				ID::Entry elem = ID::getEntry(id_table,buffer->index);
+				ID::Entry elem = ID::getEntry(id_table,buffer->table_id);
 
 				data::var varr = area_visibilyty.getvar(elem.name);
 

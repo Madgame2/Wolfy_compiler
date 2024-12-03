@@ -88,6 +88,33 @@ namespace CODE {
 		}
 	}
 
+	void insert_value(std::string& source_code, AST::node* curent, ID::ID_table id_table,Lit_table::Literal_table table) {
+
+		if (curent->type == AST::node_type::Lit) {
+
+			int table_id = curent->table_id;
+			Lit_table::Element lit = Lit_table::find(table, table_id);
+
+			size_t pos = source_code.find("<value>");
+
+			if (pos != std::string::npos) {
+				delite_tag(source_code, "<value>", pos);
+				source_code.insert(pos, wstring_to_string(lit.value));
+			}
+		}
+		else if (curent->type == AST::node_type::ID) {
+			int table_id = curent->table_id;
+			ID::Entry id = ID::getEntry(id_table, table_id);
+
+			size_t pos = source_code.find("<value>");
+
+			if (pos != std::string::npos) {
+				delite_tag(source_code, "<value>", pos);
+				source_code.insert(pos, wstring_to_string(id.name));
+			}
+		}
+	}
+
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
 	{
 
@@ -151,6 +178,8 @@ namespace CODE {
 						write_var_to_asm(asm_code, curent, id_table);
 
 						varr_init = true;
+					}else{
+						insert_value(asm_code, curent, id_table, lit_table);
 					}
 				}
 				case IDType::Type::Param: {
@@ -165,7 +194,10 @@ namespace CODE {
 				}
 
 			}
-			else if(strcmp(curent->symbol,"=")==0&& !curent->is_double_operation)
+			else if (curent->type == AST::node_type::Lit) {
+				insert_value(asm_code, curent,id_table, lit_table);
+			}
+			else if(!varr_init &&strcmp(curent->symbol,"=")==0&& !curent->is_double_operation)
 			{
 				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
 
