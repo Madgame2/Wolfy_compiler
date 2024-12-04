@@ -112,14 +112,23 @@ namespace RULE {
             templates(comand::VAR_delclarete,"var.asm",{"<var>","<data>"}),
             templates(comand::MAIN_INIT,"ASM_main.asm",{"<main>"}),
             templates(comand::ASSIGN_VALUE,"assign_a_value.asm",{"<func_code>","<main_code>"}),
-            templates(comand::ASSIGN_EXPRESSION,"ASM_expresin.asm",{"<expresion>"}),
-            templates(comand::Expression_init,"Expression_init.asm",{"<expresion>"}),
-            templates(comand::Assign_to_var,"assign_to_var.asm",{"<func_code>","<main_code>"})
+            //templates(comand::ASSIGN_EXPRESSION,"ASM_expresin.asm",{"<expresion>"}),
+            //templates(comand::Expression_init,"Expression_init.asm",{"<expresion>"}),
+            //templates(comand::Assign_to_var,"assign_to_var.asm",{"<func_code>","<main_code>"})
+            templates(comand::Expression_init,"Expression_init.asm",{"<func_code>","<main_code>"}),
+            templates(comand::ASSIGN_EXPRESSION,"Expression_bin.asm",{"<expresion>"}),
+            templates(comand::Expression_plus,"EXPRESION_add.asm",{"<operation>"}),
+            templates(comand::Expression_push,"stack_push_expression.asm",{"<expresion>"}),
+            templates(comand::Expression_mul,"EXPRESION_mul.asm",{"<operation>"})
+
         };
 
         std::map<DataType::Type, asm_info> DataType_AsmCode = {
             {DataType::Type::Int, asm_info("DWORD","eax")}
         };
-
+        std::map<std::string, comand> operatin_AsmCode = {
+            {"+",comand::Expression_plus},
+            {"*",comand::Expression_mul}
+        };
     }
 }

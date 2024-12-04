@@ -1,2 +1,0 @@
-<expresion>
-mov <var> <register>

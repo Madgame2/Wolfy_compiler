@@ -143,7 +143,12 @@ namespace RULE {
 			ASSIGN_VALUE,
 			ASSIGN_EXPRESSION,
 			Expression_init,
-			Assign_to_var
+			Assign_to_var,
+
+
+			Expression_plus,
+			Expression_mul,
+			Expression_push
 		};
 
 		struct templates {
@@ -182,5 +187,6 @@ namespace RULE {
 
 		extern std::list<templates> prefabs;
 		extern std::map<DataType::Type, asm_info> DataType_AsmCode;
+		extern std::map<std::string, comand> operatin_AsmCode;
 	}
 }

@@ -1,2 +1,2 @@
 <expresion>
-pop <var>
+push <value>

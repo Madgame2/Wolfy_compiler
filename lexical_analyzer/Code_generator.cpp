@@ -120,10 +120,10 @@ namespace CODE {
 			if (pos != std::string::npos) {
 				delite_tag(source_code, "<value>", pos);
 				if (negative) {
-					source_code.insert(pos, '-' + wstring_to_string(id.name));
+					source_code.insert(pos, '-' + wstring_to_string(id.area+id.name));
 				}
 				else {
-					source_code.insert(pos, wstring_to_string(id.name));
+					source_code.insert(pos, wstring_to_string(id.area + id.name));
 
 				}
 			}
@@ -147,6 +147,14 @@ namespace CODE {
 		if (pos != std::string::npos) {
 			delite_tag(sourece_code, "<register>", pos);
 			sourece_code.insert(pos, RULE::CODE::DataType_AsmCode[data_type].asm_register);
+		}
+	}
+	void insert_operationn(std::string& sourece_code, AST::node* curent, templates prefabs) {
+
+		if(RULE::CODE::operatin_AsmCode.find(curent->symbol) != RULE::CODE::operatin_AsmCode.end()) {
+			RULE::CODE::comand com = RULE::CODE::operatin_AsmCode[curent->symbol];
+
+			write_by_template(sourece_code, prefabs.template_asm[com], true);
 		}
 	}
 
@@ -200,6 +208,14 @@ namespace CODE {
 				}
 			}
 
+			if (!curent->is_expression) {
+				size_t pos = asm_code.find("<expresion>");
+
+				if (pos != std::string::npos) {
+					delite_tag(asm_code, "<expresoin>", pos);
+				}
+			}
+
 			if (curent->type == AST::node_type::ID) {
 				int table_id = curent->table_id;
 				ID::Entry id = ID::getEntry(id_table, table_id);
@@ -231,9 +247,7 @@ namespace CODE {
 							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 						}
 						else {
-							//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], false);
-
-							//insert_expression(asm_code, curent, id_table, lit_table);
+							
 						}
 					}
 				}
@@ -250,7 +264,13 @@ namespace CODE {
 
 			}
 			else if (curent->type == AST::node_type::Lit) {
-				insert_value(asm_code, curent,befor_minus,id_table, lit_table);
+				if (!curent->is_expression) {
+					insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+				}
+				else {
+					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+					insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+				}
 			}
 			else if(strcmp(curent->symbol,"=")==0&& !curent->is_double_operation)
 			{
@@ -260,8 +280,7 @@ namespace CODE {
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
 					}
 					else {
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Assign_to_var], false);
-						insert_expression(asm_code, buffer, id_table,lit_table);
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], false);
 					}
 					write_var_to_asm(asm_code, buffer, id_table);
 				}
@@ -271,7 +290,11 @@ namespace CODE {
 				continue;
 			}
 			else if (curent->is_expression) {
+
+
 				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
+				insert_operationn(asm_code, curent,prefabs);
+
 			}
 			else {
 				buffer = curent;
