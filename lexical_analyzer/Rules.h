@@ -141,7 +141,9 @@ namespace RULE {
 			VAR_delclarete,
 			MAIN_INIT,
 			ASSIGN_VALUE,
-			ASSIGN_EXPRESSION
+			ASSIGN_EXPRESSION,
+			Expression_init,
+			Assign_to_var
 		};
 
 		struct templates {
@@ -165,7 +167,20 @@ namespace RULE {
 			}
 		};
 
+		struct asm_info {
+			std::string asm_data_type;
+			std::string asm_register;
+
+
+			asm_info(){}
+
+			asm_info(std::string data_type, std::string reg) {
+				this->asm_data_type = data_type;
+				this->asm_register = reg;
+			}
+		};
+
 		extern std::list<templates> prefabs;
-		extern std::map<DataType::Type, std::string> DataType_AsmCode;
+		extern std::map<DataType::Type, asm_info> DataType_AsmCode;
 	}
 }

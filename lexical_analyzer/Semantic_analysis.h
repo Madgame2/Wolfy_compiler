@@ -7,7 +7,7 @@
 #include"Control_flow.h"
 
 namespace semantic {
-	void Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table);
+	void Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table::Literal_table& lit_table);
 
 	namespace data {
 		struct var {

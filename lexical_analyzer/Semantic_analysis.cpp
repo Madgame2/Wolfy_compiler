@@ -69,7 +69,7 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 	return buffer;
 }
 
-void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
+void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table::Literal_table& lit_table)
 {
 	tree.Reset();
 
@@ -180,7 +180,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 
 					//к этой области видимости добовляем новуб переменную
 					int table_id = curent->table_id;
-					ID::Entry var = ID::getEntry(id_table, table_id);
+					ID::Entry& var = ID::getEntry(id_table, table_id);
 
 					if (area_visibilyty.has_this_var(var.name)) throw Error::get_error_in(300, curent->line, curent->index);
 
@@ -190,11 +190,12 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table id_table, Lit_table:
 
 					//к этой области видимости добовляем новуб переменную
 					int table_id = curent->table_id;
-					ID::Entry var = ID::getEntry(id_table, table_id);
+					ID::Entry& var = ID::getEntry(id_table, table_id);
 
 					if (!area_visibilyty.has_this_var(var.name)) {
 						throw Error::get_error_in(302, curent->line, curent->index);
 					}
+					var.d_type = area_visibilyty.getvar(var.name).d_type;
 				}
 				else if (id_type == IDType::Type::Param) {
 					int table_id = curent->table_id;

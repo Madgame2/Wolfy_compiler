@@ -1,0 +1,2 @@
+<expresion>
+mov <rigister>, <value>

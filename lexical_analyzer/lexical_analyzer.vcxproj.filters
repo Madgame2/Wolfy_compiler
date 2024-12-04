@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Файлы ресурсов\x86">
-      <UniqueIdentifier>{155b6032-3f38-407d-827f-9c73ab401d27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы ресурсов\x64">
-      <UniqueIdentifier>{3e9e0946-1b23-48b5-a200-58b053463ea6}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Params.cpp">
@@ -68,9 +62,6 @@
     </ClCompile>
     <ClCompile Include="Code_generator.cpp">
       <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="ASM_expresin.cpp">
-      <Filter>Файлы ресурсов\x86</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -132,21 +123,6 @@
     </None>
     <None Include="File2.wolf">
       <Filter>Файлы ресурсов</Filter>
-    </None>
-    <None Include="x86_templates\ASM_header.asm">
-      <Filter>Файлы ресурсов\x86</Filter>
-    </None>
-    <None Include="x64_templates\ASM_header.asm">
-      <Filter>Файлы ресурсов\x64</Filter>
-    </None>
-    <None Include="x86_templates\ASM_main.asm">
-      <Filter>Файлы ресурсов\x86</Filter>
-    </None>
-    <None Include="x86_templates\var.asm">
-      <Filter>Файлы ресурсов\x86</Filter>
-    </None>
-    <None Include="x86_templates\assign_a_value.asm">
-      <Filter>Файлы ресурсов\x86</Filter>
     </None>
   </ItemGroup>
 </Project>

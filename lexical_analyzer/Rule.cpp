@@ -111,12 +111,14 @@ namespace RULE {
             templates(comand::PROGRAM_BEGIN,"ASM_header.asm",{"<start>"}),
             templates(comand::VAR_delclarete,"var.asm",{"<var>","<data>"}),
             templates(comand::MAIN_INIT,"ASM_main.asm",{"<main>"}),
-            templates(comand::ASSIGN_VALUE,"assign_a_value.asm",{"<main_code>","<func_code>"}),
-            templates(comand::ASSIGN_EXPRESSION,"assign_a_expression.asm",{"<main_code>,<func_code>"})
+            templates(comand::ASSIGN_VALUE,"assign_a_value.asm",{"<func_code>","<main_code>"}),
+            templates(comand::ASSIGN_EXPRESSION,"ASM_expresin.asm",{"<expresion>"}),
+            templates(comand::Expression_init,"Expression_init.asm",{"<expresion>"}),
+            templates(comand::Assign_to_var,"assign_to_var.asm",{"<func_code>","<main_code>"})
         };
 
-        std::map<DataType::Type, std::string> DataType_AsmCode = {
-            {DataType::Type::Int, "DWORD "}
+        std::map<DataType::Type, asm_info> DataType_AsmCode = {
+            {DataType::Type::Int, asm_info("DWORD","eax")}
         };
 
     }

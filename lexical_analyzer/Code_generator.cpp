@@ -3,15 +3,12 @@
 
 namespace CODE {
 
-	void delite_tag(std::string& source_code, std::string tag, size_t pos) {
-		source_code.erase(pos, tag.size());
-	}
+	
 	std::string wstring_to_string(const std::wstring& wstr) {
 		// Используем стандартный конвертер
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 		return converter.to_bytes(wstr);
 	}
-
 	std::string readFile(const std::string& filename) {
 
 		std::ifstream file(filename);
@@ -34,6 +31,9 @@ namespace CODE {
 		return content;
 	}
 
+	void delite_tag(std::string& source_code, std::string tag, size_t pos) {
+		source_code.erase(pos, tag.size());
+	}
 	void write_by_template(std::string& source_code, RULE::CODE::templates prefab, bool delete_tag) {
 		std::string tag;
 		int  offstet = 0;
@@ -59,7 +59,6 @@ namespace CODE {
 
 		//std::cout << source_code<<std::endl;
 	}
-
 	void write_var_to_asm(std::string& source_code, AST::node* curent, ID::ID_table table) {
 		int table_id = curent->table_id;
 		ID::Entry varr = ID::getEntry(table, table_id);
@@ -69,7 +68,7 @@ namespace CODE {
 
 		if (type_pos != std::string::npos) {
 			delite_tag(source_code, "<data_type>", type_pos);
-			source_code.insert(type_pos, RULE::CODE::DataType_AsmCode[varr.d_type]);
+			source_code.insert(type_pos, RULE::CODE::DataType_AsmCode[varr.d_type].asm_data_type);
 		}
 
 		size_t var_name_pos = source_code.find("<var>");
@@ -84,7 +83,6 @@ namespace CODE {
 			source_code.insert(value_pos,"0");
 		}
 	}
-
 	void varr_defoult_value(std::string& source_code) {
 		if (source_code.find("<value>") != std::string::npos) {
 			size_t poss = source_code.find("<value>");
@@ -93,7 +91,6 @@ namespace CODE {
 			source_code.insert(poss,"0");
 		}
 	}
-
 	void insert_value(std::string& source_code, AST::node* curent, bool negative , ID::ID_table id_table,Lit_table::Literal_table table) {
 
 		if (curent->type == AST::node_type::Lit) {
@@ -130,6 +127,26 @@ namespace CODE {
 
 				}
 			}
+		}
+	}
+	void insert_expression(std::string& sourece_code, AST::node* curent, ID::ID_table id_table, Lit_table::Literal_table lit_table) {
+		int table_id = curent->table_id;
+		DataType::Type data_type;
+		if (curent->type == AST::node_type::ID) {
+			ID::Entry var = ID::getEntry(id_table, table_id);
+			data_type = var.d_type;
+		}
+		else if (curent->type == AST::node_type::Lit) {
+			Lit_table::Element lit = Lit_table::find(lit_table, table_id);
+			data_type = lit.d_type;
+		}
+
+
+		size_t pos = sourece_code.find("<register>");
+
+		if (pos != std::string::npos) {
+			delite_tag(sourece_code, "<register>", pos);
+			sourece_code.insert(pos, RULE::CODE::DataType_AsmCode[data_type].asm_register);
 		}
 	}
 
@@ -200,8 +217,24 @@ namespace CODE {
 
 
 						//МЫСЛИ: тут если вырожение добавить в секцию мейна вырожение 
-					}else{
-						insert_value(asm_code, curent,befor_minus , id_table, lit_table);
+
+
+						if (curent->is_expression) {
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], false);
+
+							insert_expression(asm_code, curent, id_table, lit_table);
+
+						}
+					}
+					else {
+						if (!curent->is_expression) {
+							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+						}
+						else {
+							//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], false);
+
+							//insert_expression(asm_code, curent, id_table, lit_table);
+						}
 					}
 				}
 				case IDType::Type::Param: {
@@ -223,17 +256,22 @@ namespace CODE {
 			{
 
 				if (!varr_init) {
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
-
+					if (!buffer->is_expression) {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
+					}
+					else {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Assign_to_var], false);
+						insert_expression(asm_code, buffer, id_table,lit_table);
+					}
 					write_var_to_asm(asm_code, buffer, id_table);
-				}
-				else {
-
 				}
 			}
 			else if (strcmp(curent->symbol, "-") == 0) {
 				befor_minus = true;
 				continue;
+			}
+			else if (curent->is_expression) {
+				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
 			}
 			else {
 				buffer = curent;
