@@ -1,16 +1,15 @@
 
 int a;
 
-	a = 2+2*2;
+//a = 2+2*2;
 
-int function test2(){
+test2(a,2);
+
+int function test2( int f, int b){
 	
 	int a;
-
-	/*if((a == 255)){
-		return 25;
-	}*/
-
+	
+	a = 2*2;
 
 	return 25;
 }

@@ -15,6 +15,8 @@ namespace ID {
         bool is_array = false;
 
         std::list<extra::Type> extras;
+
+        std::list<DataType::Type> params;
     };
 
     struct ID_table

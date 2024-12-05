@@ -74,7 +74,7 @@ namespace CODE {
 		size_t var_name_pos = source_code.find("<var>");
 		if (var_name_pos != std::string::npos) {
 			delite_tag(source_code, "<var>", var_name_pos);
-			source_code.insert(var_name_pos, wstring_to_string(varr.name));
+			source_code.insert(var_name_pos, wstring_to_string(varr.area+varr.name));
 		}
 
 		size_t value_pos = source_code.find("<value>");
@@ -158,6 +158,36 @@ namespace CODE {
 		}
 	}
 
+	void insert_function_names(std::string& sourece_code, std::string func_name) {
+		size_t pos = sourece_code.find("<func_name>");
+
+
+		while (pos != std::string::npos) {
+			delite_tag(sourece_code, "<func_name>", pos);
+			sourece_code.insert(pos, func_name);
+
+			pos = sourece_code.find("<func_name>");
+		}
+	}
+
+	void insert_params_to_proto(std::string& sourece_code, AST::node* curent, ID::ID_table id_table,int argv_count) {
+		int id = curent->table_id;
+		ID::Entry param = ID::getEntry(id_table, id);
+
+		size_t pos = sourece_code.find("<data_type_proto>");
+
+		if (pos != std::string::npos) {
+
+			if (argv_count == 0) {
+				sourece_code.insert(pos, RULE::CODE::DataType_AsmCode[param.d_type].asm_data_type);
+			}
+			else {
+				sourece_code.insert(pos, ", " + RULE::CODE::DataType_AsmCode[param.d_type].asm_data_type);
+			}
+		}
+
+	}
+
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
 	{
 
@@ -187,6 +217,8 @@ namespace CODE {
 
 		bool varr_init = false;
 		bool befor_minus = false;
+		bool is_functon_params = false;
+		int argv_count = 0;
 		while (true)
 		{
 
@@ -205,6 +237,27 @@ namespace CODE {
 
 					buffer = nullptr;
 					continue;
+				}
+			}
+			else if (strcmp(curent->symbol, ",") == 0) {
+				if (varr_init) {
+					varr_defoult_value(asm_code);
+
+					buffer = nullptr;
+					continue;
+				}
+			}
+			else if (strcmp(curent->symbol, ")") == 0) {
+				if (is_functon_params) {
+
+					size_t pos = asm_code.find("<data_type_proto>");
+
+					if (pos != std::string::npos) {
+						delite_tag(asm_code, "<data_type_proto>", pos);
+					}
+					
+					varr_init = false;
+					is_functon_params = false;
 				}
 			}
 
@@ -233,8 +286,6 @@ namespace CODE {
 
 
 						//МЫСЛИ: тут если вырожение добавить в секцию мейна вырожение 
-
-
 						if (curent->is_expression) {
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], false);
 
@@ -247,20 +298,43 @@ namespace CODE {
 							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 						}
 						else {
-							
+							buffer = curent;
 						}
 					}
+					break;
 				}
 				case IDType::Type::Param: {
+					is_functon_params = true;
 
+					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
+
+					write_var_to_asm(asm_code, curent, id_table);
+
+					varr_init = true;
+
+					insert_params_to_proto(asm_code, curent, id_table, argv_count);
+					argv_count++;
+
+					break;
 				}
 				case IDType::Type::Func: {
+					if (strcmp(buffer->symbol, "f") ==0) {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
 
+						ID::Entry func = ID::getEntry(id_table, curent->table_id);
+
+						insert_function_names(asm_code, wstring_to_string( func.name));
+					}
+					break;
 				}
 				case IDType::Type::None: {
 					buffer = curent;
+
+					break;
 				}
 				}
+				
 
 			}
 			else if (curent->type == AST::node_type::Lit) {
@@ -300,7 +374,7 @@ namespace CODE {
 				buffer = curent;
 			}
 
-
+			std::cout << "------------------------------------------------------------------------------" << std::endl;
 			std::cout << asm_code << std::endl;
 			befor_minus = false;
 		}

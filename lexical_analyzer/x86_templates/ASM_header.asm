@@ -1,22 +1,23 @@
-.386					;32 битна€ архитектрура
-.MODEL FLAT, STDCALL	;ћодель пам€ти и соглашение о вызове
+.386					
+.MODEL FLAT, STDCALL	
 
-<include>				;шаблон дл€ подключаемых моделей
+<include>				
 
+<function_proto>
 
-.stack 4096				;
-<stack>					;Ўаблон дл€ стека
+.stack 4096				
+<stack>			
 
 
 .DATA
-<data>					;шаблон данных
+<data>					
 
 
 
 
 .CODE					
 
-<code>					;шаблон дл€ основных строчек кода
+<code>					
 
 
 

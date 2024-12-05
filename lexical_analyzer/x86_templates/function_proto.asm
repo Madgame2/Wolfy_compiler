@@ -1,0 +1,1 @@
+<func_name> PROTO: <data_type_proto>

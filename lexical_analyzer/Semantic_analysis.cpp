@@ -89,6 +89,10 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	data::Func_sign* last_func = nullptr;
 	DataType::Type retyrnable_type;
 	std::wstring last_func_name;
+	
+	data::Func_sign buffer_sing;
+	bool is_params = false;
+
 	bool is_expresion = false;
 	while (true)
 	{
@@ -156,6 +160,9 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 			else if (last_func!=nullptr&&strcmp(curent->symbol, ")") == 0) {
 				if (area_visibilyty.has_this_func_sign(last_func)) throw Error::get_error_in(301, curent->line, curent->index);
 				retyrnable_type = last_func->returable_type;
+
+				
+
 				last_func = nullptr;
 			}
 			else if (strcmp(curent->symbol, "?") == 0) {
@@ -170,20 +177,26 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 
 				IDType::Type id_type = get_terminal_context(curent, id_table);
 
-				if (id_type == IDType::Type::Func &&buffer&& strcmp(buffer->symbol, "f") == 0) {
-					//добавляем обьявление функции к этой облости видемости
-
+				if (id_type == IDType::Type::Func) {
 					int table_id = curent->table_id;
-					ID::Entry elem = ID::getEntry(id_table, table_id);
+					ID::Entry& elem = ID::getEntry(id_table, table_id);
 
+					//добавляем обьявление функции к этой облости видемости
+					if (buffer && strcmp(buffer->symbol, "f") == 0) {
 
-					area_visibilyty.add_new_functoin(elem);
-					last_func = &area_visibilyty.last_scope.top()->objects.functions.back();
-					area_visibilyty.add_new_scope(elem.name);
+						area_visibilyty.add_new_functoin(elem);
+						last_func = &area_visibilyty.last_scope.top()->objects.functions.back();
+						area_visibilyty.add_new_scope(elem.name);
 
+						get_conntext(elem, area_visibilyty);
 
-
-					control_flow_analyzer.beign();
+						control_flow_analyzer.beign();
+					}
+					else {
+						
+						buffer_sing.function_name = elem.name;
+						is_params = true;
+					}
 				}
 				else if (id_type == IDType::Type::Var && buffer && strcmp(buffer->symbol, "t") == 0) {
 
@@ -210,10 +223,19 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 				}
 				else if (id_type == IDType::Type::Param) {
 					int table_id = curent->table_id;
-					ID::Entry param = ID::getEntry(id_table, table_id);
+					ID::Entry& param = ID::getEntry(id_table, table_id);
 
 					area_visibilyty.add_param_to_last_func(param, last_func);
+					get_conntext(param, area_visibilyty);
 				}
+				//else if (id_type == IDType::Type::Param) {
+				//	if (strcmp(buffer->symbol, "f") == 0) {
+
+				//	}
+				//	else {
+
+				//	}
+				//}
 				else if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation) {
 					continue;
 				}

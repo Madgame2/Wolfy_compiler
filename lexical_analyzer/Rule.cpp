@@ -48,6 +48,8 @@ namespace RULE {
             Rule(NS("E"),GRB_ERROR + 2,{
                     Rule::Chain(1,TS("l")),
                     Rule::Chain(1,TS("i")),
+                    Rule::Chain(3,TS("i"),TS("("),TS(")")),
+                    Rule::Chain(4,TS("i"),TS("("),NS("A"),TS(")")),
                     Rule::Chain(2,TS("-"),TS("l")),
                     Rule::Chain(2,TS("-"),TS("i")),
                     Rule::Chain(2,TS("+"),TS("l")),
@@ -59,6 +61,14 @@ namespace RULE {
                     //Rule::Chain(4,NS("E"),TS("="),TS("="),NS("E")),
                     Rule::Chain(3,NS("E"),NS("O"),NS("E")),
 
+            }),
+            Rule(NS("A"),GRB_ERROR + 4,{
+                Rule::Chain(1,TS("i")),
+                Rule::Chain(3,TS("i"),TS("("),TS(")")),
+                Rule::Chain(4,TS("i"),TS("("),NS("A"),TS(")")),
+                Rule::Chain(1,TS("l")),
+                Rule::Chain(3,TS("i"),TS(","),NS("A")),
+                Rule::Chain(1,NS("E"))
             }),
             Rule(NS("O"),GRB_ERROR + 1,{
                     Rule::Chain(1,TS("+")),
@@ -119,8 +129,10 @@ namespace RULE {
             templates(comand::ASSIGN_EXPRESSION,"Expression_bin.asm",{"<expresion>"}),
             templates(comand::Expression_plus,"EXPRESION_add.asm",{"<operation>"}),
             templates(comand::Expression_push,"stack_push_expression.asm",{"<expresion>"}),
-            templates(comand::Expression_mul,"EXPRESION_mul.asm",{"<operation>"})
+            templates(comand::Expression_mul,"EXPRESION_mul.asm",{"<operation>"}),
 
+            templates(comand::Func_init,"function_preafab.asm",{"<code>"}),
+            templates(comand::Func_proto,"function_proto.asm",{"<function_proto>"})
         };
 
         std::map<DataType::Type, asm_info> DataType_AsmCode = {

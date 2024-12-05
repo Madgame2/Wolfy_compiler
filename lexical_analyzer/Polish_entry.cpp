@@ -35,10 +35,15 @@ namespace POL {
 		}
 		std::cout << '\n';
 
+		bool is_func = false;
 		std::stack<LT::Entry> buffer;
 		std::list<LT::Entry> polish_entry;
 		for (auto& elem : expression) {
 
+
+			if (strcmp( elem.lexema , ",")==0) {
+				continue;
+			}
 
 			if (elem.IT_index != -1 || elem.Lit_index != -1) {
 				polish_entry.push_back(elem);
@@ -124,51 +129,141 @@ namespace POL {
 	}
 
 
-	AST::node* build_tree(std::list<LT::Entry> expression)
-	{
+	//AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table table)
+	//{
+	//	std::list<LT::Entry> polish_expr = build_polish_entry(expression);
+	//	std::cout << "end build polish entry\n";
+	//	std::list<AST::node*> new_list = refactor_list(polish_expr);
+
+	//	std::stack<AST::node*> buffer;
+
+	//	for (auto elem : new_list) {
+	//		std::cout << elem->symbol;
+	//	}
+
+	//	for (auto elem : new_list) {
+	//		AST::node_type type = elem->type;
+	//		IDType::Type id_type = IDType::Type::None;
+	//		if (type == AST::node_type::ID) {
+	//			id_type = ID::getEntry(table, elem->table_id).id_type;
+	//		}
+
+
+	//		if (elem->type == AST::node_type::ID && id_type!=IDType::Type::Func || elem->type == AST::node_type::Lit) {
+	//			buffer.push(elem);
+	//		}
+	//		else
+	//		{
+
+	//			if (id_type != IDType::Type::Func) {
+	//				AST::node* right = nullptr;
+	//				AST::node* left = nullptr;
+
+	//				AST::node* operation = elem;
+	//				if (!buffer.empty()) {
+	//					right = buffer.top();
+	//					buffer.pop();
+	//				}
+
+	//				if (!buffer.empty()) {
+	//					left = buffer.top();
+	//					buffer.pop();
+	//				}
+
+	//				if (new_list.size() > 2) {
+	//					operation->is_expression = true;
+	//					right != nullptr ? right->is_expression = true : NULL;
+	//					left != nullptr ? left->is_expression = true : NULL;
+	//				}
+	//				if (left != nullptr) operation->links.push_back(left);
+	//				if (right != nullptr) operation->links.push_back(right);
+
+	//				buffer.push(operation);
+	//			}
+	//			else {
+	//				AST::node* root = elem;
+	//				while (!buffer.empty())
+	//				{
+	//					root->links.push_back(buffer.top());
+	//				}
+
+	//				buffer.push(root);
+	//			}
+	//		}
+	//	}
+	//	std::cout << '\n';
+
+	//	return buffer.top();
+	//}
+
+
+	AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table table) {
+		// Преобразуем выражение в обратную польскую запись
 		std::list<LT::Entry> polish_expr = build_polish_entry(expression);
-		std::cout << "end build polish entry\n";
-		std::list<AST::node*> new_list = refactor_list(polish_expr);
+		std::cout << "End build polish entry\n";
 
-		std::stack<AST::node*> buffer;
+		// Преобразуем в список узлов
+		std::list<AST::node*> node_list = refactor_list(polish_expr);
+		std::stack<AST::node*> stack;
 
-		for (auto elem : new_list) {
-			std::cout << elem->symbol;
+		// Переносим элементы списка в стек
+		for (auto it = node_list.rbegin(); it != node_list.rend(); ++it) {
+			stack.push(*it);
 		}
 
-		for (auto elem : new_list) {
-			if (elem->type == AST::node_type::ID || elem->type == AST::node_type::Lit) {
-				buffer.push(elem);
+		while (stack.size() > 1) {
+			AST::node* current = stack.top();
+			stack.pop();
+
+			AST::node_type type = current->type;
+			IDType::Type id_type = IDType::Type::None;
+
+			if (type == AST::node_type::ID) {
+				id_type = ID::getEntry(table, current->table_id).id_type;
 			}
-			else
-			{
-				AST::node* right = nullptr;
-				AST::node* left = nullptr;
 
-				AST::node* operation = elem;
-				if (!buffer.empty()) {
-					right = buffer.top();
-					buffer.pop();
-				}
+			if (type == AST::node_type::ID && id_type != IDType::Type::Func || type == AST::node_type::Lit) {
+				stack.push(current);
+			}
+			else {
+				if (id_type != IDType::Type::Func) {
+					AST::node* right = stack.empty() ? nullptr : stack.top();
+					if (right) stack.pop();
+					AST::node* left = stack.empty() ? nullptr : stack.top();
+					if (left) stack.pop();
 
-				if (!buffer.empty()) {
-					left = buffer.top();
-					buffer.pop();
-				}
+					if (node_list.size() > 2) {
+						current->is_expression = true;
+						if (right) right->is_expression = true;
+						if (left) left->is_expression = true;
+					}
 
-				if (new_list.size() > 2) {
-					operation->is_expression = true;
-					right != nullptr ? right->is_expression = true : NULL;
-					left != nullptr ? left->is_expression = true : NULL;
+					if (left) current->links.push_back(left);
+					if (right) current->links.push_back(right);
+
+					stack.push(current);
 				}
-				if(left  != nullptr) operation->links.push_back(left);
-				if(right != nullptr) operation->links.push_back(right);
-				
-				buffer.push(operation);
+				else {
+					AST::node* func = current;
+					IDType::Type id_type = IDType::Type::None;
+					if (stack.top()->type == AST::node_type::ID) {
+						id_type = ID::getEntry(table, stack.top()->table_id).id_type;
+					}
+
+
+					while (!stack.empty() && id_type != IDType::Type::Func) {
+						func->links.push_back(stack.top());
+						stack.pop();
+					}
+
+					std::reverse(func->links.begin(), func->links.end());
+
+					stack.push(func);
+				}
 			}
 		}
+
 		std::cout << '\n';
-
-		return buffer.top();
+		return stack.top();
 	}
 }

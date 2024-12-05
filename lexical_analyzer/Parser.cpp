@@ -70,7 +70,7 @@ namespace parser {
 		return new_node;
 	}
 
-	AST::program_struct Parse(LT::Lexem_table table, std::list<Rule> rules)
+	AST::program_struct Parse(LT::Lexem_table table, ID::ID_table id_table, std::list<Rule> rules)
 	{
 		info data;
 
@@ -290,7 +290,7 @@ namespace parser {
 			
 			AST::node** ref = AST::get_node_ref(elem.second.prerent_node, elem.first);
 			AST::delete_node(elem.first);
-			*ref = POL::build_tree(temp);
+			*ref = POL::build_tree(temp, id_table);
 		}
 
 

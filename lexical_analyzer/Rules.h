@@ -148,7 +148,10 @@ namespace RULE {
 
 			Expression_plus,
 			Expression_mul,
-			Expression_push
+			Expression_push,
+
+			Func_init,
+			Func_proto
 		};
 
 		struct templates {

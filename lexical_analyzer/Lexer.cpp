@@ -573,12 +573,12 @@ int wmain(int argc, wchar_t* argv[]) {
 	for (auto& elem : LT_files) {
 		if (elem.first == L"MAIN") {
 
-			AST::program_struct tree = parser::Parse(elem.second, MAIN);
+			AST::program_struct tree = parser::Parse(elem.second, ID_files[L"MAIN"], MAIN);
 			semantic::Parse(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
 			CODE::generate_code(elem.first,tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
 		}
 		else {
-			parser::Parse(elem.second, GENERAl);
+			//parser::Parse(elem.second, GENERAl);
 		}
 	}	
 
