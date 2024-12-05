@@ -69,6 +69,14 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 	return buffer;
 }
 
+void  get_conntext(ID::Entry& elem,semantic::scope::scope area) {
+	while (!area.last_scope.empty())
+	{
+		elem.area += area.last_scope.top()->node_name;
+		area.pop_scope();
+	}
+}
+
 void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table::Literal_table& lit_table)
 {
 	tree.Reset();
@@ -80,6 +88,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	AST::node* buffer = nullptr;
 	data::Func_sign* last_func = nullptr;
 	DataType::Type retyrnable_type;
+	std::wstring last_func_name;
 	bool is_expresion = false;
 	while (true)
 	{
@@ -185,6 +194,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 					if (area_visibilyty.has_this_var(var.name)) throw Error::get_error_in(300, curent->line, curent->index);
 
 					area_visibilyty.add_new_var(var);
+					get_conntext(var, area_visibilyty);
 				}
 				else if (id_type == IDType::Type::Var && buffer && strcmp(buffer->symbol, "t") != 0) {
 
@@ -196,6 +206,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 						throw Error::get_error_in(302, curent->line, curent->index);
 					}
 					var.d_type = area_visibilyty.getvar(var.name).d_type;
+					get_conntext(var, area_visibilyty);
 				}
 				else if (id_type == IDType::Type::Param) {
 					int table_id = curent->table_id;
@@ -322,11 +333,8 @@ void semantic::scope::scope::pop_scope()
 
 bool semantic::scope::scope::has_this_var(std::wstring name)
 {
-	std::stack<node*> stack = last_scope;
 
-	while(!stack.empty()) {
-
-		std::list<data::var> list = stack.top()->objects.vareiables;
+		std::list<data::var> list = last_scope.top()->objects.vareiables;
 
 		for (auto& elem : list) {
 			if (elem.name == name) {
@@ -334,8 +342,7 @@ bool semantic::scope::scope::has_this_var(std::wstring name)
 				return true;
 			}
 		}
-		stack.pop();
-	}
+
 	return false;
 }
 
@@ -386,6 +393,6 @@ semantic::data::var semantic::scope::scope::getvar(std::wstring name)
 		}
 		stack.pop();
 	}
-	return data::var();
+	throw NULL;
 }
 

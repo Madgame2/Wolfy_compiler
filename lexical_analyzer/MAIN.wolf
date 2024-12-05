@@ -5,9 +5,11 @@ int a;
 
 int function test2(){
 	
-	if((a == 255)){
+	int a;
+
+	/*if((a == 255)){
 		return 25;
-	}
+	}*/
 
 
 	return 25;
