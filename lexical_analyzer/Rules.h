@@ -154,7 +154,9 @@ namespace RULE {
 			Func_proto,
 			Func_call,
 			Func_push_arg,
-			Func_as_a_arg
+			Func_as_a_arg,
+			Func_ret,
+			Func_clear
 		};
 
 		struct templates {

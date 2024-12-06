@@ -135,7 +135,9 @@ namespace RULE {
             templates(comand::Func_proto,"function_proto.asm",{"<function_proto>"}),
             templates(comand::Func_call,"function_call.asm",{"<main_code>"}),
             templates(comand::Func_push_arg,"function_push_param.asm",{"<arg>"}),
-            templates(comand::Func_as_a_arg,"function_as_a_arg.asm",{"<arg>"})
+            templates(comand::Func_as_a_arg,"function_as_a_arg.asm",{"<arg>"}),
+            templates(comand::Func_ret,"function_ret.asm",{"<func_code>"}),
+            templates(comand::Func_clear,"clear_local_var.asm",{"<templ_var>","<func_code>"})
         };
 
         std::map<DataType::Type, asm_info> DataType_AsmCode = {

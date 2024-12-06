@@ -188,6 +188,28 @@ namespace CODE {
 
 	}
 
+	void insert_cleaner_local_vars(std::string& source_code, templates prefabs ,std::vector<std::wstring> names) {
+		for (auto& elem : names) {
+			write_by_template(source_code, prefabs.template_asm[RULE::CODE::comand::Func_clear], false);
+			
+			size_t pos = source_code.find("<var>");
+
+			if (pos != std::string::npos) {
+				delite_tag(source_code, "<var>", pos);
+				source_code.insert(pos, wstring_to_string(elem));
+			}
+		}
+	}
+
+	void insert_clear_all_local_vars(std::string& source_code, templates prefabs, std::stack<std::vector<std::wstring>> local_vars) {
+		while (!local_vars.empty()) {
+
+			insert_cleaner_local_vars(source_code, prefabs, local_vars.top());
+
+			local_vars.pop();
+		}
+	}
+
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
 	{
 
@@ -219,6 +241,7 @@ namespace CODE {
 		bool befor_minus = false;
 		bool is_functon_params = false;
 		int argv_count = 0;
+		std::stack<std::vector<std::wstring>> local_vars;
 		while (true)
 		{
 
@@ -293,6 +316,9 @@ namespace CODE {
 
 						varr_init = true;
 
+						if (!local_vars.empty()) {
+							local_vars.top().push_back(id.area + id.name);
+						}
 
 						//МЫСЛИ: тут если вырожение добавить в секцию мейна вырожение 
 						if (curent->is_expression) {
@@ -323,7 +349,6 @@ namespace CODE {
 					is_functon_params = true;
 
 					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
-
 					write_var_to_asm(asm_code, curent, id_table);
 
 					varr_init = true;
@@ -331,6 +356,10 @@ namespace CODE {
 					insert_params_to_proto(asm_code, curent, id_table, argv_count);
 					argv_count++;
 
+					if (!local_vars.empty()) {
+						local_vars.top().push_back(id.area + id.name);
+					}
+					
 					break;
 				}
 				case IDType::Type::Func: {
@@ -348,6 +377,8 @@ namespace CODE {
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
 
 						insert_function_names(asm_code, wstring_to_string( func.name));
+
+						local_vars.push(std::vector<std::wstring>());
 					}
 					else {
 						if (!curent->is_param) {
@@ -400,6 +431,19 @@ namespace CODE {
 			else if (strcmp(curent->symbol, "-") == 0) {
 				befor_minus = true;
 				continue;
+			}
+			else if (strcmp(curent->symbol, "r") == 0) {
+				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_ret], false);
+				insert_clear_all_local_vars(asm_code, prefabs, local_vars);
+
+				size_t pos = asm_code.find("<templ_var>");
+				if (pos != std::string::npos) {
+					delite_tag(asm_code, "<templ_var>", pos);
+				}
+			}
+			else if (strcmp(curent->symbol, "}") == 0) {
+				
+			local_vars.pop();
 			}
 			else if (curent->is_expression) {
 
