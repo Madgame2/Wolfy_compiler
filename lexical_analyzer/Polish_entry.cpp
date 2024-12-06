@@ -205,13 +205,14 @@ namespace POL {
 		// Преобразуем в список узлов
 		std::list<AST::node*> node_list = refactor_list(polish_expr);
 		std::stack<AST::node*> stack;
+		std::stack<AST::node*> buffer;
 
 		// Переносим элементы списка в стек
 		for (auto it = node_list.rbegin(); it != node_list.rend(); ++it) {
 			stack.push(*it);
 		}
 
-		while (stack.size() > 1) {
+		while (stack.size() > 1|| !buffer.empty()) {
 			AST::node* current = stack.top();
 			stack.pop();
 
@@ -223,14 +224,14 @@ namespace POL {
 			}
 
 			if (type == AST::node_type::ID && id_type != IDType::Type::Func || type == AST::node_type::Lit) {
-				stack.push(current);
+				buffer.push(current);
 			}
 			else {
 				if (id_type != IDType::Type::Func) {
-					AST::node* right = stack.empty() ? nullptr : stack.top();
-					if (right) stack.pop();
-					AST::node* left = stack.empty() ? nullptr : stack.top();
-					if (left) stack.pop();
+					AST::node* right = buffer.empty() ? nullptr : buffer.top();
+					if (right) buffer.pop();
+					AST::node* left = buffer.empty() ? nullptr : buffer.top();
+					if (left) buffer.pop();
 
 					if (node_list.size() > 2) {
 						current->is_expression = true;
