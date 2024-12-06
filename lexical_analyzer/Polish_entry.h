@@ -8,5 +8,5 @@
 
 
 namespace POL {
-	AST::node* build_tree(std::list<LT::Entry> expression,ID::ID_table table);
+	AST::node* build_tree(std::list<LT::Entry> expression,ID::ID_table& table);
 }

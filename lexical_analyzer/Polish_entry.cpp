@@ -27,7 +27,7 @@ namespace POL {
 		}
 	}
 
-	std::list<LT::Entry> build_polish_entry(std::list<LT::Entry> expression, ID::ID_table id_table) {
+	std::list<LT::Entry> build_polish_entry(std::list<LT::Entry> expression, ID::ID_table& id_table) {
 
 		std::cout << "build polish entry:\n";
 		for (auto& elem : expression) {
@@ -38,20 +38,31 @@ namespace POL {
 		bool is_func = false;
 		std::stack<LT::Entry> buffer;
 		std::list<LT::Entry> polish_entry;
+		std::stack<ID::Entry*> last_func;
 		for (auto& elem : expression) {
 
 
 			if (strcmp( elem.lexema , ",")==0) {
+				if (is_func) {
+					if (last_func.top()->arg_count == 0) {
+						last_func.top()->arg_count = 1;
+					}
+					last_func.top()->arg_count++;
+				}
+				 
 				continue;
 			}
 
 			if (elem.IT_index != -1 || elem.Lit_index != -1) {
 				if (elem.IT_index != -1) {
-					ID::Entry id = ID::getEntry(id_table, elem.IT_index);
+					ID::Entry& id = ID::getEntry(id_table, elem.IT_index);
 					if (id.id_type == IDType::Type::Func) {
+						is_func = true;
+						last_func.push(&id);
 						buffer.push(elem);
 					}
 					else {
+
 						polish_entry.push_back(elem);
 					}
 				}
@@ -73,6 +84,13 @@ namespace POL {
 						buffer.pop();
 					}
 					buffer.pop();
+					if (is_func) {
+						last_func.pop();
+					}
+					if (last_func.empty()) {
+						is_func = false;
+					}
+
 				}
 				else {
 					operatoion_prioritet::operations curent_prioritet = get_priorete(lexem);
@@ -208,7 +226,7 @@ namespace POL {
 	//}
 
 
-	AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table table) {
+	AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table& table) {
 		// Преобразуем выражение в обратную польскую запись
 		std::list<LT::Entry> polish_expr = build_polish_entry(expression,table);
 		std::cout << "End build polish entry\n";
@@ -259,16 +277,18 @@ namespace POL {
 				}
 				else {
 					AST::node* func = current;
-					IDType::Type id_type = IDType::Type::None;
-					if (buffer.top()->type == AST::node_type::ID) {
-						id_type = ID::getEntry(table, buffer.top()->table_id).id_type;
-					}
+					//IDType::Type id_type = IDType::Type::None;
+					//if (buffer.top()->type == AST::node_type::ID) {
+					//	id_type = ID::getEntry(table, buffer.top()->table_id).id_type;
+					//}
 
+					ID::Entry id = ID::getEntry(table, func->table_id);
 
-					while (!buffer.empty() && id_type != IDType::Type::Func) {
+					while (id.arg_count!=0) {
 						func->links.push_back(buffer.top());
 						buffer.top()->is_param = true;
 						buffer.pop();
+						id.arg_count--;
 					}
 
 					std::reverse(func->links.begin(), func->links.end());

@@ -13,6 +13,7 @@ namespace ID {
         IDType::Type id_type = IDType::Type::None;
 
         bool is_array = false;
+        int arg_count = 0;
 
         std::list<extra::Type> extras;
 

@@ -87,6 +87,7 @@ namespace parser {
 		AST::program_struct tree;
 		
 		bool is_active = true;
+		ID::Entry* last_func_id = nullptr;
 		while (is_active)
 		{
 			if (table.table[data.index].lexema == "|") {
@@ -123,7 +124,11 @@ namespace parser {
 			case MFST::Results::OK_RESUULT:
 				
 			{
-
+				//if (table.table[data.index].IT_index != -1) {
+				//	if (ID::getEntry(id_table, table.table[data.index].IT_index).id_type == IDType::Type::Func) {
+				//		last_func_id = &ID::getEntry(id_table, table.table[data.index].IT_index);
+				//	}
+				//}
 
 				while (NT_node_struct.top().count_rules <= 0) {
 					bool buffer = NT_node_struct.top().is_expression;

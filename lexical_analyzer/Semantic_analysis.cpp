@@ -99,6 +99,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	std::vector<data::Func_sign> sign_for_checking;
 	std::vector<data::Func_sign> inited_func_sign;
 	std::vector<info> info_for_sign;
+
 	bool is_params = false;
 
 	bool is_expresion = false;
