@@ -134,7 +134,8 @@ namespace RULE {
             templates(comand::Func_init,"function_preafab.asm",{"<code>"}),
             templates(comand::Func_proto,"function_proto.asm",{"<function_proto>"}),
             templates(comand::Func_call,"function_call.asm",{"<main_code>"}),
-            templates(comand::Func_push_arg,"function_push_param.asm",{"<arg>"})
+            templates(comand::Func_push_arg,"function_push_param.asm",{"<arg>"}),
+            templates(comand::Func_as_a_arg,"function_as_a_arg.asm",{"<arg>"})
         };
 
         std::map<DataType::Type, asm_info> DataType_AsmCode = {

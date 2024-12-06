@@ -338,15 +338,27 @@ namespace CODE {
 
 
 					if (strcmp(buffer->symbol, "f") ==0) {
+
+						size_t pos = asm_code.find("<func_code>");
+						if (pos != std::string::npos) {
+							delite_tag(asm_code, "<func_code>", pos);
+						}
+
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
 
 						insert_function_names(asm_code, wstring_to_string( func.name));
 					}
 					else {
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
-						insert_function_names(asm_code, wstring_to_string(func.name));
-						is_functon_params = true;
+						if (!curent->is_param) {
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
+							insert_function_names(asm_code, wstring_to_string(func.name));
+							is_functon_params = true;
+						}
+						else {
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_as_a_arg], true);
+							insert_function_names(asm_code, wstring_to_string(func.name));
+						}
 					}
 					break;
 				}
