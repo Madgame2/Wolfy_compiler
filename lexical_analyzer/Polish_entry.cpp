@@ -212,7 +212,7 @@ namespace POL {
 			stack.push(*it);
 		}
 
-		while (stack.size() > 1|| !buffer.empty()) {
+		while (stack.size() !=0) {
 			AST::node* current = stack.top();
 			stack.pop();
 
@@ -242,7 +242,9 @@ namespace POL {
 					if (left) current->links.push_back(left);
 					if (right) current->links.push_back(right);
 
-					stack.push(current);
+
+
+					buffer.push(current);
 				}
 				else {
 					AST::node* func = current;
@@ -260,12 +262,12 @@ namespace POL {
 
 					std::reverse(func->links.begin(), func->links.end());
 
-					stack.push(func);
+					buffer.push(func);
 				}
 			}
 		}
 
 		std::cout << '\n';
-		return stack.top();
+		return buffer.top();
 	}
 }
