@@ -119,7 +119,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 
 			DataType::Type expression = getExpressinType(tree, curent,area_visibilyty, id_table, lit_table);
 
-			if (buffer->type == AST::node_type::ID) {
+			if (!is_params&&buffer->type == AST::node_type::ID) {
 				ID::Entry elem = ID::getEntry(id_table,buffer->table_id);
 
 				data::var varr = area_visibilyty.getvar(elem.name);
@@ -127,6 +127,9 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 				if (varr.d_type != expression) {
 					throw Error::get_error_in(302, curent->line, curent->index);
 				}
+			}
+			else if (is_params) {
+				buffer_sing.params.push_back(expression);
 			}
 		}
 

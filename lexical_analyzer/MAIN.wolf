@@ -1,9 +1,9 @@
 
 int a;
 
-a = 2+2*2;
+//a = 2+2*2;
 
-test2(a,2);
+test2(a,"hello world");
 
 int function test2( int f, int b){
 	

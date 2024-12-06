@@ -27,7 +27,7 @@ namespace POL {
 		}
 	}
 
-	std::list<LT::Entry> build_polish_entry(std::list<LT::Entry> expression) {
+	std::list<LT::Entry> build_polish_entry(std::list<LT::Entry> expression, ID::ID_table id_table) {
 
 		std::cout << "build polish entry:\n";
 		for (auto& elem : expression) {
@@ -46,7 +46,18 @@ namespace POL {
 			}
 
 			if (elem.IT_index != -1 || elem.Lit_index != -1) {
-				polish_entry.push_back(elem);
+				if (elem.IT_index != -1) {
+					ID::Entry id = ID::getEntry(id_table, elem.IT_index);
+					if (id.id_type == IDType::Type::Func) {
+						buffer.push(elem);
+					}
+					else {
+						polish_entry.push_back(elem);
+					}
+				}
+				else {
+					polish_entry.push_back(elem);
+				}
 			}
 			else {
 
@@ -199,7 +210,7 @@ namespace POL {
 
 	AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table table) {
 		// ѕреобразуем выражение в обратную польскую запись
-		std::list<LT::Entry> polish_expr = build_polish_entry(expression);
+		std::list<LT::Entry> polish_expr = build_polish_entry(expression,table);
 		std::cout << "End build polish entry\n";
 
 		// ѕреобразуем в список узлов
@@ -249,15 +260,15 @@ namespace POL {
 				else {
 					AST::node* func = current;
 					IDType::Type id_type = IDType::Type::None;
-					if (stack.top()->type == AST::node_type::ID) {
-						id_type = ID::getEntry(table, stack.top()->table_id).id_type;
+					if (buffer.top()->type == AST::node_type::ID) {
+						id_type = ID::getEntry(table, buffer.top()->table_id).id_type;
 					}
 
 
-					while (!stack.empty() && id_type != IDType::Type::Func) {
-						func->links.push_back(stack.top());
-						stack.top()->is_param = true;
-						stack.pop();
+					while (!buffer.empty() && id_type != IDType::Type::Func) {
+						func->links.push_back(buffer.top());
+						buffer.top()->is_param = true;
+						buffer.pop();
 					}
 
 					std::reverse(func->links.begin(), func->links.end());
