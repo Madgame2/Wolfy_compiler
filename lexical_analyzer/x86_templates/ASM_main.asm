@@ -1,5 +1,5 @@
 main PROC
-	<main_code>
+<main_code>
 
 	ret
 main ENDP

@@ -268,6 +268,15 @@ namespace CODE {
 					delite_tag(asm_code, "<expresoin>", pos);
 				}
 			}
+			if (!curent->is_param && is_functon_params) {
+				is_functon_params = false;
+
+				size_t pos = asm_code.find("<arg>");
+
+				if (pos != std::string::npos) {
+					delite_tag(asm_code, "<arg>", pos);
+				}
+			}
 
 			if (curent->type == AST::node_type::ID) {
 				int table_id = curent->table_id;
@@ -294,11 +303,18 @@ namespace CODE {
 						}
 					}
 					else {
-						if (!curent->is_expression) {
+						if (!curent->is_expression&&!curent->is_param) {
 							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 						}
 						else {
-							buffer = curent;
+							if (curent->is_param) {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
+								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+
+							}
+							else {
+								buffer = curent;
+							}
 						}
 					}
 					break;
@@ -318,13 +334,19 @@ namespace CODE {
 					break;
 				}
 				case IDType::Type::Func: {
+					ID::Entry func = ID::getEntry(id_table, curent->table_id);
+
+
 					if (strcmp(buffer->symbol, "f") ==0) {
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
 
-						ID::Entry func = ID::getEntry(id_table, curent->table_id);
-
 						insert_function_names(asm_code, wstring_to_string( func.name));
+					}
+					else {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
+						insert_function_names(asm_code, wstring_to_string(func.name));
+						is_functon_params = true;
 					}
 					break;
 				}
@@ -338,7 +360,11 @@ namespace CODE {
 
 			}
 			else if (curent->type == AST::node_type::Lit) {
-				if (!curent->is_expression) {
+				if (!curent->is_expression&&!curent->is_param) {
+					insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+				}
+				else if(curent->is_param) {
+					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
 					insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 				}
 				else {

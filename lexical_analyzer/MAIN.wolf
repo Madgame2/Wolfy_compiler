@@ -3,7 +3,7 @@ int a;
 
 //a = 2+2*2;
 
-test2(a,"hello world");
+test2(a,like());
 
 int function test2( int f, int b){
 	
@@ -14,3 +14,8 @@ int function test2( int f, int b){
 	return 25;
 }
 
+
+int function like(){
+	
+	return 10;
+}

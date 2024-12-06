@@ -151,7 +151,9 @@ namespace RULE {
 			Expression_push,
 
 			Func_init,
-			Func_proto
+			Func_proto,
+			Func_call,
+			Func_push_arg
 		};
 
 		struct templates {
