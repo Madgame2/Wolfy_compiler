@@ -95,7 +95,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	DataType::Type retyrnable_type;
 	std::wstring last_func_name;
 	
-	data::Func_sign buffer_sing;
+	std::stack<data::Func_sign> buffer_sing;
 	std::vector<data::Func_sign> sign_for_checking;
 	std::vector<data::Func_sign> inited_func_sign;
 	std::vector<info> info_for_sign;
@@ -130,19 +130,20 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 				}
 			}
 			else if (is_params) {
-				buffer_sing.params.push_back(expression);
+				buffer_sing.top().params.push_back(&expression);
 			}
 		}
 
 		if (is_params && !curent->is_param) {
 			
-			sign_for_checking.push_back(buffer_sing);
+			sign_for_checking.push_back(buffer_sing.top());
 			info new_info;
 			new_info.line = curent->line;
 			new_info.pos = curent->index;
 			info_for_sign.push_back(new_info);
 
-			buffer_sing = data::Func_sign();
+			buffer_sing.pop();
+			if(buffer_sing.empty())
 			is_params = false;
 		}
 		
@@ -217,8 +218,14 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 						control_flow_analyzer.beign();
 					}
 					else {
-						
-						buffer_sing.function_name = elem.name;
+						data::Func_sign new_sign;
+
+						if (is_params) {
+							buffer_sing.top().params.push_back(&new_sign.returable_type);
+						}
+
+						new_sign.function_name = elem.name;
+						buffer_sing.push(new_sign);
 						is_params = true;
 					}
 				}
@@ -285,7 +292,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 						}
 
 
-						buffer_sing.params.push_back(type);
+						buffer_sing.top().params.push_back(&type);
 					}
 					else if ((strcmp(buffer->symbol, "i") == 0)) {
 
@@ -351,9 +358,12 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	int i = 0;
 	for (auto& elem : sign_for_checking) {
 
+		//elem.ref_returnable_type = DataType::Type::String;
+
 		bool find = false;
 		for (auto& referens : inited_func_sign) {
 			if (elem == referens) {
+				*elem.ref_returnable_type = referens.returable_type;
 				find = true;
 				break;
 			}
@@ -409,7 +419,7 @@ void semantic::scope::scope::add_new_functoin(ID::Entry func)
 
 void semantic::scope::scope::add_param_to_last_func(ID::Entry param, data::Func_sign* function)
 {
-	function->params.push_back(param.d_type);
+	function->params.push_back(&param.d_type);
 }
 
 void semantic::scope::scope::pop_scope()

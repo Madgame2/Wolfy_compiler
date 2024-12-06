@@ -23,9 +23,9 @@ namespace semantic {
 		struct Func_sign {
 			std::wstring function_name;
 			DataType::Type returable_type = DataType::Type::None;
+			DataType::Type* ref_returnable_type = &returable_type;
 
-
-			std::vector<DataType::Type> params;
+			std::vector<DataType::Type*> params;
 
 			bool operator ==(Func_sign referens) {
 				if (this->function_name != referens.function_name) {
@@ -35,7 +35,10 @@ namespace semantic {
 					return false;
 				}
 				for (int i = 0; i < this->params.size(); i++) {
-					if (this->params[i] != referens.params[i]) {
+					DataType::Type type1 = *this->params[i];
+					DataType::Type type2 = *referens.params[i];
+
+					if (type2 != type1) {
 						return false;
 					}
 				}
