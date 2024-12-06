@@ -2,6 +2,11 @@
 #include<iostream>
 
 
+struct info {
+	int line = 0;
+	int pos = 0;
+};
+
 IDType::Type get_terminal_context(AST::node* curent, ID::ID_table table) {
 	switch (curent->type)
 	{
@@ -91,6 +96,9 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	std::wstring last_func_name;
 	
 	data::Func_sign buffer_sing;
+	std::vector<data::Func_sign> sign_for_checking;
+	std::vector<data::Func_sign> inited_func_sign;
+	std::vector<info> info_for_sign;
 	bool is_params = false;
 
 	bool is_expresion = false;
@@ -120,6 +128,18 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 					throw Error::get_error_in(302, curent->line, curent->index);
 				}
 			}
+		}
+
+		if (is_params && !curent->is_param) {
+			
+			sign_for_checking.push_back(buffer_sing);
+			info new_info;
+			new_info.line = curent->line;
+			new_info.pos = curent->index;
+			info_for_sign.push_back(new_info);
+
+			buffer_sing = data::Func_sign();
+			is_params = false;
 		}
 		
 		switch (curent->symbol_type)
@@ -161,7 +181,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 				if (area_visibilyty.has_this_func_sign(last_func)) throw Error::get_error_in(301, curent->line, curent->index);
 				retyrnable_type = last_func->returable_type;
 
-				
+				inited_func_sign.push_back(*last_func);
 
 				last_func = nullptr;
 			}
@@ -209,7 +229,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 					area_visibilyty.add_new_var(var);
 					get_conntext(var, area_visibilyty);
 				}
-				else if (id_type == IDType::Type::Var && buffer && strcmp(buffer->symbol, "t") != 0) {
+				else if (id_type == IDType::Type::Var && buffer && strcmp(buffer->symbol, "t") != 0&&!curent->is_param) {
 
 					//к этой области видимости добовляем новуб переменную
 					int table_id = curent->table_id;
@@ -240,8 +260,30 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 					continue;
 				}
 				else if ((strcmp(curent->symbol, "l") == 0) || (strcmp(curent->symbol, "i") == 0)) {
-					
-					if ((strcmp(buffer->symbol, "i") == 0)) {
+					if(curent->is_param){
+						DataType::Type type;
+						int id = curent->table_id;
+						if (curent->type == AST::node_type::ID) {
+
+							try {
+								type = area_visibilyty.getvar(ID::getEntry(id_table, id).name).d_type;
+							}
+							catch(...){
+								throw Error::get_error_in(302, curent->line, curent->index);
+							}
+
+							//type = ID::getEntry(id_table, id).d_type;
+						}
+						else if(curent->type == AST::node_type::Lit)
+						{
+							type = Lit_table::find(lit_table, id).d_type;
+
+						}
+
+
+						buffer_sing.params.push_back(type);
+					}
+					else if ((strcmp(buffer->symbol, "i") == 0)) {
 
 						std::wstring name = ID::getEntry(id_table, buffer->table_id).name;
 						data::var varyable = area_visibilyty.getvar(name);
@@ -299,6 +341,24 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 		}
 
 		buffer = curent;
+	}
+
+
+	int i = 0;
+	for (auto& elem : sign_for_checking) {
+
+		bool find = false;
+		for (auto& referens : inited_func_sign) {
+			if (elem == referens) {
+				find = true;
+				break;
+			}
+		}
+
+		if (!find) {
+			throw Error::get_error_in(306, info_for_sign[i].line, info_for_sign[i].pos);
+		}
+		i++;
 	}
 }
 
@@ -387,6 +447,7 @@ bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func)
 							return false;
 						}
 					}
+					return true;
 				}
 				else {
 					return false;
@@ -396,7 +457,7 @@ bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func)
 		index++;
 	}
 
-	return true;
+	return false;
 }
 
 semantic::data::var semantic::scope::scope::getvar(std::wstring name)

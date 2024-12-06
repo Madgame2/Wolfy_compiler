@@ -24,6 +24,7 @@ namespace AST {
 
 		bool is_double_operation = false;
 		bool is_expression = false;
+		bool is_param = false;
 
 		std::vector<node*> links;
 

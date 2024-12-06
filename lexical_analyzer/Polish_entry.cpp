@@ -254,6 +254,7 @@ namespace POL {
 
 					while (!stack.empty() && id_type != IDType::Type::Func) {
 						func->links.push_back(stack.top());
+						stack.top()->is_param = true;
 						stack.pop();
 					}
 

@@ -26,6 +26,35 @@ namespace semantic {
 
 
 			std::vector<DataType::Type> params;
+
+			bool operator ==(Func_sign referens) {
+				if (this->function_name != referens.function_name) {
+					return false;
+				}
+				if (this->params.size() != referens.params.size()) {
+					return false;
+				}
+				for (int i = 0; i < this->params.size(); i++) {
+					if (this->params[i] != referens.params[i]) {
+						return false;
+					}
+				}
+				return true;
+			}
+			bool operator !=(Func_sign referens) {
+				if (this->function_name != referens.function_name) {
+					return false;
+				}
+				if (this->params.size() != referens.params.size()) {
+					return false;
+				}
+				for (int i = 0; i < this->params.size(); i++) {
+					if (this->params[i] != referens.params[i]) {
+						return false;
+					}
+				}
+				return true;
+			}
 		};
 	}
 
