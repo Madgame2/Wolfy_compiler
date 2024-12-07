@@ -3,7 +3,19 @@ int a;
 
 //a = 2+2*2;
 
+Console<<a;
+//console>>a;
+
 test2(a,like());
+
+
+
+
+int function like(){
+	
+	return 10;
+}
+
 
 int function test2( int f, int b){
 	
@@ -12,10 +24,4 @@ int function test2( int f, int b){
 	a = 2*2;
 
 	return 25;
-}
-
-
-int function like(){
-	
-	return 10;
 }

@@ -42,7 +42,8 @@ namespace parser {
 		strncpy_s(new_node->symbol, elem.lexema, sizeof(new_node->symbol)-1);
 		new_node->symbol_type = AST::symbol_type::Terminal;
 		new_node->is_double_operation = elem.is_double_oeration;
-		
+		new_node->console_operation = elem.console_operations;
+
 		if (elem.IT_index != -1) {
 			new_node->type = AST::node_type::ID;
 			new_node->table_id = elem.IT_index;

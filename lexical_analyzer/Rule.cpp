@@ -12,6 +12,8 @@ namespace RULE {
             Elemet(L"Global","g"),
             Elemet(L"if","?"),
             Elemet(L"return","r"),
+            Elemet(L"Console","c"),
+            Elemet(L"console","c"),
             Elemet(L"unsigned","e",extra::Type::Unsigned)
         };
     }
@@ -42,6 +44,8 @@ namespace RULE {
                 Rule::Chain(5,TS("i"),TS("="),NS("E"),TS(";"),NS("M")),
                 Rule::Chain(11,TS("?"),TS("("),TS("t"),TS("i"),TS("="),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("M")),
                 Rule::Chain(8,TS("?"),TS("("),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("M")),
+                Rule::Chain(5,TS("c"),TS("<"),NS("E"),TS(";"),NS("M")),
+                Rule::Chain(5,TS("c"),TS(">"),TS("i"),TS(";"),NS("M")),
                 Rule::Chain(3,NS("E"),TS(";"),NS("M")),
                 Rule::Chain()
             }),

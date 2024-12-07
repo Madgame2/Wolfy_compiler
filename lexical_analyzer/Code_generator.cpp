@@ -5,7 +5,6 @@ namespace CODE {
 
 	
 	std::string wstring_to_string(const std::wstring& wstr) {
-		// Используем стандартный конвертер
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 		return converter.to_bytes(wstr);
 	}
@@ -120,10 +119,12 @@ namespace CODE {
 			if (pos != std::string::npos) {
 				delite_tag(source_code, "<value>", pos);
 				if (negative) {
-					source_code.insert(pos, '-' + wstring_to_string(id.area+id.name));
+					//негатива добавит 
+
+					source_code.insert(pos, wstring_to_string(id.area+id.name));
 				}
 				else {
-					source_code.insert(pos, wstring_to_string(id.area + id.name));
+					source_code.insert(pos, '[' + wstring_to_string(id.area + id.name)+']');
 
 				}
 			}
@@ -210,6 +211,15 @@ namespace CODE {
 		}
 	}
 
+	void insert_stack_size(std::string& source_code, int size) {
+		size_t pos = source_code.find("<size>");
+
+		if (pos != std::string::npos) {
+			delite_tag(source_code, "<size>", pos);
+			source_code.insert(pos,std::to_string(size));
+		}
+	}
+
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
 	{
 
@@ -240,7 +250,10 @@ namespace CODE {
 		bool varr_init = false;
 		bool befor_minus = false;
 		bool is_functon_params = false;
+		bool console_func = false;
 		int argv_count = 0;
+		int LITERAL_count = 0;
+		int funct_arg_size = 0;
 		std::stack<std::vector<std::wstring>> local_vars;
 		while (true)
 		{
@@ -278,7 +291,7 @@ namespace CODE {
 					if (pos != std::string::npos) {
 						delite_tag(asm_code, "<data_type_proto>", pos);
 					}
-					
+				
 					varr_init = false;
 					is_functon_params = false;
 				}
@@ -292,7 +305,7 @@ namespace CODE {
 				}
 			}
 			if (!curent->is_param && is_functon_params) {
-				is_functon_params = false;
+				//is_functon_params = false;
 
 				size_t pos = asm_code.find("<arg>");
 
@@ -308,6 +321,41 @@ namespace CODE {
 				switch (id.id_type)
 				{
 				case IDType::Type::Var: {
+
+					if (console_func) {
+						DataType::Type type = id.d_type;
+
+						size_t pos = asm_code.find("<func_name>");
+
+						if (pos != std::string::npos) {
+
+							delite_tag(asm_code, "<func_name>", pos);
+							switch (type)
+							{
+							case DataType::Type::Int:
+								asm_code.insert(pos,"print_int");
+
+								break;
+							case DataType::Type::Float:
+								break;
+							case DataType::Type::String:
+								break;
+							case DataType::Type::Short:
+								break;
+							case DataType::Type::None:
+								break;
+							default:
+								break;
+							}
+						}
+						console_func = false;
+
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
+						insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+
+						pos = asm_code.find("<arg>");
+						delite_tag(asm_code, "<arg>", pos);
+					}
 
 					if (buffer!=nullptr&&strcmp(buffer->symbol, "t") == 0) {
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
@@ -356,6 +404,23 @@ namespace CODE {
 					insert_params_to_proto(asm_code, curent, id_table, argv_count);
 					argv_count++;
 
+					switch (id.d_type)
+					{
+					case DataType::Type::Int:
+						funct_arg_size += 4;
+						break;
+					case DataType::Type::Short:
+						funct_arg_size += 2;
+					case DataType::Type::Float:
+						funct_arg_size += 4;
+						break;
+					case DataType::Type::String:
+						funct_arg_size += 4;
+						break;
+					default:
+						break;
+					}
+
 					if (!local_vars.empty()) {
 						local_vars.top().push_back(id.area + id.name);
 					}
@@ -372,6 +437,7 @@ namespace CODE {
 						if (pos != std::string::npos) {
 							delite_tag(asm_code, "<func_code>", pos);
 						}
+						funct_arg_size = 0;
 
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
@@ -379,6 +445,7 @@ namespace CODE {
 						insert_function_names(asm_code, wstring_to_string( func.name));
 
 						local_vars.push(std::vector<std::wstring>());
+						is_functon_params = true;
 					}
 					else {
 						if (!curent->is_param) {
@@ -403,8 +470,77 @@ namespace CODE {
 
 			}
 			else if (curent->type == AST::node_type::Lit) {
-				if (!curent->is_expression&&!curent->is_param) {
-					insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+			Lit_table::Element lit = Lit_table::find(lit_table, curent->table_id);
+
+				if (lit.d_type == DataType::Type::String) {
+					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
+					size_t name_pos = asm_code.find("<var>");
+					delite_tag(asm_code, "<var>", name_pos);
+
+					std::string l("L");
+					l += (char)LITERAL_count+'0';
+
+					asm_code.insert(name_pos, l);
+
+
+					size_t type_pos = asm_code.find("<data_type>");
+					delite_tag(asm_code, "<data_type>", type_pos);
+					asm_code.insert(type_pos, "db");
+
+					size_t value_pos = asm_code.find("<value>");
+					delite_tag(asm_code, "<value>", value_pos);
+					asm_code.insert(value_pos, "\"" + wstring_to_string(lit.value) + "\"" +" 0");
+				}
+				
+				if (console_func) {
+
+
+					size_t pos = asm_code.find("<func_name>");
+
+					if (pos != std::string::npos) {
+
+						delite_tag(asm_code, "<func_name>", pos);
+						switch (lit.d_type)
+						{
+						case DataType::Type::Int:
+							asm_code.insert(pos, "print_int");
+
+							break;
+						case DataType::Type::Float:
+							break;
+						case DataType::Type::String:
+							asm_code.insert(pos, "print_string");
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
+							
+							break;
+						case DataType::Type::Short:
+							break;
+						case DataType::Type::None:
+							break;
+						default:
+							break;
+						}
+					}
+					console_func = false;
+				}
+			
+				if (!curent->is_expression && !curent->is_param) {
+					if (lit.d_type == DataType::Type::String) {
+						size_t pos = asm_code.find("<value>");
+
+						std::string l("L");
+						l += (char)LITERAL_count + '0';
+
+						delite_tag(asm_code, "<value>", pos);
+						asm_code.insert(pos, "offset " + l);
+
+						pos = asm_code.find("<arg>");
+						delite_tag(asm_code, "<arg>", pos);
+					}
+					else {
+
+						insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+					}
 				}
 				else if(curent->is_param) {
 					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
@@ -436,10 +572,20 @@ namespace CODE {
 				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_ret], false);
 				insert_clear_all_local_vars(asm_code, prefabs, local_vars);
 
+				insert_stack_size(asm_code, funct_arg_size);
+
 				size_t pos = asm_code.find("<templ_var>");
 				if (pos != std::string::npos) {
 					delite_tag(asm_code, "<templ_var>", pos);
 				}
+			}
+			else if (strcmp(curent->symbol, "c") == 0) {
+				//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
+				console_func = true;
+			}
+			else if (strcmp(curent->symbol, "<") == 0&&console_func) {
+			write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
+			//console_func = true;
 			}
 			else if (strcmp(curent->symbol, "}") == 0) {
 				

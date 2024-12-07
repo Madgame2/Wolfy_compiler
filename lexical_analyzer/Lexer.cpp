@@ -61,6 +61,16 @@ list<wstring> divid_str(wstring source_code) {
 					words.push_back(L">=");
 					index++; // Пропускаем следующий символ
 				}
+
+
+				else if (current_char == L'<'&&source_code[index+1]==L'<') {
+					words.push_back(L"<<");
+					index++;
+				}
+				else if (current_char == L'>' && source_code[index + 1] == L'>') {
+					words.push_back(L">>");
+					index++;
+				}
 				else {
 					words.push_back(source_code.substr(index, 1)); // Добавляем специальный символ
 				}
@@ -376,6 +386,46 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 						LT::add(LT_files[file_name], new_entry);
 					}
+					else if (word == L">>") {
+						// Обрабатываем оператор ">="
+						// Поднимите флаг для >=
+
+
+						LT::Entry new_entry;
+
+
+						new_entry.lexema[0] = '>';
+						new_entry.lexema[1] = '\0';
+						new_entry.console_operations = true;
+						new_entry.source_code_line = line;
+
+#ifdef DEBUG
+						cout << new_entry.lexema;
+#endif // DEBUG
+
+						LT::add(LT_files[file_name], new_entry);
+					}
+					else if (word == L"<<") {
+					// Обрабатываем оператор ">="
+					// Поднимите флаг для >=
+
+
+					LT::Entry new_entry;
+
+
+					new_entry.lexema[0] = '<';
+					new_entry.lexema[1] = '\0';
+					new_entry.console_operations = true;
+					new_entry.source_code_line = line;
+
+#ifdef DEBUG
+					cout << new_entry.lexema;
+#endif // DEBUG
+
+					LT::add(LT_files[file_name], new_entry);
+					}
+
+
 					else if (word.size() == 1 && (specialChars.find(word[0]) != specialChars.end())) {
 
 						wchar_t buffer = word[0];

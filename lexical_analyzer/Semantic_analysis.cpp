@@ -278,6 +278,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 
 							try {
 								type = area_visibilyty.getvar(ID::getEntry(id_table, id).name).d_type;
+								get_conntext(ID::getEntry(id_table, curent->table_id), area_visibilyty);
 							}
 							catch(...){
 								throw Error::get_error_in(302, curent->line, curent->index);
@@ -332,6 +333,11 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 						}
 					}
 
+				}
+				else if (strcmp(curent->symbol, "<") == 0 && strcmp(buffer->symbol, "c") == 0) {
+				if (!curent->console_operation) {
+					throw Error::get_error_in(601, curent->line, curent->index);
+					}
 				}
 				else if(strcmp(curent->symbol, "+") == 0 ||
 						strcmp(curent->symbol, "-") == 0 ||

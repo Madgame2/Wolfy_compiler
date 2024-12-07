@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы ресурсов\static_libs">
+      <UniqueIdentifier>{3d4c89ad-7654-4369-bf44-f138799cc757}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Params.cpp">
@@ -124,5 +127,10 @@
     <None Include="File2.wolf">
       <Filter>Файлы ресурсов</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Wolfy_console_lib.obj">
+      <Filter>Файлы ресурсов\static_libs</Filter>
+    </Object>
   </ItemGroup>
 </Project>

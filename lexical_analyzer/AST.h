@@ -25,6 +25,7 @@ namespace AST {
 		bool is_double_operation = false;
 		bool is_expression = false;
 		bool is_param = false;
+		bool console_operation = false;
 		int argv_count = 0;
 
 		std::vector<node*> links;
