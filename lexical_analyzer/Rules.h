@@ -156,7 +156,9 @@ namespace RULE {
 			Func_push_arg,
 			Func_as_a_arg,
 			Func_ret,
-			Func_clear
+			Func_clear,
+
+			if_init
 		};
 
 		struct templates {

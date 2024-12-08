@@ -219,6 +219,21 @@ namespace CODE {
 			source_code.insert(pos,std::to_string(size));
 		}
 	}
+	void insert_if_blocks_id(std::string& asm_code, int id) {
+		size_t pos = asm_code.find("<num>");
+
+		if (pos != std::string::npos) {
+			delite_tag(asm_code, "<num>", pos);
+			asm_code.insert(pos, std::to_string(id));
+		}
+
+		pos = asm_code.find("<num>");
+
+		if (pos != std::string::npos) {
+			delite_tag(asm_code, "<num>", pos);
+			asm_code.insert(pos, std::to_string(id));
+		}
+	}
 
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
 	{
@@ -251,9 +266,11 @@ namespace CODE {
 		bool befor_minus = false;
 		bool is_functon_params = false;
 		bool console_func = false;
+		bool is_if_expreson = false;
 		int argv_count = 0;
 		int LITERAL_count = 0;
 		int funct_arg_size = 0;
+		int if_block_id = 0;
 		std::stack<std::vector<std::wstring>> local_vars;
 		while (true)
 		{
@@ -284,6 +301,11 @@ namespace CODE {
 				}
 			}
 			else if (strcmp(curent->symbol, ")") == 0) {
+				if (varr_init) {
+					varr_defoult_value(asm_code);
+
+					buffer = nullptr;
+				}
 				if (is_functon_params) {
 
 					size_t pos = asm_code.find("<data_type_proto>");
@@ -295,9 +317,13 @@ namespace CODE {
 					varr_init = false;
 					is_functon_params = false;
 				}
+				if (is_if_expreson) {
+					is_if_expreson = false;
+				}
+
 			}
 
-			if (!curent->is_expression) {
+			if (!curent->is_expression && !is_if_expreson) {
 				size_t pos = asm_code.find("<expresion>");
 
 				if (pos != std::string::npos) {
@@ -387,6 +413,10 @@ namespace CODE {
 
 							}
 							else {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+								//is_if_expreson = true;
+
 								buffer = curent;
 							}
 						}
@@ -591,12 +621,19 @@ namespace CODE {
 				
 			local_vars.pop();
 			}
+			else if (strcmp(curent->symbol, "?") == 0)
+			{
+				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::if_init], false);
+				insert_if_blocks_id(asm_code, if_block_id);
+				is_if_expreson = true;
+				if_block_id++;
+			}
 			else if (curent->is_expression) {
 
-
-				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
-				insert_operationn(asm_code, curent,prefabs);
-
+				if (!curent->is_double_operation) {
+					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
+					insert_operationn(asm_code, curent, prefabs);
+				}
 			}
 			else {
 				buffer = curent;

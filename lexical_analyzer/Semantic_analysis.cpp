@@ -27,7 +27,32 @@ IDType::Type get_terminal_context(AST::node* curent, ID::ID_table table) {
 	}
 }
 
-DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, semantic::scope::scope area_visibilyty, ID::ID_table id_table, Lit_table::Literal_table lit_table) {
+
+void  get_conntext(ID::Entry& elem, semantic::scope::scope area) {
+	//while (!area.last_scope.empty())
+	//{
+	//	for (auto& var : area.last_scope.top()->objects.vareiables) {
+	//		if (elem.name == var.name) {
+	//			elem.area += area.last_scope.top()->node_name;
+	//			return;
+	//		}
+	//	}
+	//	area.pop_scope();
+	//}
+
+	try
+	{
+		elem.area = area.get_area(area.getvar(elem.name)).node_name;
+
+	}
+	catch (...)
+	{
+		elem.area = area.last_scope.top()->node_name;
+	}
+
+}
+
+DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, semantic::scope::scope area_visibilyty, ID::ID_table& id_table, Lit_table::Literal_table lit_table) {
 
 	
 
@@ -45,11 +70,23 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 
 
 			if (curent->type == AST::node_type::ID) {
-				ID::Entry  elem = ID::getEntry(id_table, curent->table_id);
+				ID::Entry&  elem = ID::getEntry(id_table, curent->table_id);
 
-				if (!area_visibilyty.has_this_var(elem.name)) {
-					throw Error::get_error_in(302, curent->line, curent->index);
+				try
+				{
+					elem.d_type = area_visibilyty.getvar(elem.name).d_type;
+					get_conntext(elem, area_visibilyty);
+					
 				}
+				catch (...)
+				{
+					throw Error::get_error_in(302, curent->line, curent->index);
+
+				}
+
+				//if (!area_visibilyty.has_this_var(elem.name)) {
+				//	throw Error::get_error_in(302, curent->line, curent->index);
+				//}
 
 				curent_type = elem.d_type;
 
@@ -74,13 +111,6 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 	return buffer;
 }
 
-void  get_conntext(ID::Entry& elem,semantic::scope::scope area) {
-	while (!area.last_scope.empty())
-	{
-		elem.area += area.last_scope.top()->node_name;
-		area.pop_scope();
-	}
-}
 
 void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table::Literal_table& lit_table)
 {
@@ -107,6 +137,11 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	{
 		
 		AST::node* curent = tree.DFS.Step();
+		//while (curent != nullptr) {
+		//	std::cout << curent->symbol << std::endl;
+		//	curent  =tree.DFS.Step();
+		//}
+
 
 		if (curent == nullptr) {
 
@@ -246,9 +281,16 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 					int table_id = curent->table_id;
 					ID::Entry& var = ID::getEntry(id_table, table_id);
 
-					if (!area_visibilyty.has_this_var(var.name)) {
+					try {
+						area_visibilyty.getvar(var.name);
+					}
+					catch(...) {
 						throw Error::get_error_in(302, curent->line, curent->index);
 					}
+
+					//if (!area_visibilyty.has_this_var(var.name)) {
+					//	throw Error::get_error_in(302, curent->line, curent->index);
+					//}
 					var.d_type = area_visibilyty.getvar(var.name).d_type;
 					get_conntext(var, area_visibilyty);
 				}
@@ -259,14 +301,6 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 					area_visibilyty.add_param_to_last_func(param, last_func);
 					get_conntext(param, area_visibilyty);
 				}
-				//else if (id_type == IDType::Type::Param) {
-				//	if (strcmp(buffer->symbol, "f") == 0) {
-
-				//	}
-				//	else {
-
-				//	}
-				//}
 				else if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation) {
 					continue;
 				}
@@ -495,6 +529,22 @@ semantic::data::var semantic::scope::scope::getvar(std::wstring name)
 			}
 		}
 		stack.pop();
+	}
+	throw NULL;
+}
+
+semantic::scope::node& semantic::scope::scope::get_area(data::var i)
+{
+	std::stack<node* > last = last_scope;
+
+	while (!last.empty()) {
+
+		for (auto& elem : last.top()->objects.vareiables) {
+			if (elem.name == i.name) {
+				return *last.top();
+			}
+		}
+		last.pop();
 	}
 	throw NULL;
 }

@@ -125,11 +125,11 @@ namespace RULE {
             templates(comand::PROGRAM_BEGIN,"ASM_header.asm",{"<start>"}),
             templates(comand::VAR_delclarete,"var.asm",{"<var>","<data>"}),
             templates(comand::MAIN_INIT,"ASM_main.asm",{"<main>"}),
-            templates(comand::ASSIGN_VALUE,"assign_a_value.asm",{"<func_code>","<main_code>"}),
+            templates(comand::ASSIGN_VALUE,"assign_a_value.asm",{"<if_block>","<func_code>","<main_code>"}),
             //templates(comand::ASSIGN_EXPRESSION,"ASM_expresin.asm",{"<expresion>"}),
             //templates(comand::Expression_init,"Expression_init.asm",{"<expresion>"}),
             //templates(comand::Assign_to_var,"assign_to_var.asm",{"<func_code>","<main_code>"})
-            templates(comand::Expression_init,"Expression_init.asm",{"<func_code>","<main_code>"}),
+            templates(comand::Expression_init,"Expression_init.asm",{"<if_block>","<func_code>","<main_code>"}),
             templates(comand::ASSIGN_EXPRESSION,"Expression_bin.asm",{"<expresion>"}),
             templates(comand::Expression_plus,"EXPRESION_add.asm",{"<operation>"}),
             templates(comand::Expression_push,"stack_push_expression.asm",{"<expresion>"}),
@@ -137,11 +137,13 @@ namespace RULE {
 
             templates(comand::Func_init,"function_preafab.asm",{"<code>"}),
             templates(comand::Func_proto,"function_proto.asm",{"<function_proto>"}),
-            templates(comand::Func_call,"function_call.asm",{"<main_code>"}),
+            templates(comand::Func_call,"function_call.asm",{"<if_block>","<main_code>"}),
             templates(comand::Func_push_arg,"function_push_param.asm",{"<arg>"}),
             templates(comand::Func_as_a_arg,"function_as_a_arg.asm",{"<arg>"}),
             templates(comand::Func_ret,"function_ret.asm",{"<func_code>"}),
-            templates(comand::Func_clear,"clear_local_var.asm",{"<templ_var>","<func_code>"})
+            templates(comand::Func_clear,"clear_local_var.asm",{"<templ_var>","<func_code>"}),
+
+            templates(comand::if_init,"if_prefab.asm",{"<if_block>","<func_code>","<main_code>"})
         };
 
         std::map<DataType::Type, asm_info> DataType_AsmCode = {

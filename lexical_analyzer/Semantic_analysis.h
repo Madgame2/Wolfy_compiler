@@ -94,6 +94,7 @@ namespace semantic {
 
 			data::var getvar(std::wstring name);
 			data::Func_sign get_last_Func();
+			node& get_area(data::var);
 		};
 
 	}
