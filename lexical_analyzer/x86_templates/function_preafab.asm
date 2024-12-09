@@ -3,6 +3,8 @@
     push ebp
     mov ebp, esp
 
+    <params>
+
     <func_code>
 
 

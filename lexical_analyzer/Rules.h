@@ -144,6 +144,7 @@ namespace RULE {
 			ASSIGN_EXPRESSION,
 			Expression_init,
 			Assign_to_var,
+			pop_value,
 
 
 			Expression_plus,
@@ -157,8 +158,12 @@ namespace RULE {
 			Func_as_a_arg,
 			Func_ret,
 			Func_clear,
+			Func_take_arg,
 
-			if_init
+			if_init,
+
+			while_init,
+			while_expresion
 		};
 
 		struct templates {

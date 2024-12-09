@@ -6,6 +6,6 @@ cmp eax, ebx
 
 <if_block>
 
-skip<num>
+skip<num>:
 
 

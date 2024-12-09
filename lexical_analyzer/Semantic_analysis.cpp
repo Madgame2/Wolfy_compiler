@@ -230,6 +230,11 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 
 				control_flow_analyzer.create_new_branch();
 			}
+			else if (strcmp(curent->symbol, "w") == 0) {
+				area_visibilyty.add_new_scope(L"WHILE");
+
+				control_flow_analyzer.create_new_branch();
+			}
 			else if (strcmp(curent->symbol, "r") == 0) {
 				control_flow_analyzer.set_returnable();
 			}
@@ -299,7 +304,9 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 					ID::Entry& param = ID::getEntry(id_table, table_id);
 
 					area_visibilyty.add_param_to_last_func(param, last_func);
+					area_visibilyty.add_new_var(param);
 					get_conntext(param, area_visibilyty);
+
 				}
 				else if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation) {
 					continue;
