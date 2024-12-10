@@ -127,6 +127,9 @@
     <None Include="File2.wolf">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="MAIN.asm">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Object Include="Wolfy_console_lib.obj">

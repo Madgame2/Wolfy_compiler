@@ -1,1 +1,1 @@
-<func_name> PROTO: <data_type_proto>
+<func_name> PROTO <data_type_proto>

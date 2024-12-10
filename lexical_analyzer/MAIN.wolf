@@ -1,8 +1,8 @@
-int function test2(int f, int b){
-	
-	while(f<=2+2){
-	
-	}
 
-	return 25;
+int a = 0;
+
+while(a<10){
+	console<<a;
+	console<<endl;
+	a=a+1;
 }

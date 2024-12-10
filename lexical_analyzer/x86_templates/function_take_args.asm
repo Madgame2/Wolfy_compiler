@@ -1,1 +1,2 @@
-mov <var>, [ebp+<num>]
+mov eax, [ebp+<num>]
+mov <var>, eax

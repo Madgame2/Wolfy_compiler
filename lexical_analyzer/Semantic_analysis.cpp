@@ -226,14 +226,17 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 				last_func = nullptr;
 			}
 			else if (strcmp(curent->symbol, "?") == 0) {
-				area_visibilyty.add_new_scope(L"IF");
 
-				control_flow_analyzer.create_new_branch();
+				if (area_visibilyty.last_scope.top()->node_name != L"MAIN")
+					control_flow_analyzer.create_new_branch();
+
+				area_visibilyty.add_new_scope(L"IF");
 			}
 			else if (strcmp(curent->symbol, "w") == 0) {
-				area_visibilyty.add_new_scope(L"WHILE");
+				if (area_visibilyty.last_scope.top()->node_name != L"MAIN")
+					control_flow_analyzer.create_new_branch();
 
-				control_flow_analyzer.create_new_branch();
+				area_visibilyty.add_new_scope(L"WHILE");
 			}
 			else if (strcmp(curent->symbol, "r") == 0) {
 				control_flow_analyzer.set_returnable();

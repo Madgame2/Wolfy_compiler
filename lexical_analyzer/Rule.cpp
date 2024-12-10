@@ -14,6 +14,7 @@ namespace RULE {
             Elemet(L"return","r"),
             Elemet(L"Console","c"),
             Elemet(L"console","c"),
+            Elemet(L"endl","n"),
             Elemet(L"while","w"),
             Elemet(L"unsigned","e",extra::Type::Unsigned)
         };
@@ -45,6 +46,7 @@ namespace RULE {
                 Rule::Chain(5,TS("i"),TS("="),NS("E"),TS(";"),NS("M")),
                 Rule::Chain(11,TS("?"),TS("("),TS("t"),TS("i"),TS("="),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("M")),
                 Rule::Chain(8,TS("?"),TS("("),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("M")),
+                Rule::Chain(5,TS("c"),TS("<"),TS("n"),TS(";"),NS("M")),
                 Rule::Chain(5,TS("c"),TS("<"),NS("E"),TS(";"),NS("M")),
                 Rule::Chain(5,TS("c"),TS(">"),TS("i"),TS(";"),NS("M")),
                 Rule::Chain(8,TS("w"),TS("("),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("M")),
@@ -102,7 +104,10 @@ namespace RULE {
                 Rule::Chain(8,TS("w"),TS("("),NS("E"),TS(")"),TS("{"),NS("B"),TS("}"),NS("B")),
                 Rule::Chain(3,TS("r"),TS(";"),NS("B")),
                 Rule::Chain(4,TS("r"),NS("E"),TS(";"),NS("B")),
-
+                Rule::Chain(5,TS("c"),TS("<"),TS("n"),TS(";"),NS("B")),
+                Rule::Chain(5,TS("c"),TS("<"),NS("E"),TS(";"),NS("B")),
+                Rule::Chain(5,TS("c"),TS(">"),TS("i"),TS(";"),NS("B")),
+                
             }),
         };
     }

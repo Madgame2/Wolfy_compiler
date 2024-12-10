@@ -12,7 +12,7 @@ includelib WolfyConsoleLib.lib
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD
-endl PROTO
+print_newline PROTO
 
 .stack 4096				
 			
@@ -31,13 +31,10 @@ MAINa DWORD 0
 
 main PROC
 
-xor eax, eax
-mov eax, 1
-
 while_start0:
 
-push 10
 push MAINa
+push 10
 
 pop eax
 pop ebx
@@ -49,9 +46,10 @@ push MAINa
 
 call print_int
 
-call endl
+call print_newline
 
 push 1
+push MAINa
 
 pop eax
 pop ebx
@@ -74,4 +72,6 @@ while_end0:
 main ENDP
 
 END main
+
+
 

@@ -1,5 +1,5 @@
 ﻿#include"Wolfy_console_lib.h"
-
+#include<iostream>
 
 extern "C"
 {

@@ -15,13 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Wolfy_console_lib.cpp">
+    <MASM Include="Main.asm">
       <Filter>Исходные файлы</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Wolfy_console_lib.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
+    </MASM>
+    <MASM Include="..\lexical_analyzer\MAIN.asm">
+      <Filter>Файлы ресурсов</Filter>
+    </MASM>
   </ItemGroup>
 </Project>
