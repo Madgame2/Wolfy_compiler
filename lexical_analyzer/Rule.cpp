@@ -16,7 +16,10 @@ namespace RULE {
             Elemet(L"console","c"),
             Elemet(L"endl","n"),
             Elemet(L"while","w"),
-            Elemet(L"unsigned","e",extra::Type::Unsigned)
+            Elemet(L"unsigned","e",extra::Type::Unsigned),
+            Elemet(L"BIN", "s",notations::notation::Bin),
+            Elemet(L"OCT", "s",notations::notation::oct),
+            Elemet(L"HEX", "s",notations::notation::Hex),
         };
     }
     namespace GRB {
@@ -55,6 +58,7 @@ namespace RULE {
             }),
             Rule(NS("E"),GRB_ERROR + 2,{
                     Rule::Chain(1,TS("l")),
+                    Rule::Chain(4,TS("s"),TS("("),TS("l"),TS(")")),
                     Rule::Chain(1,TS("i")),
                     Rule::Chain(3,TS("i"),TS("("),TS(")")),
                     Rule::Chain(4,TS("i"),TS("("),NS("A"),TS(")")),
@@ -132,10 +136,11 @@ namespace RULE {
         std::list<templates> prefabs = {
             templates(comand::PROGRAM_BEGIN,"ASM_header.asm",{"<start>"}),
             templates(comand::VAR_delclarete,"var.asm",{"<var>","<data>"}),
+            templates(comand::Const_declare,"var.asm", {"<const>"}),
             templates(comand::MAIN_INIT,"ASM_main.asm",{"<main>"}),
 
-            templates(comand::ASSIGN_VALUE,"assign_a_value.asm",{"<while_code>","<if_block>","<func_code>","<main_code>"}),
-            templates(comand::Expression_init,"Expression_init.asm",{"<while_code>","<if_block>","<func_code>","<main_code>"}),
+            templates(comand::ASSIGN_VALUE,"assign_a_value.asm",{"<block>","<func_code>","<main_code>"}),
+            templates(comand::Expression_init,"Expression_init.asm",{"<block>","<func_code>","<main_code>"}),
             templates(comand::ASSIGN_EXPRESSION,"Expression_bin.asm",{"<expresion>"}),
             templates(comand::Expression_plus,"EXPRESION_add.asm",{"<operation>"}),
             templates(comand::Expression_push,"stack_push_expression.asm",{"<expresion>"}),
@@ -144,21 +149,22 @@ namespace RULE {
 
             templates(comand::Func_init,"function_preafab.asm",{"<code>"}),
             templates(comand::Func_proto,"function_proto.asm",{"<function_proto>"}),
-            templates(comand::Func_call,"function_call.asm",{"<while_code>","<if_block>","<func_code>","<main_code>"}),
+            templates(comand::Func_call,"function_call.asm",{"<block>","<func_code>","<main_code>"}),
             templates(comand::Func_push_arg,"function_push_param.asm",{"<arg>"}),
             templates(comand::Func_as_a_arg,"function_as_a_arg.asm",{"<arg>"}),
             templates(comand::Func_ret,"function_ret.asm",{"<func_code>"}),
             templates(comand::Func_take_arg,"function_take_args.asm",{"<params>"}),
             templates(comand::Func_clear,"clear_local_var.asm",{"<templ_var>","<func_code>"}),
 
-            templates(comand::if_init,"if_prefab.asm",{"<while_code>","<if_block>","<func_code>","<main_code>"}),
+            templates(comand::if_init,"if_prefab.asm",{"<block>","<func_code>","<main_code>"}),
 
-            templates(comand::while_init,"while_init.asm",{"<while_code>","<if_block>","<func_code>","<main_code>"}),
+            templates(comand::while_init,"while_init.asm",{"<block>","<func_code>","<main_code>"}),
             templates(comand::while_expresion,"while_expresion.asm",{"<expresion>"})
         };
 
         std::map<DataType::Type, asm_info> DataType_AsmCode = {
-            {DataType::Type::Int, asm_info("DWORD","eax")}
+            {DataType::Type::Int, asm_info("DWORD","eax")},
+            {DataType::Type::String, asm_info("DWORD","eax")}
         };
         std::map<std::string, comand> operatin_AsmCode = {
             {"+",comand::Expression_plus},

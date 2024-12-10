@@ -5,7 +5,7 @@ pop ebx
 cmp eax, ebx
 <flag> while_end<num>
 
-<while_code>
+<block>
 
 jmp while_start<num>
 

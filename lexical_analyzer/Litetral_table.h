@@ -8,6 +8,7 @@ namespace Lit_table {
 	struct Element {
 		DataType::Type d_type = DataType::Type::None;
 		std::wstring value;
+		notations::notation my_notation = notations::notation::None;
 
 		Element(){}
 		Element(std::wstring value, DataType::Type type) {

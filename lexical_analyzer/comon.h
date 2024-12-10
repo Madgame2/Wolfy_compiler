@@ -32,6 +32,16 @@
         };
     }
 
+    namespace notations {
+        enum class notation{
+            Dec,
+            Bin,
+            oct,
+            Hex,
+            None
+        };
+    }
+
     namespace operatoion_prioritet {
         enum class operations {
             PLUS = 2,

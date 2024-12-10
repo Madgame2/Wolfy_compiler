@@ -29,17 +29,6 @@ IDType::Type get_terminal_context(AST::node* curent, ID::ID_table table) {
 
 
 void  get_conntext(ID::Entry& elem, semantic::scope::scope area) {
-	//while (!area.last_scope.empty())
-	//{
-	//	for (auto& var : area.last_scope.top()->objects.vareiables) {
-	//		if (elem.name == var.name) {
-	//			elem.area += area.last_scope.top()->node_name;
-	//			return;
-	//		}
-	//	}
-	//	area.pop_scope();
-	//}
-
 	try
 	{
 		elem.area = area.get_area(area.getvar(elem.name)).node_name;
@@ -50,6 +39,103 @@ void  get_conntext(ID::Entry& elem, semantic::scope::scope area) {
 		elem.area = area.last_scope.top()->node_name;
 	}
 
+}
+
+bool is_only_dec(std::wstring value) {
+	for (auto i : value) {
+		if (!isdigit(i)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool is_only_bin(std::wstring value) {
+	for (auto i: value) {
+		if (i != L'1' && i != L'0') {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool is_only_oct(std::wstring value) {
+	for (auto i : value) {
+		if (isdigit(i)) {
+			int num = static_cast<int>(i) - L'0';
+
+			if (!(num >= 0 && num <= 7)) {
+				return false;
+			}
+		}
+
+	}
+	return true;
+}
+
+bool is_only_Hex(std::wstring& value) {
+	std::wstring buffer;
+
+	int index = 0;
+	for (auto i : value) {
+		if (isdigit(i)) {
+			int num = static_cast<int>(i) - L'0';
+
+			if (!(num >= 0 && num <= 7)) {
+				return false;
+			}
+			buffer += i;
+		}
+		else {
+			if (index == 0) buffer = L'0';
+
+			if (!((i >= 'A' && i <= 'F') || (i >= 'a' && i <= 'f'))) {
+				return false;
+			}
+			buffer += i;
+		}
+		index++;
+	}
+	value = buffer;
+
+	return true;
+}
+
+void check_lit_struct(Lit_table::Element& lit,AST::node*curent) {
+
+	switch (lit.my_notation)
+	{
+	case notations::notation::Dec:
+		
+		if (!is_only_dec(lit.value)) {
+			throw Error::get_error_in(605, curent->line, curent->index);
+		}
+
+		break;
+	case notations::notation::Bin:
+
+		if (!is_only_bin(lit.value)) {
+			throw Error::get_error_in(605, curent->line, curent->index);
+		}
+
+		break;
+	case notations::notation::oct:
+
+		if (!is_only_oct(lit.value)) {
+			throw Error::get_error_in(605, curent->line, curent->index);
+		}
+
+		break;
+	case notations::notation::Hex:
+
+		if (!is_only_Hex(lit.value)) {
+			throw Error::get_error_in(605, curent->line, curent->index);
+		}
+
+		break;
+	default:
+		break;
+	}
 }
 
 DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, semantic::scope::scope area_visibilyty, ID::ID_table& id_table, Lit_table::Literal_table lit_table) {
@@ -63,11 +149,6 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 	{
 
 		if (strcmp(curent->symbol, "i") == 0 || strcmp(curent->symbol, "l") == 0) {
-
-
-
-
-
 
 			if (curent->type == AST::node_type::ID) {
 				ID::Entry&  elem = ID::getEntry(id_table, curent->table_id);
@@ -84,16 +165,17 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 
 				}
 
-				//if (!area_visibilyty.has_this_var(elem.name)) {
-				//	throw Error::get_error_in(302, curent->line, curent->index);
-				//}
-
 				curent_type = elem.d_type;
 
 			}
 			else if (curent->type == AST::node_type::Lit) {
-				Lit_table::Element  elem = Lit_table::find(lit_table, curent->table_id);
+				Lit_table::Element&  elem = Lit_table::find(lit_table, curent->table_id);
 				curent_type = elem.d_type;
+
+				check_lit_struct(elem,curent);
+
+				if (elem.d_type == DataType::Type::String) throw Error::get_error_in(605, curent->line, curent->index);
+				
 			}
 		}
 
@@ -101,6 +183,12 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 			if (buffer != curent_type) {
 				throw Error::get_error_in(302, curent->line, curent->index);
 			}
+		}
+
+		if (curent->type == AST::node_type::notation) {
+			
+			curent = tree.DFS.Step();
+			continue;
 		}
 
 		buffer = curent_type;
@@ -296,13 +384,11 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 						throw Error::get_error_in(302, curent->line, curent->index);
 					}
 
-					//if (!area_visibilyty.has_this_var(var.name)) {
-					//	throw Error::get_error_in(302, curent->line, curent->index);
-					//}
 					var.d_type = area_visibilyty.getvar(var.name).d_type;
 					get_conntext(var, area_visibilyty);
 				}
 				else if (id_type == IDType::Type::Param) {
+
 					int table_id = curent->table_id;
 					ID::Entry& param = ID::getEntry(id_table, table_id);
 
@@ -333,6 +419,9 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 						else if(curent->type == AST::node_type::Lit)
 						{
 							type = Lit_table::find(lit_table, id).d_type;
+
+							check_lit_struct(Lit_table::find(lit_table, id),curent);
+
 
 						}
 

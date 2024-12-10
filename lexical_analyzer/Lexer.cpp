@@ -123,6 +123,27 @@ void getContext(ID::Entry& entry,stack<wstring> context, key_words::Key_words_ta
 		context.pop();
 	}
 }
+void  get_litContext(Lit_table::Element& lit, stack<wstring> context, key_words::Key_words_table table) {
+	if (lit.d_type == DataType::Type::String) return;
+	
+	while (!context.empty())
+	{
+		int id = table.find(context.top());
+		if (id != -1) {
+
+
+			RULE::key::Elemet elem = table.get_element(id);
+			if (elem.notation != notations::notation::None) {
+				lit.my_notation = elem.notation;
+				return;
+			}
+
+		}
+
+		context.pop();
+	}
+	lit.my_notation == notations::notation::Dec;
+}
 void check_redefinition(ID::Entry& entry, stack<wstring> context, key_words::Key_words_table table, int line, int pos) {
 	while (!context.empty())
 	{
@@ -146,7 +167,7 @@ void check_redefinition(ID::Entry& entry, stack<wstring> context, key_words::Key
 		context.pop();
 	}
 }
-void clear_context(stack<wstring>& context) {
+void  clear_context(stack<wstring>& context) {
 	while (!context.empty())
 	{
 		context.pop();
@@ -229,7 +250,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 
 		list<wstring> words = divid_str(in_files.FILES[i].source_code);			//Разбиваем файл на список слов и смволов 
-		
+
 		//for (auto&  elem: words) {
 		//	wcout << elem << endl;
 		//}
@@ -263,7 +284,8 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 		bool new_ID_created = false;
 		bool is_joint = false;
 		bool is_params = false;
-		int last_ID_id=-1;
+		bool is_notation = false;
+		int last_ID_id = -1;
 		int last_lit_id = -1;
 		wstring lit_buffer;
 		unsigned int line = 0;
@@ -273,14 +295,14 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 			if (is_word_leteral) {
 
-				
+
 
 				if (word.size() == 1 && (word[0] == L'"' || word[0] == L'\'')) {
 					//Добавляем ЛИТЕРАЛ строки
 					last_lit_id++;
 
 					create_LitT_lement(Lit_files[file_name], lit_buffer, DataType::Type::String);
-					create_LexT_element(LT_files[file_name], LEX_LET,line,last_lit_id,LIT_KEY);
+					create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY);
 
 					lit_buffer.clear();
 					is_word_leteral = false;
@@ -295,47 +317,30 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 				}
 			}
 			else {
-				if (word[0] == L'\"') 
-				{ 
-					is_word_leteral = true; 
+				if (word[0] == L'\"')
+				{
+					is_word_leteral = true;
 				}
 				else
 				{
 					//Проверка на ключевое слово
 					int id;
-					if ((id = key_words.find(word))>=0) {
+					if ((id = key_words.find(word)) >= 0) {
 						//Вставить лексему ключегого слова 
+
+						if (key_words.get_element(id).notation != notations::notation::None) is_notation = true;
 
 						context_stack.push(word);
 
 						create_LexT_element(LT_files[file_name], key_words.get_element(id).lexem, line);
 
 					}
-					else if(is_only_digit(word)) {
-						//Вставки лексемы литерала 
-						
-						if (!is_joint) {
-							last_lit_id++;
-
-							create_LitT_lement(Lit_files[file_name], word, DataType::Type::Int);
-							create_LexT_element(LT_files[file_name], LEX_LET, line,last_lit_id, LIT_KEY);
-
-						}
-						else
-						{
-							Lit_table::find(Lit_files[file_name], last_lit_id).value += context_stack.top() + word;
-							Lit_table::find(Lit_files[file_name], last_lit_id).d_type = DataType::Type::Float;
-
-							is_joint = false;
-						}
-						context_stack.push(word);
-					}
 					else if (word == L"==") {
 						// Обрабатываем оператор "=="
 						// Поднимите флаг для ==
 
 						LT::Entry new_entry;
-						
+
 
 						new_entry.lexema[0] = '=';
 						new_entry.lexema[1] = '\0';
@@ -347,7 +352,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 #endif // DEBUG
 
 						LT::add(LT_files[file_name], new_entry);
-						
+
 					}
 					else if (word == L"<=") {
 						// Обрабатываем оператор "<="
@@ -406,26 +411,24 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						LT::add(LT_files[file_name], new_entry);
 					}
 					else if (word == L"<<") {
-					// Обрабатываем оператор ">="
-					// Поднимите флаг для >=
+						// Обрабатываем оператор ">="
+						// Поднимите флаг для >=
 
 
-					LT::Entry new_entry;
+						LT::Entry new_entry;
 
 
-					new_entry.lexema[0] = '<';
-					new_entry.lexema[1] = '\0';
-					new_entry.console_operations = true;
-					new_entry.source_code_line = line;
+						new_entry.lexema[0] = '<';
+						new_entry.lexema[1] = '\0';
+						new_entry.console_operations = true;
+						new_entry.source_code_line = line;
 
 #ifdef DEBUG
-					cout << new_entry.lexema;
+						cout << new_entry.lexema;
 #endif // DEBUG
 
-					LT::add(LT_files[file_name], new_entry);
+						LT::add(LT_files[file_name], new_entry);
 					}
-
-
 					else if (word.size() == 1 && (specialChars.find(word[0]) != specialChars.end())) {
 
 						wchar_t buffer = word[0];
@@ -440,7 +443,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							switch (buffer)
 							{
 							case L')':
-								if (!hocks.empty()&&hocks.top() == L'(') {
+								if (!hocks.empty() && hocks.top() == L'(') {
 									is_params = false;
 									hocks.pop();
 								}
@@ -483,7 +486,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						case L';':
 							clear_context(context_stack);
 							break;
-						case L'.': 
+						case L'.':
 						{
 							if (is_only_digit(context_stack.top())) {
 								LT::Entry latst_entry = LT::getEntry(LT_files[file_name], LT_files[file_name].size - 1);
@@ -496,7 +499,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 										continue;
 									}
 									else {
-										throw Error::get_error_in(8, line,word_index);
+										throw Error::get_error_in(8, line, word_index);
 									}
 								}
 								break;
@@ -508,28 +511,32 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							int ID_index = last_entry.IT_index;
 
 
-							if(ID_index!=-1&&ID::getEntry(ID_files[file_name], ID_index).id_type==IDType::Type::Func)
-							is_params = true;
+							if (ID_index != -1 && ID::getEntry(ID_files[file_name], ID_index).id_type == IDType::Type::Func)
+								is_params = true;
 
 							if (new_ID_created) {
 								ID::getEntry(ID_files[file_name], last_ID_id).id_type = IDType::Type::Func;
 							}
-
+							if(!is_notation)
 							clear_context(context_stack);
-							}
-							break;
+						}
+							   break;
+						case')': {
+							clear_context(context_stack);
+						
+						}
 						case '[':
+						{
+
+							if (new_ID_created && (ID::getEntry(ID_files[file_name], last_ID_id).id_type != IDType::Type::Func))
 							{
-
-								if (new_ID_created && (ID::getEntry(ID_files[file_name], last_ID_id).id_type != IDType::Type::Func)) 
-								{
-									ID::getEntry(ID_files[file_name], last_ID_id).is_array = true;
-								}
+								ID::getEntry(ID_files[file_name], last_ID_id).is_array = true;
 							}
+						}
 
-							break;
+						break;
 
-						case '{': 
+						case '{':
 							clear_context(context_stack);
 							break;
 						case',':
@@ -539,6 +546,27 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						create_LexT_element(LT_files[file_name], word[0], line);
 
 						context_stack.push(word);
+					}
+					else if (is_only_digit(word) || is_notation) {
+						//Вставки лексемы литерала 
+
+						if (!is_joint) {
+							last_lit_id++;
+
+							create_LitT_lement(Lit_files[file_name], word, DataType::Type::Int);
+							create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY);
+
+							get_litContext(Lit_files[file_name].table.back(), context_stack, key_words);
+						}
+						else
+						{
+							Lit_table::find(Lit_files[file_name], last_lit_id).value += context_stack.top() + word;
+							Lit_table::find(Lit_files[file_name], last_lit_id).d_type = DataType::Type::Float;
+
+							is_joint = false;
+						}
+						context_stack.push(word);
+						is_notation = false;
 					}
 					else {
 						//вставляем индефикатор
@@ -550,31 +578,24 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 
 						//Таблица индефикаторов 
-						
-						///int curent_ID;
-						//if ((curent_ID = ID::isId(ID_files[file_name], word, function_context.empty() ? L"" : function_context.top())) == -1) {
 
-							ID::Entry new_ID;
-							last_ID_id++;
-							new_ID.name = word;
-							new_ID.area = function_context.empty() ? L"" : function_context.top();
-							if (!is_params) {
-								new_ID.id_type = IDType::Type::Var;
-							}
-							else {
-								new_ID.id_type = IDType::Type::Param;
-							}
+						ID::Entry new_ID;
+						last_ID_id++;
+						new_ID.name = word;
+						new_ID.area = function_context.empty() ? L"" : function_context.top();
+						if (!is_params) {
+							new_ID.id_type = IDType::Type::Var;
+						}
+						else {
+							new_ID.id_type = IDType::Type::Param;
+						}
 
-							getContext(new_ID, context_stack, key_words);
+						getContext(new_ID, context_stack, key_words);
 
-							ID::add(ID_files[file_name], new_ID);
-							new_ID_created = true;
+						ID::add(ID_files[file_name], new_ID);
+						new_ID_created = true;
 
-						//}
-						//else {
-							new_entry.IT_index= last_ID_id;
-							//check_redefinition(ID::getEntry(ID_files[file_name], curent_ID), context_stack, key_words, line, word_index);
-						//}
+						new_entry.IT_index = last_ID_id;
 
 
 						LT::add(LT_files[file_name], new_entry);
@@ -582,7 +603,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						cout << new_entry.lexema;
 						continue;
 					}
-					
+
 					new_ID_created = false;
 
 				}

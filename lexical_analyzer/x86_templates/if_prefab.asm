@@ -4,7 +4,7 @@ pop ebx
 cmp eax, ebx
 <flag> skip<num>
 
-<if_block>
+<block>
 
 skip<num>:
 

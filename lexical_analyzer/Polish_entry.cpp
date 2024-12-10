@@ -92,6 +92,9 @@ namespace POL {
 					}
 
 				}
+				else if (lexem == 's') {
+					polish_entry.push_back(elem);
+				}
 				else {
 					operatoion_prioritet::operations curent_prioritet = get_priorete(lexem);
 
@@ -151,6 +154,10 @@ namespace POL {
 				new_node->table_id = elem.Lit_index;
 			}
 
+			if (strcmp(elem.lexema, "s") == 0) {
+				new_node->type = AST::node_type::notation;
+			}
+
 			new_list.push_back(new_node);
 		}
 
@@ -158,78 +165,15 @@ namespace POL {
 	}
 
 
-	//AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table table)
-	//{
-	//	std::list<LT::Entry> polish_expr = build_polish_entry(expression);
-	//	std::cout << "end build polish entry\n";
-	//	std::list<AST::node*> new_list = refactor_list(polish_expr);
-
-	//	std::stack<AST::node*> buffer;
-
-	//	for (auto elem : new_list) {
-	//		std::cout << elem->symbol;
-	//	}
-
-	//	for (auto elem : new_list) {
-	//		AST::node_type type = elem->type;
-	//		IDType::Type id_type = IDType::Type::None;
-	//		if (type == AST::node_type::ID) {
-	//			id_type = ID::getEntry(table, elem->table_id).id_type;
-	//		}
-
-
-	//		if (elem->type == AST::node_type::ID && id_type!=IDType::Type::Func || elem->type == AST::node_type::Lit) {
-	//			buffer.push(elem);
-	//		}
-	//		else
-	//		{
-
-	//			if (id_type != IDType::Type::Func) {
-	//				AST::node* right = nullptr;
-	//				AST::node* left = nullptr;
-
-	//				AST::node* operation = elem;
-	//				if (!buffer.empty()) {
-	//					right = buffer.top();
-	//					buffer.pop();
-	//				}
-
-	//				if (!buffer.empty()) {
-	//					left = buffer.top();
-	//					buffer.pop();
-	//				}
-
-	//				if (new_list.size() > 2) {
-	//					operation->is_expression = true;
-	//					right != nullptr ? right->is_expression = true : NULL;
-	//					left != nullptr ? left->is_expression = true : NULL;
-	//				}
-	//				if (left != nullptr) operation->links.push_back(left);
-	//				if (right != nullptr) operation->links.push_back(right);
-
-	//				buffer.push(operation);
-	//			}
-	//			else {
-	//				AST::node* root = elem;
-	//				while (!buffer.empty())
-	//				{
-	//					root->links.push_back(buffer.top());
-	//				}
-
-	//				buffer.push(root);
-	//			}
-	//		}
-	//	}
-	//	std::cout << '\n';
-
-	//	return buffer.top();
-	//}
-
-
 	AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table& table) {
 		// ѕреобразуем выражение в обратную польскую запись
 		std::list<LT::Entry> polish_expr = build_polish_entry(expression,table);
 		std::cout << "End build polish entry\n";
+
+		for (auto elem : polish_expr) {
+			std::cout << elem.lexema;
+		}
+		std::cout << std::endl;
 
 		// ѕреобразуем в список узлов
 		std::list<AST::node*> node_list = refactor_list(polish_expr);
@@ -256,7 +200,16 @@ namespace POL {
 				buffer.push(current);
 			}
 			else {
-				if (id_type != IDType::Type::Func) {
+				if (type == AST::node_type::notation) {
+					AST::node* new_node = stack.empty() ? nullptr : stack.top();
+					if (new_node) stack.pop();
+
+					new_node->is_expression = true;
+					current->links.push_back(new_node);
+
+					buffer.push(current);
+				}
+				else if (id_type != IDType::Type::Func) {
 					AST::node* right = buffer.empty() ? nullptr : buffer.top();
 					if (right) buffer.pop();
 					AST::node* left = buffer.empty() ? nullptr : buffer.top();

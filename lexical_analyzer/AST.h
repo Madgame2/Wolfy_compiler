@@ -11,6 +11,7 @@ namespace AST {
 	enum class node_type {
 		ID,
 		Lit,
+		notation,
 		general
 	};
 

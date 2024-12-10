@@ -1,6 +1,10 @@
 #include"Code_generator.h"
 #include<iostream>
 
+#define HEX 'f'
+#define BIN 'b'
+#define OCT 'o'
+
 namespace CODE {
 
 
@@ -38,14 +42,17 @@ namespace CODE {
 		int  offstet = 0;
 
 
+		bool find = false;
 		for (int i = 0; i < prefab.tags.size(); i++) {
 			if (source_code.find(prefab.tags[i]) != std::string::npos) {
 				tag = prefab.tags[i];
 				offstet = i;
+				find = true;
 				break;
 			}
 		}
 
+		if (!find) return;
 
 		size_t pos = source_code.find(tag);
 
@@ -99,14 +106,41 @@ namespace CODE {
 
 			size_t pos = source_code.find("<value>");
 
-			if (pos != std::string::npos) {
+			if (lit.d_type == DataType::Type::String) {
 				delite_tag(source_code, "<value>", pos);
-				if (negative) {
-					source_code.insert(pos, '-' + wstring_to_string(lit.value));
-				}
-				else
+
+				source_code.insert(pos, "\"" + wstring_to_string(lit.value) + "\", 0");
+
+			}
+			else {
+
+				char notation = ' ';
+
+				switch (lit.my_notation)
 				{
-					source_code.insert(pos, wstring_to_string(lit.value));
+				case notations::notation::Bin:
+					notation = BIN;
+					break;
+				case notations::notation::oct:
+					notation = OCT;
+
+					break;
+				case notations::notation::Hex:
+					notation = HEX;
+
+					break;
+				}
+
+
+				if (pos != std::string::npos) {
+					delite_tag(source_code, "<value>", pos);
+					if (negative) {
+						source_code.insert(pos, '-' + wstring_to_string(lit.value) + notation);
+					}
+					else
+					{
+						source_code.insert(pos, wstring_to_string(lit.value) + notation);
+					}
 				}
 			}
 		}
@@ -351,6 +385,7 @@ namespace CODE {
 					if (pos != std::string::npos) {
 						delite_tag(asm_code, "<expresoin>", pos);
 					}
+					is_while = false;
 				}
 				if (is_functon_params) {
 
@@ -375,6 +410,9 @@ namespace CODE {
 					is_if_expreson = false;
 				}
 
+			}
+			else if (strcmp(curent->symbol, "s") == 0) {
+				continue;
 			}
 
 			if (!curent->is_expression&& !varr_init && !is_if_expreson&& !is_while) {
@@ -419,6 +457,7 @@ namespace CODE {
 							case DataType::Type::Float:
 								break;
 							case DataType::Type::String:
+								asm_code.insert(pos, "print_string");
 								break;
 							case DataType::Type::Short:
 								break;
@@ -439,9 +478,10 @@ namespace CODE {
 
 					if (buffer != nullptr && strcmp(buffer->symbol, "t") == 0) {
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
-
 						write_var_to_asm(asm_code, curent, id_table);
 
+
+						buffer = curent;
 						varr_init = true;
 
 						if (!local_vars.empty()) {
@@ -453,7 +493,6 @@ namespace CODE {
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], false);
 
 							write_var_to_asm(asm_code, curent, id_table);
-							//insert_expression(asm_code, curent, id_table, lit_table);
 							buffer = curent;
 						}
 					}
@@ -461,26 +500,23 @@ namespace CODE {
 						if (!curent->is_expression && !curent->is_param) {
 							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 						}
-						//else if (is_while) {
-						//	write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], true);
-
-						//	size_t pos = asm_code.find("<var>");
-						//	delite_tag(asm_code, "<var>", pos);
-						//	asm_code.insert(pos, wstring_to_string(id.area + id.name));
-
-						//	buffer = curent;
-						//}
 						else {
 							if (curent->is_param) {
 								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
 								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 
 							}
-							else {
-								//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
-								//insert_value(asm_code, curent, befor_minus, id_table, lit_table);
-								//is_if_expreson = true;
+							else if (is_while) {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+							}
+							else if (curent->is_expression) {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 
+								buffer = curent;
+							}
+							else {
 								buffer = curent;
 							}
 						}
@@ -497,7 +533,7 @@ namespace CODE {
 
 					//insert_params_to_proto(asm_code, curent, id_table, argv_count);
 					argv_count++;
-					
+
 					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_take_arg], false);
 					write_var_to_asm(asm_code, curent, id_table);
 					insert_stack_offset(asm_code, stack_offset);
@@ -571,9 +607,10 @@ namespace CODE {
 				Lit_table::Element lit = Lit_table::find(lit_table, curent->table_id);
 
 				if (lit.d_type == DataType::Type::String) {
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
+					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Const_declare], false);
 					size_t name_pos = asm_code.find("<var>");
 					delite_tag(asm_code, "<var>", name_pos);
+
 
 					std::string l("L");
 					l += (char)LITERAL_count + '0';
@@ -588,6 +625,7 @@ namespace CODE {
 					size_t value_pos = asm_code.find("<value>");
 					delite_tag(asm_code, "<value>", value_pos);
 					asm_code.insert(value_pos, "\"" + wstring_to_string(lit.value) + "\"," + " 0");
+
 				}
 
 				if (console_func) {
@@ -633,6 +671,7 @@ namespace CODE {
 						asm_code.insert(pos, "offset " + l);
 
 						pos = asm_code.find("<arg>");
+						if(pos!=std::string::npos)
 						delite_tag(asm_code, "<arg>", pos);
 					}
 					else {
@@ -698,14 +737,14 @@ namespace CODE {
 					size_t pos = asm_code.find("<flag>");
 					if (pos != std::string::npos) {
 						delite_tag(asm_code, "<flag>", pos);
-						asm_code.insert(pos, "jle");
+						asm_code.insert(pos, "jge");
 					}
 				}
 				else {
 					size_t pos = asm_code.find("<flag>");
 					if (pos != std::string::npos) {
 						delite_tag(asm_code, "<flag>", pos);
-						asm_code.insert(pos, "jl");
+						asm_code.insert(pos, "jg");
 					}
 				
 				}
@@ -714,32 +753,18 @@ namespace CODE {
 
 				if(!local_vars.empty()) local_vars.pop();
 
-				size_t while_pos = asm_code.find("<while_code>");
-				size_t if_pos = asm_code.find("<if_block>");
+				size_t pos = asm_code.find("<block>");
 
-				if (while_pos - if_pos > 0) {
-
-					if (while_pos != std::string::npos) {
-						delite_tag(asm_code, "<while_code>", while_pos);
-					}
-					is_while = false;
+				if (pos != std::string::npos) {
+					delite_tag(asm_code, "<block>", pos);
 				}
-				else if(while_pos - if_pos < 0) {
-					if (if_pos != std::string::npos) {
-						delite_tag(asm_code, "<if_block>", if_pos);
-					}
-				}
-				else {
-					size_t pos = asm_code.find("<func_code>");
-					delite_tag(asm_code, "<func_code>", pos);
-
-				}
+				
 			}
 			else if (strcmp(curent->symbol, "n") == 0) {
 				size_t pos = asm_code.find("<func_name>");
 
 				if (pos != std::string::npos) {
-					asm_code.insert(pos, "endl");
+					asm_code.insert(pos, "print_newline");
 					//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
 				}
 			}

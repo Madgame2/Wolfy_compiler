@@ -1,8 +1,7 @@
 
-int a = 0;
 
-while(a<10){
-	console<<a;
-	console<<endl;
-	a=a+1;
-}
+string str = "hello wrold";
+
+string str1 = str;
+
+console<<str1;

@@ -12,23 +12,19 @@ includelib WolfyConsoleLib.lib
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD
-endl PROTO
+print_newline PROTO
 
 .stack 4096				
 <stack>			
 
+.CONST
+<const>
 
 .DATA
 <data>					
 
-
-
-
 .CODE					
 
 <code>					
-
-
-
 
 <main>

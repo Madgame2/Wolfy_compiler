@@ -19,6 +19,7 @@ namespace RULE {
 			char lexem[LEXEMA_SIZE + 1];
 			DataType::Type type = DataType::Type::None;
 			extra::Type extra = extra::Type::None;
+			notations::notation notation = notations::notation::None;
 
 			Elemet(const std::wstring& str, const char* lexem) {
 
@@ -42,6 +43,14 @@ namespace RULE {
 				this->lexem[LEXEMA_SIZE] = '\0';
 
 				this->extra = extra;
+			}
+			Elemet(const std::wstring& str, const char* lexem, notations::notation notation) {
+
+				this->str = str;
+				memcpy_s(this->lexem, sizeof(this->lexem), lexem, LEXEMA_SIZE);
+				this->lexem[LEXEMA_SIZE] = '\0';
+
+				this->notation = notation;
 			}
 			Elemet() {
 				lexem[0] = '\0';
@@ -163,7 +172,9 @@ namespace RULE {
 			if_init,
 
 			while_init,
-			while_expresion
+			while_expresion,
+
+			Const_declare
 		};
 
 		struct templates {

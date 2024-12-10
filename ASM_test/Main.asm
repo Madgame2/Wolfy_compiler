@@ -15,11 +15,15 @@ print_int PROTO: DWORD
 print_newline PROTO
 
 .stack 4096				
-			
+
+.CONST
+
+LO db "hello wrold", 0
 
 
 .DATA
-MAINa DWORD 0
+MAINstr DWORD offset LO
+MAINstr1 DWORD offset MAINstr
 					
 
 
@@ -29,40 +33,14 @@ MAINa DWORD 0
 
 					
 
+
+
+
 main PROC
 
-while_start0:
+push MAINstr1
 
-push MAINa
-push 10
-
-pop eax
-pop ebx
-cmp eax, ebx
-jl while_end0
-
-
-push MAINa
-
-call print_int
-
-call print_newline
-
-push 1
-push MAINa
-
-pop eax
-pop ebx
-add eax, ebx
- 
-push eax
-
-pop MAINa
-
-
-jmp while_start0
-
-while_end0:
+call print_string
 
 
 	push 0
@@ -72,6 +50,4 @@ while_end0:
 main ENDP
 
 END main
-
-
 

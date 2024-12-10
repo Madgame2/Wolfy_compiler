@@ -59,6 +59,7 @@ namespace Error {
 		ERROR_ENTRY(602,"error in expression"),
 		ERROR_ENTRY(603,"function params error"),
 		ERROR_ENTRY(604,"params error in caled function"),
+		ERROR_ENTRY(605,"wrong value in this notation"),
 		ERROR_ENTRY_NODEF100(700),ERROR_ENTRY_NODEF100(800),ERROR_ENTRY_NODEF100(900)
 	};
 
