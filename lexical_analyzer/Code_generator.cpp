@@ -357,7 +357,7 @@ namespace CODE {
 					varr_init = false;
 					varr_defoult_value(asm_code);
 
-					
+
 					buffer = nullptr;
 					continue;
 				}
@@ -415,7 +415,7 @@ namespace CODE {
 				continue;
 			}
 
-			if (!curent->is_expression&& !varr_init && !is_if_expreson&& !is_while) {
+			if (!curent->is_expression && !varr_init && !is_if_expreson && !is_while) {
 				size_t pos = asm_code.find("<expresion>");
 
 				if (pos != std::string::npos) {
@@ -432,23 +432,237 @@ namespace CODE {
 				}
 			}
 
-			if (curent->type == AST::node_type::ID) {
-				int table_id = curent->table_id;
-				ID::Entry id = ID::getEntry(id_table, table_id);
 
-				switch (id.id_type)
+			AST::symbol_type node_type = curent->symbol_type;
+			AST::node_type type = curent->type;
+
+			switch (node_type)
+			{
+			case AST::symbol_type::Terminal:
+			{
+				switch (type)
 				{
-				case IDType::Type::Var: {
+				case AST::node_type::ID:
+
+				{
+					int table_id = curent->table_id;
+					ID::Entry id = ID::getEntry(id_table, table_id);
+					IDType::Type id_type = id.id_type;
+
+
+					switch (id_type)
+					{
+					case IDType::Type::Var:
+
+					{
+						if (console_func) {
+							DataType::Type type = id.d_type;
+
+							size_t pos = asm_code.find("<func_name>");
+
+							if (pos != std::string::npos) {
+
+								delite_tag(asm_code, "<func_name>", pos);
+								switch (type)
+								{
+								case DataType::Type::Int:
+									asm_code.insert(pos, "print_int");
+
+									break;
+								case DataType::Type::Float:
+									break;
+								case DataType::Type::String:
+									asm_code.insert(pos, "print_string");
+									break;
+								case DataType::Type::Short:
+									break;
+								case DataType::Type::None:
+									break;
+								default:
+									break;
+								}
+							}
+							console_func = false;
+
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
+							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+
+							pos = asm_code.find("<arg>");
+							delite_tag(asm_code, "<arg>", pos);
+						}
+
+
+						if (buffer != nullptr && strcmp(buffer->symbol, "t") == 0) {
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
+							write_var_to_asm(asm_code, curent, id_table);
+
+
+							buffer = curent;
+							varr_init = true;
+
+							if (!local_vars.empty()) {
+								local_vars.top().push_back(id.area + id.name);
+							}
+
+							//МЫСЛИ: тут если вырожение добавить в секцию мейна вырожение 
+							if (curent->is_expression) {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], false);
+
+								write_var_to_asm(asm_code, curent, id_table);
+								buffer = curent;
+							}
+						}
+						else {
+							if (!curent->is_expression && !curent->is_param) {
+								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+							}
+							else {
+								if (curent->is_param) {
+									write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
+									insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+
+								}
+								else if (is_while) {
+									write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+									insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+								}
+								else if (curent->is_expression) {
+									write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+									insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+
+									buffer = curent;
+								}
+								else {
+									buffer = curent;
+								}
+							}
+						}
+					}
+
+
+					break;
+					case IDType::Type::Func: {
+						ID::Entry func = ID::getEntry(id_table, curent->table_id);
+
+
+						if (strcmp(buffer->symbol, "f") == 0) {
+
+							size_t pos = asm_code.find("<func_code>");
+							if (pos != std::string::npos) {
+								delite_tag(asm_code, "<func_code>", pos);
+							}
+							funct_arg_size = 0;
+
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
+
+							insert_function_names(asm_code, wstring_to_string(func.name));
+
+							local_vars.push(std::vector<std::wstring>());
+							is_functon_params = true;
+						}
+						else {
+							if (!curent->is_param) {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
+								insert_function_names(asm_code, wstring_to_string(func.name));
+								is_functon_params = true;
+							}
+							else {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_as_a_arg], true);
+								insert_function_names(asm_code, wstring_to_string(func.name));
+							}
+						}
+					}
+										   break;
+					case IDType::Type::Param:
+					{
+						is_functon_params = true;
+
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
+						write_var_to_asm(asm_code, curent, id_table);
+
+						varr_init = true;
+
+						//insert_params_to_proto(asm_code, curent, id_table, argv_count);
+						argv_count++;
+
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_take_arg], false);
+						write_var_to_asm(asm_code, curent, id_table);
+						insert_stack_offset(asm_code, stack_offset);
+
+						switch (id.d_type)
+						{
+						case DataType::Type::Int:
+							funct_arg_size += 4;
+							break;
+						case DataType::Type::Short:
+							funct_arg_size += 2;
+						case DataType::Type::Float:
+							funct_arg_size += 4;
+							break;
+						case DataType::Type::String:
+							funct_arg_size += 4;
+							break;
+						default:
+							break;
+						}
+
+						if (!local_vars.empty()) {
+							local_vars.top().push_back(id.area + id.name);
+						}
+					}
+					break;
+					case IDType::Type::None:
+
+						buffer = curent;
+
+						break;
+					}
+
+				}
+
+				break;
+				case AST::node_type::Lit:
+				{
+					Lit_table::Element lit = Lit_table::find(lit_table, curent->table_id);
+					DataType::Type data_type = lit.d_type;
+
+
+					switch (data_type)
+					{
+					case DataType::Type::String:
+					{
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Const_declare], false);
+						size_t name_pos = asm_code.find("<var>");
+						delite_tag(asm_code, "<var>", name_pos);
+
+
+						std::string l("L");
+						l += (char)LITERAL_count + '0';
+
+						asm_code.insert(name_pos, l);
+
+
+						size_t type_pos = asm_code.find("<data_type>");
+						delite_tag(asm_code, "<data_type>", type_pos);
+						asm_code.insert(type_pos, "db");
+
+						size_t value_pos = asm_code.find("<value>");
+						delite_tag(asm_code, "<value>", value_pos);
+						asm_code.insert(value_pos, "\"" + wstring_to_string(lit.value) + "\"," + " 0");
+					}
+					break;
+					default:
+						break;
+					}
 
 					if (console_func) {
-						DataType::Type type = id.d_type;
-
 						size_t pos = asm_code.find("<func_name>");
 
 						if (pos != std::string::npos) {
 
 							delite_tag(asm_code, "<func_name>", pos);
-							switch (type)
+							switch (lit.d_type)
 							{
 							case DataType::Type::Int:
 								asm_code.insert(pos, "print_int");
@@ -458,6 +672,8 @@ namespace CODE {
 								break;
 							case DataType::Type::String:
 								asm_code.insert(pos, "print_string");
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
+
 								break;
 							case DataType::Type::Short:
 								break;
@@ -468,347 +684,176 @@ namespace CODE {
 							}
 						}
 						console_func = false;
-
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
-						insert_value(asm_code, curent, befor_minus, id_table, lit_table);
-
-						pos = asm_code.find("<arg>");
-						delite_tag(asm_code, "<arg>", pos);
 					}
 
-					if (buffer != nullptr && strcmp(buffer->symbol, "t") == 0) {
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
-						write_var_to_asm(asm_code, curent, id_table);
 
+					if (!curent->is_expression && !curent->is_param) {
+						if (lit.d_type == DataType::Type::String) {
+							size_t pos = asm_code.find("<value>");
 
-						buffer = curent;
-						varr_init = true;
+							std::string l("L");
+							l += (char)LITERAL_count + '0';
 
-						if (!local_vars.empty()) {
-							local_vars.top().push_back(id.area + id.name);
+							delite_tag(asm_code, "<value>", pos);
+							asm_code.insert(pos, "offset " + l);
+
+							pos = asm_code.find("<arg>");
+							if (pos != std::string::npos)
+								delite_tag(asm_code, "<arg>", pos);
 						}
+						else {
 
-						//МЫСЛИ: тут если вырожение добавить в секцию мейна вырожение 
-						if (curent->is_expression) {
-							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], false);
-
-							write_var_to_asm(asm_code, curent, id_table);
-							buffer = curent;
-						}
-					}
-					else {
-						if (!curent->is_expression && !curent->is_param) {
 							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 						}
-						else {
-							if (curent->is_param) {
-								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
-								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
-
-							}
-							else if (is_while) {
-								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
-								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
-							}
-							else if (curent->is_expression) {
-								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
-								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
-
-								buffer = curent;
-							}
-							else {
-								buffer = curent;
-							}
-						}
 					}
-					break;
-				}
-				case IDType::Type::Param: {
-					is_functon_params = true;
-
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
-					write_var_to_asm(asm_code, curent, id_table);
-
-					varr_init = true;
-
-					//insert_params_to_proto(asm_code, curent, id_table, argv_count);
-					argv_count++;
-
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_take_arg], false);
-					write_var_to_asm(asm_code, curent, id_table);
-					insert_stack_offset(asm_code, stack_offset);
-
-					switch (id.d_type)
-					{
-					case DataType::Type::Int:
-						funct_arg_size += 4;
-						break;
-					case DataType::Type::Short:
-						funct_arg_size += 2;
-					case DataType::Type::Float:
-						funct_arg_size += 4;
-						break;
-					case DataType::Type::String:
-						funct_arg_size += 4;
-						break;
-					default:
-						break;
-					}
-
-					if (!local_vars.empty()) {
-						local_vars.top().push_back(id.area + id.name);
-					}
-
-					break;
-				}
-				case IDType::Type::Func: {
-					ID::Entry func = ID::getEntry(id_table, curent->table_id);
-
-
-					if (strcmp(buffer->symbol, "f") == 0) {
-
-						size_t pos = asm_code.find("<func_code>");
-						if (pos != std::string::npos) {
-							delite_tag(asm_code, "<func_code>", pos);
-						}
-						funct_arg_size = 0;
-
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
-
-						insert_function_names(asm_code, wstring_to_string(func.name));
-
-						local_vars.push(std::vector<std::wstring>());
-						is_functon_params = true;
-					}
-					else {
-						if (!curent->is_param) {
-							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
-							insert_function_names(asm_code, wstring_to_string(func.name));
-							is_functon_params = true;
-						}
-						else {
-							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_as_a_arg], true);
-							insert_function_names(asm_code, wstring_to_string(func.name));
-						}
-					}
-					break;
-				}
-				case IDType::Type::None: {
-					buffer = curent;
-
-					break;
-				}
-				}
-
-
-			}
-			else if (curent->type == AST::node_type::Lit) {
-				Lit_table::Element lit = Lit_table::find(lit_table, curent->table_id);
-
-				if (lit.d_type == DataType::Type::String) {
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Const_declare], false);
-					size_t name_pos = asm_code.find("<var>");
-					delite_tag(asm_code, "<var>", name_pos);
-
-
-					std::string l("L");
-					l += (char)LITERAL_count + '0';
-
-					asm_code.insert(name_pos, l);
-
-
-					size_t type_pos = asm_code.find("<data_type>");
-					delite_tag(asm_code, "<data_type>", type_pos);
-					asm_code.insert(type_pos, "db");
-
-					size_t value_pos = asm_code.find("<value>");
-					delite_tag(asm_code, "<value>", value_pos);
-					asm_code.insert(value_pos, "\"" + wstring_to_string(lit.value) + "\"," + " 0");
-
-				}
-
-				if (console_func) {
-
-
-					size_t pos = asm_code.find("<func_name>");
-
-					if (pos != std::string::npos) {
-
-						delite_tag(asm_code, "<func_name>", pos);
-						switch (lit.d_type)
-						{
-						case DataType::Type::Int:
-							asm_code.insert(pos, "print_int");
-
-							break;
-						case DataType::Type::Float:
-							break;
-						case DataType::Type::String:
-							asm_code.insert(pos, "print_string");
-							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
-
-							break;
-						case DataType::Type::Short:
-							break;
-						case DataType::Type::None:
-							break;
-						default:
-							break;
-						}
-					}
-					console_func = false;
-				}
-
-				if (!curent->is_expression && !curent->is_param) {
-					if (lit.d_type == DataType::Type::String) {
-						size_t pos = asm_code.find("<value>");
-
-						std::string l("L");
-						l += (char)LITERAL_count + '0';
-
-						delite_tag(asm_code, "<value>", pos);
-						asm_code.insert(pos, "offset " + l);
-
-						pos = asm_code.find("<arg>");
-						if(pos!=std::string::npos)
-						delite_tag(asm_code, "<arg>", pos);
-					}
-					else {
-
+					else if (curent->is_param) {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
 						insert_value(asm_code, curent, befor_minus, id_table, lit_table);
 					}
-				}
-				else if (curent->is_param) {
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
-					insert_value(asm_code, curent, befor_minus, id_table, lit_table);
-				}
-				else {
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
-					insert_value(asm_code, curent, befor_minus, id_table, lit_table);
-				}
-			}
-			else if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation)
-			{
+					else {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+						insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+					}
 
-				if (!varr_init) {
-					if (!buffer->is_expression) {
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
+				}
+				break;
+				case AST::node_type::notation:
+					break;
+				case AST::node_type::general:
+				{
+					if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation)
+					{
+
+						if (!varr_init) {
+							if (!buffer->is_expression) {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_VALUE], false);
+							}
+							else {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], false);
+							}
+							write_var_to_asm(asm_code, buffer, id_table);
+						}
+					}
+					else if (strcmp(curent->symbol, "=") == 0 && curent->is_double_operation)
+					{
+						size_t pos = asm_code.find("<flag>");
+						if (pos != std::string::npos) {
+							delite_tag(asm_code, "<flag>", pos);
+							asm_code.insert(pos, "jne");
+						}
+					}
+					else if (strcmp(curent->symbol, "-") == 0) {
+						befor_minus = true;
+						continue;
+					}
+					else if (strcmp(curent->symbol, "r") == 0) {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_ret], false);
+						insert_clear_all_local_vars(asm_code, prefabs, local_vars);
+
+						insert_stack_size(asm_code, funct_arg_size);
+
+						size_t pos = asm_code.find("<templ_var>");
+						if (pos != std::string::npos) {
+							delite_tag(asm_code, "<templ_var>", pos);
+						}
+					}
+					else if (strcmp(curent->symbol, "c") == 0) {
+						//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
+						console_func = true;
+					}
+					else if (strcmp(curent->symbol, "<") == 0) {
+						if (console_func) {
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
+							//console_func = true;
+						}
+						else if (curent->is_double_operation) {
+							size_t pos = asm_code.find("<flag>");
+							if (pos != std::string::npos) {
+								delite_tag(asm_code, "<flag>", pos);
+								asm_code.insert(pos, "jge");
+							}
+						}
+						else {
+							size_t pos = asm_code.find("<flag>");
+							if (pos != std::string::npos) {
+								delite_tag(asm_code, "<flag>", pos);
+								asm_code.insert(pos, "jg");
+							}
+
+						}
+					}
+					else if (strcmp(curent->symbol, "}") == 0) {
+
+						if (!local_vars.empty()) local_vars.pop();
+
+						size_t pos = asm_code.find("<block>");
+
+						if (pos != std::string::npos) {
+							delite_tag(asm_code, "<block>", pos);
+						}
+
+					}
+					else if (strcmp(curent->symbol, "n") == 0) {
+						size_t pos = asm_code.find("<func_name>");
+
+						if (pos != std::string::npos) {
+							asm_code.insert(pos, "print_newline");
+							//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
+						}
+					}
+					else if (strcmp(curent->symbol, "?") == 0)
+					{
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::if_init], false);
+						insert_if_blocks_id(asm_code, if_block_id);
+						local_vars.push(std::vector<std::wstring>());
+
+						is_if_expreson = true;
+						if_block_id++;
+					}
+
+					else if (strcmp(curent->symbol, "w") == 0) {
+						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::while_init], false);
+						inseert_while_blocks_id(asm_code, while_id);
+						local_vars.push(std::vector<std::wstring>());
+
+						is_while = true;
+					}
+					else if (curent->is_expression) {
+
+
+						//ТУТ вырожение для while
+						if (is_while) {
+
+
+							//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::pop_value], true);
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::while_expresion], true);
+							insert_operationn(asm_code, curent, prefabs);
+
+						}
+						else if (!curent->is_double_operation) {
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
+							insert_operationn(asm_code, curent, prefabs);
+						}
 					}
 					else {
-						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], false);
+						buffer = curent;
 					}
-					write_var_to_asm(asm_code, buffer, id_table);
+
+					std::cout << "------------------------------------------------------------------------------" << std::endl;
+					std::cout << asm_code << std::endl;
+					befor_minus = false;
 				}
-			}
-			else if (strcmp(curent->symbol, "=") == 0 && curent->is_double_operation)
-			{
-				size_t pos = asm_code.find("<flag>");
-				if (pos != std::string::npos) {
-					delite_tag(asm_code, "<flag>", pos);
-					asm_code.insert(pos, "jne");
+
+				break;
 				}
-			}
-			else if (strcmp(curent->symbol, "-") == 0) {
-				befor_minus = true;
+			case AST::symbol_type::NonTerminal:
+
 				continue;
-			}
-			else if (strcmp(curent->symbol, "r") == 0) {
-				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_ret], false);
-				insert_clear_all_local_vars(asm_code, prefabs, local_vars);
-
-				insert_stack_size(asm_code, funct_arg_size);
-
-				size_t pos = asm_code.find("<templ_var>");
-				if (pos != std::string::npos) {
-					delite_tag(asm_code, "<templ_var>", pos);
-				}
-			}
-			else if (strcmp(curent->symbol, "c") == 0) {
-				//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
-				console_func = true;
-			}
-			else if (strcmp(curent->symbol, "<") == 0) {
-				if (console_func) {
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
-					//console_func = true;
-				}
-				else if (curent->is_double_operation) {
-					size_t pos = asm_code.find("<flag>");
-					if (pos != std::string::npos) {
-						delite_tag(asm_code, "<flag>", pos);
-						asm_code.insert(pos, "jge");
-					}
-				}
-				else {
-					size_t pos = asm_code.find("<flag>");
-					if (pos != std::string::npos) {
-						delite_tag(asm_code, "<flag>", pos);
-						asm_code.insert(pos, "jg");
-					}
-				
-				}
-			}
-			else if (strcmp(curent->symbol, "}") == 0) {
-
-				if(!local_vars.empty()) local_vars.pop();
-
-				size_t pos = asm_code.find("<block>");
-
-				if (pos != std::string::npos) {
-					delite_tag(asm_code, "<block>", pos);
-				}
-				
-			}
-			else if (strcmp(curent->symbol, "n") == 0) {
-				size_t pos = asm_code.find("<func_name>");
-
-				if (pos != std::string::npos) {
-					asm_code.insert(pos, "print_newline");
-					//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
-				}
-			}
-			else if (strcmp(curent->symbol, "?") == 0)
-			{
-				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::if_init], false);
-				insert_if_blocks_id(asm_code, if_block_id);
-				local_vars.push(std::vector<std::wstring>());
-
-				is_if_expreson = true;
-				if_block_id++;
-			}
-			else if (strcmp(curent->symbol, "w") == 0) {
-				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::while_init], false);
-				inseert_while_blocks_id(asm_code, while_id);
-				local_vars.push(std::vector<std::wstring>());
-
-				is_while = true;
-			}
-			else if (curent->is_expression) {
-				
-
-				//ТУТ вырожение для while
-				if (is_while) {
-
-
-					//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::pop_value], true);
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::while_expresion], true);
-					insert_operationn(asm_code, curent, prefabs);
-
-				}else if (!curent->is_double_operation) {
-					write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
-					insert_operationn(asm_code, curent, prefabs);
-				}
-			}
-			else {
-				buffer = curent;
+				break;
 			}
 
-			std::cout << "------------------------------------------------------------------------------" << std::endl;
-			std::cout << asm_code << std::endl;
-			befor_minus = false;
+			}
 		}
-
 		clear_all_tags(asm_code);
 
 		out_file << asm_code;
