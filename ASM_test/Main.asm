@@ -15,28 +15,30 @@ print_int PROTO: DWORD
 print_newline PROTO
 
 .stack 4096				
+			
 
 .CONST
-
-LO db "hello wrold", 0
+L0 db "hello wrold", 0
 
 
 .DATA
-MAINstr DWORD offset LO
-MAINstr1 DWORD offset MAINstr
+MAINstr DWORD 0
+MAINstr1 DWORD 0
 					
-
-
-
 
 .CODE					
 
 					
 
-
-
-
 main PROC
+
+push offset L0
+
+pop MAINstr
+
+push MAINstr
+
+pop MAINstr1
 
 push MAINstr1
 
@@ -50,4 +52,3 @@ call print_string
 main ENDP
 
 END main
-

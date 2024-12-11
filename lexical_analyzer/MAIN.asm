@@ -22,8 +22,8 @@ L0 db "hello wrold", 0
 
 
 .DATA
-MAINstr DWORD offset L0
-MAINstr1 DWORD MAINstr
+MAINstr DWORD 0
+MAINstr1 DWORD 0
 					
 
 .CODE					
@@ -31,6 +31,14 @@ MAINstr1 DWORD MAINstr
 					
 
 main PROC
+
+push offset L0
+
+pop MAINstr
+
+push MAINstr
+
+pop MAINstr1
 
 push MAINstr1
 

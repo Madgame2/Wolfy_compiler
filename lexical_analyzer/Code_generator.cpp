@@ -496,13 +496,22 @@ namespace CODE {
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::VAR_delclarete], false);
 							write_var_to_asm(asm_code, curent, id_table);
 
-
 							buffer = curent;
 							varr_init = true;
 
 							if (!local_vars.empty()) {
 								local_vars.top().push_back(id.area + id.name);
 							}
+
+							if (id.d_type == DataType::Type::String) {
+								varr_defoult_value(asm_code);
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_init], false);
+
+								write_var_to_asm(asm_code, curent, id_table);
+								continue;
+							}
+
+
 
 							//МЫСЛИ: тут если вырожение добавить в секцию мейна вырожение 
 							if (curent->is_expression) {
@@ -545,7 +554,7 @@ namespace CODE {
 						ID::Entry func = ID::getEntry(id_table, curent->table_id);
 
 
-						if (strcmp(buffer->symbol, "f") == 0) {
+						if (buffer&&strcmp(buffer->symbol, "f") == 0) {
 
 							size_t pos = asm_code.find("<func_code>");
 							if (pos != std::string::npos) {
@@ -723,6 +732,12 @@ namespace CODE {
 				{
 					if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation)
 					{
+						if (buffer->type == AST::node_type::ID) {
+							if (ID::getEntry(id_table, buffer->table_id).d_type == DataType::Type::String) {
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+								continue;
+							}
+						}
 
 						if (!varr_init) {
 							if (!buffer->is_expression) {
