@@ -7,8 +7,6 @@
 #include"Control_flow.h"
 
 namespace semantic {
-	void Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table::Literal_table& lit_table);
-
 	namespace data {
 		struct var {
 			std::wstring name;
@@ -59,6 +57,10 @@ namespace semantic {
 				return true;
 			}
 		};
+		struct global_elem {
+			bool is_relisated = false;
+			Func_sign function;
+		};
 	}
 
 	namespace scope {
@@ -90,7 +92,7 @@ namespace semantic {
 
 			bool has_this_var(AST::node* name);
 			bool has_this_var(std::wstring name);
-			bool has_this_func_sign(data::Func_sign* last_func);
+			bool has_this_func_sign(data::Func_sign* last_func, std::list<semantic::data::global_elem>& global, AST::node* curent);
 
 			data::var getvar(std::wstring name);
 			data::Func_sign get_last_Func();
@@ -99,5 +101,6 @@ namespace semantic {
 
 	}
 
-
+	void Parse(AST::program_struct tree, std::list<semantic::data::global_elem>& global, ID::ID_table& id_table, Lit_table::Literal_table& lit_table);
+	std::list<data::global_elem> Parse_Global(AST::program_struct tree, ID::ID_table& id_table);
 }

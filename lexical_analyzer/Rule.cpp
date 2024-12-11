@@ -26,18 +26,34 @@ namespace RULE {
         //Правила Грейбаха
 
         std::list<Rule> general_rules = {
-            Rule(NS("S"), GRB_ERROR + 1,
-                {
-                    Rule::Chain(3,TS("t"),TS("i"),TS(";")),
-                    Rule::Chain(5,TS("t"),TS("i"),TS("="),NS("N"),TS(";"))
-                })
+            Rule(NS("S"),GRB_ERROR,{
+                Rule::Chain(5,TS("g"),TS("{"),NS("G"),TS("}"),NS("F")),
+                Rule::Chain(1,NS("F"))
+            }),
+            Rule(NS("G"),GRB_ERROR,{
+                Rule::Chain(7,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS(";"),NS("G")),
+                Rule::Chain(8,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS(";"),NS("G")),
+                Rule::Chain()
+             }),
+            Rule(NS("F"),GRB_ERROR,{
+                Rule::Chain()
+            }),
+            Rule(NS("P"),GRB_ERROR + 3,{
+                Rule::Chain(2,TS("t"),TS("i")),
+                Rule::Chain(4,TS("t"),TS("i"),TS(","),NS("P")),
+            }),
         };
 
         std::list<Rule> main_rules = {
             Rule(NS("S"),GRB_ERROR,{
-                Rule::Chain(4,TS("g"),TS("{"),TS("}"),NS("M")),
+                Rule::Chain(5,TS("g"),TS("{"),NS("G"),TS("}"),NS("M")),
                 Rule::Chain(1,NS("M"))
             }),
+            Rule(NS("G"),GRB_ERROR,{
+                Rule::Chain(7,TS("t"),TS("f"),TS("i"),TS("("),TS(")"),TS(";"),NS("G")),
+                Rule::Chain(8,TS("t"),TS("f"),TS("i"),TS("("),NS("P"),TS(")"),TS(";"),NS("G")),
+                Rule::Chain()
+                }),
             Rule(NS("M"),GRB_ERROR,{
                 Rule::Chain(4,TS("t"),TS("i"),TS(";"),NS("M")),
                 Rule::Chain(6,TS("t"),TS("i"),TS("="),NS("E"),TS(";"),NS("M")),

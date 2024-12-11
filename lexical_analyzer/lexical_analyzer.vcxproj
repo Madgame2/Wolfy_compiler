@@ -179,10 +179,6 @@
     <ClInclude Include="Semantic_analysis.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MAIN.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
     <None Include="MAIN.wolf" />
     <None Include="File2.wolf" />
   </ItemGroup>

@@ -1,4 +1,11 @@
+Global{
+	int function min(int a, int b);
+}
 
+int function min(int a, int b){
+	
+	return a;
+}
 
 string str = "hello wrold";
 

@@ -200,7 +200,7 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 }
 
 
-void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table::Literal_table& lit_table)
+void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_elem>& global, ID::ID_table& id_table, Lit_table::Literal_table& lit_table)
 {
 	tree.Reset();
 
@@ -306,7 +306,7 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 				area_visibilyty.last_scope.pop();
 			}
 			else if (last_func!=nullptr&&strcmp(curent->symbol, ")") == 0) {
-				if (area_visibilyty.has_this_func_sign(last_func)) throw Error::get_error_in(301, curent->line, curent->index);
+				if (area_visibilyty.has_this_func_sign(last_func, global,curent)) throw Error::get_error_in(301, curent->line, curent->index);
 				retyrnable_type = last_func->returable_type;
 
 				inited_func_sign.push_back(*last_func);
@@ -515,6 +515,93 @@ void semantic::Parse(AST::program_struct tree, ID::ID_table& id_table, Lit_table
 	}
 }
 
+
+bool is_func_declere(AST::node* curent, AST::node* buffer) {
+	if (!buffer) return false;
+
+	if (curent->type == AST::node_type::ID && strcmp(buffer->symbol, "f") == 0) {
+		return true;
+	}
+	return false;
+}
+
+bool is_Var_declere(AST::node* curent, AST::node* buffer) {
+
+	if (!buffer) return false;
+
+	if (curent->type == AST::node_type::ID && strcmp(buffer->symbol, "t") == 0) {
+		return true;
+	}
+	return false;
+}
+
+bool has_this_func_sign(std::list<semantic::data::global_elem> list, semantic::data::Func_sign curent) {
+
+	int index = 0;
+	for (auto elem : list) {
+		if (index == list.size() - 1) {
+			break;
+		}
+
+		if (elem.function == curent) {
+			return true;
+		}
+
+		index++;
+	}
+	return false;
+}
+
+std::list<semantic::data::global_elem> semantic::Parse_Global(AST::program_struct tree, ID::ID_table& id_table)
+{
+	std::list<semantic::data::global_elem> result;
+
+	AST::node* curent = nullptr;
+	AST::node* buffer = nullptr;
+	bool is_new_func = false;
+	tree.Reset();
+
+	do {
+		curent = tree.DFS.Step();
+
+		if (curent&&is_func_declere(curent, buffer)) {
+			ID::Entry id = ID::getEntry(id_table, curent->table_id);
+
+			data::Func_sign new_sign;
+			new_sign.function_name = id.name;
+			new_sign.returable_type = id.d_type;
+
+			data::global_elem new_elem;
+			new_elem.function = new_sign;
+
+			result.push_back(new_elem);
+
+			is_new_func = true;
+		}
+		else if (curent&&is_Var_declere(curent, buffer)) {
+			ID::Entry& id = ID::getEntry(id_table, curent->table_id);
+
+			result.back().function.params.push_back(&id.d_type);
+		}
+		else if (curent &&strcmp(curent->symbol, ")") == 0) {
+			if (is_new_func) {
+
+				if (has_this_func_sign(result, result.back().function)) {
+					throw Error::get_error_in(301, curent->line, curent->index);
+				}
+
+				is_new_func = false;
+			}
+		}
+
+		buffer = curent;
+
+	} while (curent != nullptr);
+
+
+	return result;
+}
+
 void semantic::scope::scope::add_new_scope(std::wstring name)
 {
 	semantic::scope::node* new_node = new semantic::scope::node();
@@ -581,8 +668,28 @@ bool semantic::scope::scope::has_this_var(std::wstring name)
 	return false;
 }
 
-bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func)
+bool equal_sign(semantic::data::Func_sign elem1, semantic::data::Func_sign elem2) {
+	if (elem1 == elem2) {
+		return true;
+	}
+	return false;
+}
+
+bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func, std::list<semantic::data::global_elem>& global, AST::node* curent)
 {
+	for (auto& elem : global) {
+		if (equal_sign(elem.function, *last_func)) {
+
+
+			if (elem.is_relisated) {
+				throw Error::get_error_in(307, curent->line, curent->index);
+			}
+			else {
+				elem.is_relisated = true;
+			}
+		}
+	}
+
 	std::list<data::Func_sign> list = last_scope.top()->parent->objects.functions;
 
 	int index = 0;

@@ -232,6 +232,8 @@ void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType
 	table.table.push_back(elem);
 	table.size++;
 }
+
+bool is_global = false;
 void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 	std::map<wstring, LT::Lexem_table>& LT_files,
 	std::map<wstring, ID::ID_table>& ID_files,
@@ -256,6 +258,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 		//}
 
 		wstring file_name;
+		wstring buffer_name;
 		if (in_files.FILES[i].is_main) {
 			file_name = L"MAIN";
 		}
@@ -273,6 +276,15 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 		Lit_table::Literal_table new_lit_table;
 		Lit_files[file_name] = new_lit_table;
+
+		if (LT_files.find(L"GLOBAL") == LT_files.end()) {
+			LT::Lexem_table new_table;
+			LT::create_Lexem_table(new_table, words.size());
+			LT_files[L"GLOBAL"] = new_table;
+
+			ID::ID_table new_id_table;
+			ID_files[L"GLOBAL"] = new_id_table;
+		}
 
 
 		stack<wstring> context_stack;						//стек последних слов; (обнул€етс€ при встече ; )
@@ -329,6 +341,11 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						//¬ставить лексему ключегого слова 
 
 						if (key_words.get_element(id).notation != notations::notation::None) is_notation = true;
+						if (word == L"Global") {
+							buffer_name = file_name;
+							file_name = L"GLOBAL";
+							is_global = true;
+						}
 
 						context_stack.push(word);
 
@@ -539,6 +556,17 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						case '{':
 							clear_context(context_stack);
 							break;
+						case '}':
+							create_LexT_element(LT_files[file_name], word[0], line);
+							if (is_global) {
+								is_global = false;
+								file_name = buffer_name;
+
+								last_ID_id = -1;
+								last_lit_id = -1;
+							}
+							continue;
+							break;
 						case',':
 							clear_context(context_stack);
 							break;
@@ -615,7 +643,6 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 }
 
 
-
 int wmain(int argc, wchar_t* argv[]) {
 
 	Param::Params param = Param::getParams(argc, argv);
@@ -640,18 +667,61 @@ int wmain(int argc, wchar_t* argv[]) {
 	cout << "\n";
 	//parser::Parse(LT_files[L"file1.wolf"]);
 
+	for (auto elem : LT_files) {
+		wcout << elem.first<<endl;
+		
+		for (int i = 0; i < elem.second.size; i++) {
+			if (elem.second.table[i].lexema[0] == '|') {
+				cout << endl;
+			}
+			else {
+				cout << elem.second.table[i].lexema;
+			}
+		}
+		cout << endl;
 
+	}
+
+
+	map<std::wstring, AST::program_struct> file_structs;
 	for (auto& elem : LT_files) {
 		if (elem.first == L"MAIN") {
 
+
 			AST::program_struct tree = parser::Parse(elem.second, ID_files[L"MAIN"], MAIN);
-			semantic::Parse(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
-			CODE::generate_code(elem.first,tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
+			file_structs[L"MAIN"] = tree;
+
+			//semantic::Parse(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
+			//CODE::generate_code(elem.first,tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
 		}
 		else {
-			//parser::Parse(elem.second, GENERAl);
+			AST::program_struct tree = parser::Parse(elem.second, ID_files[elem.first], GENERAl);
+			file_structs[elem.first] = tree;
 		}
-	}	
+	}
+
+	std::list<semantic::data::global_elem> global_functions = semantic::Parse_Global(file_structs[L"GLOBAL"], ID_files[L"GLOBAL"]);
+
+	for (auto& elem : file_structs) {
+		if (elem.first == L"GLOBAL") {
+			continue;
+		}
+		semantic::Parse(elem.second, global_functions, ID_files[elem.first], Lit_files[elem.first]);
+	}
+
+	for (auto& elem : global_functions) {
+		if (!elem.is_relisated) {
+			throw Error::get_error(308);
+		}
+	}
+
+	for (auto& elem : file_structs) {
+		if (elem.first == L"GLOBAL") {
+			continue;
+		}
+
+		CODE::generate_code(elem.first, elem.second, ID_files[elem.first], Lit_files[elem.first]);
+	}
 
 	Param::delete_all(param);
 }
