@@ -23,7 +23,7 @@ L0 db "hello wolrd", 0
 
 
 .DATA
-fooa DWORD 0
+foo0a DWORD 0
 					
 
 .CODE					
@@ -34,11 +34,11 @@ foo0 PROC
     mov ebp, esp
 
     mov eax, [ebp+8]
-mov fooa, eax
+mov foo0a, eax
 
 
     
-push fooa
+push foo0a
 
 call print_string
 mov eax, 0

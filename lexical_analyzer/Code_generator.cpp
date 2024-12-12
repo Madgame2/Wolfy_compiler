@@ -7,6 +7,8 @@
 
 namespace CODE {
 
+	int func_id = -1;
+	bool func_params = false;
 
 	std::string wstring_to_string(const std::wstring& wstr) {
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -80,7 +82,8 @@ namespace CODE {
 		size_t var_name_pos = source_code.find("<var>");
 		if (var_name_pos != std::string::npos) {
 			delite_tag(source_code, "<var>", var_name_pos);
-			source_code.insert(var_name_pos, wstring_to_string(varr.area + varr.name));
+			std::wstring area = func_params ? varr.area + std::to_wstring(func_id) : varr.area;
+			source_code.insert(var_name_pos, wstring_to_string(area  + varr.name));
 		}
 
 		size_t value_pos = source_code.find("<value>");
@@ -152,13 +155,15 @@ namespace CODE {
 
 			if (pos != std::string::npos) {
 				delite_tag(source_code, "<value>", pos);
+
+				std::wstring area = func_params ? id.area + std::to_wstring(func_id) : id.area;
 				if (negative) {
 					//негатива добавит 
 
-					source_code.insert(pos, wstring_to_string(id.area + id.name));
+					source_code.insert(pos, wstring_to_string(area + id.name));
 				}
 				else {
-					source_code.insert(pos, wstring_to_string(id.area + id.name));
+					source_code.insert(pos, wstring_to_string(area + id.name));
 
 				}
 			}
@@ -300,8 +305,12 @@ namespace CODE {
 		}
 	}
 
+
+
+
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
 	{
+		func_id = -1;
 
 		std::ofstream out_file(name + L".asm");
 
@@ -422,6 +431,8 @@ namespace CODE {
 
 					if (poss != std::string::npos) {
 						delite_tag(asm_code, "<func_code>", poss);
+						func_params = false;
+
 					}
 				}
 			}
@@ -583,7 +594,9 @@ namespace CODE {
 
 							local_vars.push(std::vector<std::wstring>());
 							is_functon_params = true;
-							
+							func_id = func.func_unick_id;
+
+							func_params = true;
 						}
 						else {
 							if (!curent->is_param) {
