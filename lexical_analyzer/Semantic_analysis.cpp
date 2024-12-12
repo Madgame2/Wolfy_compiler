@@ -2,6 +2,19 @@
 #include<iostream>
 
 
+
+semantic::data::Func_sign* defoult_functions_sign(int& size) {
+	semantic::data::Func_sign* sign = new semantic::data::Func_sign[2];
+
+
+	sign[0] = semantic::data::Func_sign(L"is_equal", DataType::Type::Int, { DataType::Type::String, DataType::Type::String });
+	sign[1] = semantic::data::Func_sign(L"save_is_equal", DataType::Type::Int, { DataType::Type::String, DataType::Type::String, DataType::Type::Int});
+	
+	size = 2;
+	return sign;
+}
+
+
 struct info {
 	int line = 0;
 	int pos = 0;
@@ -228,10 +241,18 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 	DataType::Type retyrnable_type;
 	std::wstring last_func_name;
 	
+	
 	std::stack<data::Func_sign> buffer_sing;
 	std::vector<data::Func_sign> sign_for_checking;
 	std::vector<data::Func_sign> inited_func_sign;
 	std::vector<info> info_for_sign;
+
+	int size = 0;
+	data::Func_sign* standart_functions = defoult_functions_sign(size);
+
+	for (int i = 0; i < size; i++) {
+		inited_func_sign.push_back(standart_functions[i]);
+	}
 
 	for (auto& elem : global) {
 		inited_func_sign.push_back(elem.function);
@@ -244,10 +265,6 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 	{
 		
 		AST::node* curent = tree.DFS.Step();
-		//while (curent != nullptr) {
-		//	std::cout << curent->symbol << std::endl;
-		//	curent  =tree.DFS.Step();
-		//}
 
 
 		if (curent == nullptr) {

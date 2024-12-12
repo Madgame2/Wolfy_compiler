@@ -28,9 +28,23 @@ namespace semantic {
 			DataType::Type returable_type = DataType::Type::None;
 			DataType::Type* ref_returnable_type = &returable_type;
 
+			std::vector<DataType::Type> params_definded;
 			std::vector<DataType::Type*> params;
 
 			int* func_unick_id = nullptr;
+
+			Func_sign(){}
+			Func_sign(std::wstring name, DataType::Type returable_type, std::list<DataType::Type> param) {
+				this->function_name = name;
+				this->returable_type = returable_type;
+				for (auto& elem : param) {
+					this->params_definded.push_back(elem);
+				}
+
+				for (auto& elem : params_definded) {
+					params.push_back(&elem);
+				}
+			}
 
 			bool operator ==(Func_sign referens) {
 				if (this->function_name != referens.function_name) {

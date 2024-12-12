@@ -1,2 +1,4 @@
 
 short b = 2-2;
+
+is_equal("hello world","hello world");
