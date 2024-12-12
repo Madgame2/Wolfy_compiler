@@ -1,12 +1,3 @@
-Global{
-	int function min(int a, int b);
-}
-
-int function min(int a, int b){
-	
-	return a;
-}
-
 int function foo(){
 
 	return 1;
@@ -21,8 +12,4 @@ foo();
 foo(1);
 
 
-string str = "hello wrold";
-
-string str1 = str;
-
-console<<str1;
+console<<"hello";

@@ -240,14 +240,16 @@ namespace POL {
 					//	id_type = ID::getEntry(table, buffer.top()->table_id).id_type;
 					//}
 
-					ID::Entry id = ID::getEntry(table, func->table_id);
+					ID::Entry& id = ID::getEntry(table, func->table_id);
 
+					int argv_coutn_save = id.arg_count;
 					while (id.arg_count!=0) {
 						func->links.push_back(buffer.top());
 						buffer.top()->is_param = true;
 						buffer.pop();
 						id.arg_count--;
 					}
+					id.arg_count = argv_coutn_save;
 
 					std::reverse(func->links.begin(), func->links.end());
 
