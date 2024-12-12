@@ -1,15 +1,9 @@
-int function foo(){
+void function foo (int a){
 
-	return 1;
+	console<<a;
+
+	return;
 }
 
-int function foo(int a){
- return 2;
-}
 
-foo();
-
-foo(1);
-
-
-console<<"hello";
+foo(25);

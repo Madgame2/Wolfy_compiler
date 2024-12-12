@@ -354,10 +354,9 @@ namespace CODE {
 			}
 
 			if (strcmp(curent->symbol, ";") == 0) {
+				varr_defoult_value(asm_code);
 				if (varr_init) {
 					varr_init = false;
-					varr_defoult_value(asm_code);
-
 
 					buffer = nullptr;
 					continue;

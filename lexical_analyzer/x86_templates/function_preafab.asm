@@ -1,4 +1,4 @@
-<func_name> PROC uses eax ebx ecx edi esi
+<func_name> PROC
 
     push ebp
     mov ebp, esp
