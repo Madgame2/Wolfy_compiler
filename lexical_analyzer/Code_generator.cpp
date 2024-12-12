@@ -305,6 +305,19 @@ namespace CODE {
 		}
 	}
 
+	void insert_register(std::string& asm_code, AST::node* curent) {
+
+		size_t poss = asm_code.find("<register>");
+
+		if (poss != std::string::npos) {
+			delite_tag(asm_code, "<register>", poss);
+			
+
+			std::string reg = RULE::CODE::DataType_AsmCode[curent->expresion_type].asm_register;
+
+			asm_code.insert(poss, reg);
+		}
+	}
 
 
 
@@ -817,6 +830,7 @@ namespace CODE {
 					else if (strcmp(curent->symbol, "-") == 0) {
 						if (curent->links.size() > 1) {
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
+							insert_register(asm_code, curent);
 							insert_operationn(asm_code, curent, prefabs);
 						}
 						else {
@@ -910,6 +924,7 @@ namespace CODE {
 						}
 						else if (!curent->is_double_operation) {
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
+							insert_register(asm_code, curent);
 							insert_operationn(asm_code, curent, prefabs);
 						}
 					}

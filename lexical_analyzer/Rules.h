@@ -127,18 +127,8 @@ namespace RULE {
 
 
 	namespace convetable_dataType {
-		struct data_type
-		{
-			DataType::Type dataType;
-			std::list<DataType::Type> converatable_types;
-
-			data_type(DataType::Type type, std::list<DataType::Type> types) {
-				dataType = type;
-				converatable_types = types;
-			}
-		};
 		namespace save {
-			extern  std::list<data_type> save_convertable;
+			extern  std::map<DataType::Type, std::list<DataType::Type>> save_convertable;
 		}
 
 	}

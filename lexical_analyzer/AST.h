@@ -34,6 +34,8 @@ namespace AST {
 		node_type type = node_type::general;
 		symbol_type symbol_type = symbol_type::Terminal;
 
+		DataType::Type expresion_type = DataType::Type::None;
+
 		int table_id = -1;
 		int index=-1;
 		int line = -1;

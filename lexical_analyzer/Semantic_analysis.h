@@ -5,6 +5,7 @@
 #include"Identification_table.h"
 #include"Litetral_table.h"
 #include"Control_flow.h"
+#include"Rules.h"
 
 namespace semantic {
 	namespace data {

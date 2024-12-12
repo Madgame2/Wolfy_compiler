@@ -2,4 +2,4 @@
 pop eax
 pop ebx
 <operation> 
-push eax
+push <register>

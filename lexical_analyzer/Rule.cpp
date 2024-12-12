@@ -187,10 +187,10 @@ namespace RULE {
 
         namespace save {
 
-            std::list<data_type> save_convertable = {
-                data_type(DataType::Type::Int, {}),
-                data_type(DataType::Type::Float, {}),
-                data_type(DataType::Type::String, {})
+            std::map<DataType::Type, std::list<DataType::Type>> save_convertable = {
+                {DataType::Type::Int, {DataType::Type::Short}},
+                {DataType::Type::String, {}},
+                {DataType::Type::Short,{}}
             };
         }
     }
@@ -235,7 +235,8 @@ namespace RULE {
 
         std::map<DataType::Type, asm_info> DataType_AsmCode = {
             {DataType::Type::Int, asm_info("DWORD","eax")},
-            {DataType::Type::String, asm_info("DWORD","eax")}
+            {DataType::Type::String, asm_info("DWORD","eax")},
+            {DataType::Type::Short, asm_info("WORD","ax")},
         };
         std::map<std::string, comand> operatin_AsmCode = {
             {"+",comand::Expression_plus},

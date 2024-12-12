@@ -21,7 +21,7 @@ print_newline PROTO
 
 
 .DATA
-MAINb DWORD 0
+MAINb WORD 0
 					
 
 .CODE					
@@ -38,7 +38,7 @@ pop eax
 pop ebx
 sub eax, edx
  
-push eax
+push ax
 
 pop MAINb
 
