@@ -1,4 +1,4 @@
-void function foo (int a){
+void function foo (string a){
 
 	console<<a;
 
@@ -6,4 +6,4 @@ void function foo (int a){
 }
 
 
-foo(25);
+foo("hello wolrd");

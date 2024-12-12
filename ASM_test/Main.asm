@@ -19,6 +19,7 @@ print_newline PROTO
 			
 
 .CONST
+L0 db "hello wolrd", 0
 
 
 .DATA
@@ -39,7 +40,7 @@ mov fooa, eax
     
 push fooa
 
-call print_int
+call print_string
 mov eax, 0
 mov fooa, 0
 
@@ -55,7 +56,7 @@ foo0 ENDP
 
 main PROC
 
-push 25 
+push offset L0
 
 call foo0
 
@@ -67,4 +68,3 @@ call foo0
 main ENDP
 
 END main
-

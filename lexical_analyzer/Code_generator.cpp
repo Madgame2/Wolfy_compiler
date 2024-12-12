@@ -735,7 +735,25 @@ namespace CODE {
 					}
 					else if (curent->is_param) {
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
-						insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+
+						if (lit.d_type == DataType::Type::String) {
+							size_t pos = asm_code.find("<value>");
+
+							std::string l("L");
+							l += (char)LITERAL_count + '0';
+
+							if (pos != std::string::npos) {
+								delite_tag(asm_code, "<value>", pos);
+								asm_code.insert(pos, "offset " + l);
+							}
+
+							pos = asm_code.find("<arg>");
+							if (pos != std::string::npos)
+								delite_tag(asm_code, "<arg>", pos);
+						}
+						else {
+							insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+						}
 						params_count--;
 					}
 					else {
