@@ -26,7 +26,7 @@ void LT::add(Lexem_table& table, Entry ent)
 	table.size++;
 }
 
-LT::Entry LT::getEntry(Lexem_table& table, int id)
+LT::Entry& LT::getEntry(Lexem_table& table, int id)
 {
 	if (id < 0 || id >= table.size) throw Error::get_error(3);
 

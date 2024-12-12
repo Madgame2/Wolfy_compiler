@@ -14,6 +14,7 @@ namespace ID {
 
         bool is_array = false;
         int arg_count = 0;
+        int func_unick_id = 0;
 
         std::list<extra::Type> extras;
 

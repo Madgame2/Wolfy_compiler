@@ -355,6 +355,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 							buffer_sing.top().params.push_back(&new_sign.returable_type);
 						}
 
+						new_sign.func_unick_id = &elem.func_unick_id;
 						new_sign.function_name = elem.name;
 						buffer_sing.push(new_sign);
 						is_params = true;
@@ -421,7 +422,6 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 							type = Lit_table::find(lit_table, id).d_type;
 
 							check_lit_struct(Lit_table::find(lit_table, id),curent);
-
 
 						}
 
@@ -502,6 +502,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 		bool find = false;
 		for (auto& referens : inited_func_sign) {
 			if (elem == referens) {
+				*elem.func_unick_id = *referens.func_unick_id;
 				*elem.ref_returnable_type = referens.returable_type;
 				find = true;
 				break;
@@ -633,10 +634,13 @@ void semantic::scope::scope::add_new_var(ID::Entry var)
 
 }
 
-void semantic::scope::scope::add_new_functoin(ID::Entry func)
+void semantic::scope::scope::add_new_functoin(ID::Entry& func)
 {
 	data::Func_sign new_function;
 
+	new_function.func_unick_id = &func.func_unick_id;
+	*new_function.func_unick_id = data::func_id++;
+	new_function.func_unick_id = &func.func_unick_id;
 	new_function.function_name = func.name;
 	new_function.returable_type = func.d_type;
 

@@ -59,6 +59,7 @@ namespace POL {
 					if (id.id_type == IDType::Type::Func) {
 						is_func = true;
 						last_func.push(&id);
+
 						buffer.push(elem);
 					}
 					else {
@@ -68,6 +69,10 @@ namespace POL {
 				}
 				else {
 					polish_entry.push_back(elem);
+				}
+
+				if (!buffer.empty() && !last_func.empty() && buffer.top().lexema[0] == '(') {
+					last_func.top()->arg_count = 1;
 				}
 			}
 			else {

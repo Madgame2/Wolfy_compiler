@@ -8,6 +8,8 @@
 
 namespace semantic {
 	namespace data {
+		static int func_id = 0;
+
 		struct var {
 			std::wstring name;
 			DataType::Type d_type = DataType::Type::None;
@@ -19,11 +21,15 @@ namespace semantic {
 		};
 
 		struct Func_sign {
+			
+
 			std::wstring function_name;
 			DataType::Type returable_type = DataType::Type::None;
 			DataType::Type* ref_returnable_type = &returable_type;
 
 			std::vector<DataType::Type*> params;
+
+			int* func_unick_id = nullptr;
 
 			bool operator ==(Func_sign referens) {
 				if (this->function_name != referens.function_name) {
@@ -37,6 +43,7 @@ namespace semantic {
 					DataType::Type type2 = *referens.params[i];
 
 					if (type2 != type1) {
+						if(this->func_unick_id)
 						return false;
 					}
 				}
@@ -61,6 +68,8 @@ namespace semantic {
 			bool is_relisated = false;
 			Func_sign function;
 		};
+
+
 	}
 
 	namespace scope {
@@ -85,7 +94,7 @@ namespace semantic {
 			void add_new_scope(std::wstring name);
 			void add_new_var(ID::Entry var);
 
-			void add_new_functoin(ID::Entry func);
+			void add_new_functoin(ID::Entry& func);
 			void add_param_to_last_func(ID::Entry param, data::Func_sign* function);
 
 			void pop_scope();

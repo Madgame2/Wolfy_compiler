@@ -59,6 +59,6 @@ namespace LT {
 	void Delete(Lexem_table& table);
 
 	void add(Lexem_table& table, Entry ent);
-	Entry getEntry(Lexem_table& table, int id);
+	Entry& getEntry(Lexem_table& table, int id);
 }
 

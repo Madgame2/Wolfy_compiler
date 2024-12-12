@@ -7,6 +7,20 @@ int function min(int a, int b){
 	return a;
 }
 
+int function foo(){
+
+	return 1;
+}
+
+int function foo(int a){
+ return 2;
+}
+
+foo();
+
+foo(1);
+
+
 string str = "hello wrold";
 
 string str1 = str;
