@@ -151,6 +151,23 @@ void check_lit_struct(Lit_table::Element& lit,AST::node*curent) {
 	}
 }
 
+bool is_convertable_types(DataType::Type& type1, DataType::Type& type2) {
+	if (type1 == type2) {
+		return true;
+	}
+
+	std::list<DataType::Type> convertable = RULE::convetable_dataType::save::save_convertable[type2];
+	for (auto& elem : convertable)
+	{
+		if (elem == type1) {
+			type2 = type1;
+			return true;
+		}
+	}
+	return false;
+}
+
+
 DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, semantic::scope::scope area_visibilyty, ID::ID_table& id_table, Lit_table::Literal_table lit_table) {
 
 	
@@ -193,7 +210,10 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 		}
 
 		if (buffer != DataType::Type::None) {
-			if (buffer != curent_type) {
+
+			/*!is_convertable_types(buffer, curent_type)*/
+
+			if (buffer!=curent_type) {
 				throw Error::get_error_in(302, curent->line, curent->index);
 			}
 		}
@@ -212,21 +232,6 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 	return buffer;
 }
 
-bool is_convertable_types(DataType::Type& type1, DataType::Type& type2) {
-	if (type1 == type2) {
-		return true;
-	}
-
-	std::list<DataType::Type> convertable = RULE::convetable_dataType::save::save_convertable[type2];
-	for (auto& elem : convertable)
-	{
-		if (elem == type1) {
-			type2 = type1;
-			return true;
-		}
-	}
-	return false;
-}
 
 void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_elem>& global, ID::ID_table& id_table, Lit_table::Literal_table& lit_table)
 {

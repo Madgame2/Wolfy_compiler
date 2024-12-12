@@ -110,7 +110,7 @@ namespace POL {
 						if (buffer.top().lexema[0] == '(') {
 							buffer.push(elem);
 						}
-						else if (buffer_priorety > curent_prioritet) {
+						else if (buffer_priorety < curent_prioritet) {
 							polish_entry.push_back(elem);
 						}
 						else if (buffer_priorety == curent_prioritet) {
@@ -119,6 +119,8 @@ namespace POL {
 							buffer.push(elem);
 						}
 						else {
+							polish_entry.push_back(buffer.top());
+							buffer.pop();
 							buffer.push(elem);
 						}
 					}

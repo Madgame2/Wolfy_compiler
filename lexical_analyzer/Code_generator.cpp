@@ -258,7 +258,7 @@ namespace CODE {
 			source_code.insert(pos, std::to_string(size));
 		}
 	}
-	void insert_if_blocks_id(std::string& asm_code, int id) {
+	void insert_if_blocks_id(std::string& asm_code, int& id) {
 		size_t pos = asm_code.find("<num>");
 
 		if (pos != std::string::npos) {
@@ -272,9 +272,11 @@ namespace CODE {
 			delite_tag(asm_code, "<num>", pos);
 			asm_code.insert(pos, std::to_string(id));
 		}
+
+		id++;
 	}
 
-	void inseert_while_blocks_id(std::string& asm_code, int id) {
+	void inseert_while_blocks_id(std::string& asm_code, int& id) {
 		size_t pos;
 
 		for (int i = 0; i < 4; i++) {
@@ -283,6 +285,7 @@ namespace CODE {
 			delite_tag(asm_code, "<num>", pos);
 			asm_code.insert(pos, std::to_string(id));
 		}
+		id++;
 	}
 
 	void insert_stack_offset(std::string& asm_code, int& offset) {
@@ -314,8 +317,12 @@ namespace CODE {
 			
 
 			std::string reg = RULE::CODE::DataType_AsmCode[curent->expresion_type].asm_register;
-
-			asm_code.insert(poss, reg);
+			if (reg != "") {
+				asm_code.insert(poss, reg);
+			}
+			else {
+				asm_code.insert(poss, "eax");
+			}
 		}
 	}
 
@@ -441,16 +448,18 @@ namespace CODE {
 
 			}
 			else if (strcmp(curent->symbol, "}") == 0) {
-				size_t poss = asm_code.find("<block>");
+				if (!local_vars.empty()) local_vars.pop();
 
-				if (poss != std::string::npos) {
-					delite_tag(asm_code, "<block>", poss);
+				size_t pos = asm_code.find("<block>");
+
+				if (pos != std::string::npos) {
+					delite_tag(asm_code, "<block>", pos);
 				}
 				else {
-					poss = asm_code.find("<func_code>");
+					pos = asm_code.find("<func_code>");
 
-					if (poss != std::string::npos) {
-						delite_tag(asm_code, "<func_code>", poss);
+					if (pos != std::string::npos) {
+						delite_tag(asm_code, "<func_code>", pos);
 						func_params = false;
 
 					}
@@ -467,7 +476,7 @@ namespace CODE {
 					delite_tag(asm_code, "<expresoin>", pos);
 				}
 			}
-			if (!curent->is_param && is_functon_params&&!console_func) {
+			if (!curent->is_param && !is_functon_params&&!console_func) {
 				//is_functon_params = false;
 
 				size_t pos = asm_code.find("<arg>");
@@ -545,7 +554,7 @@ namespace CODE {
 							varr_init = true;
 
 							if (!local_vars.empty()) {
-								local_vars.top().push_back(id.area + id.name);
+								local_vars.top().push_back(id.area+ std::to_wstring(func_id) + id.name);
 							}
 
 							if (id.d_type == DataType::Type::String) {
@@ -569,6 +578,7 @@ namespace CODE {
 						else {
 							if (!curent->is_expression && !curent->is_param) {
 								insert_value(asm_code, curent, befor_minus, id_table, lit_table);
+								buffer = curent;
 							}
 							else {
 								if (curent->is_param) {
@@ -666,7 +676,7 @@ namespace CODE {
 						}
 
 						if (!local_vars.empty()) {
-							local_vars.top().push_back(id.area + id.name);
+							local_vars.top().push_back(id.area+std::to_wstring(func_id) + id.name);
 						}
 					}
 					break;
@@ -724,6 +734,7 @@ namespace CODE {
 							{
 							case DataType::Type::Int:
 								asm_code.insert(pos, "print_int");
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
 
 								break;
 							case DataType::Type::Float:
@@ -760,6 +771,8 @@ namespace CODE {
 							pos = asm_code.find("<arg>");
 							if (pos != std::string::npos)
 								delite_tag(asm_code, "<arg>", pos);
+
+							LITERAL_count++;
 						}
 						else {
 
@@ -802,7 +815,7 @@ namespace CODE {
 				{
 					if (strcmp(curent->symbol, "=") == 0 && !curent->is_double_operation)
 					{
-						if (buffer->type == AST::node_type::ID) {
+						if (buffer&&buffer->type == AST::node_type::ID) {
 							if (ID::getEntry(id_table, buffer->table_id).d_type == DataType::Type::String) {
 								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
 								continue;
@@ -874,24 +887,20 @@ namespace CODE {
 
 						}
 					}
-					else if (strcmp(curent->symbol, "}") == 0) {
-
-						if (!local_vars.empty()) local_vars.pop();
-
-						size_t pos = asm_code.find("<block>");
-
-						if (pos != std::string::npos) {
-							delite_tag(asm_code, "<block>", pos);
-						}
-
-					}
 					else if (strcmp(curent->symbol, "n") == 0) {
 						size_t pos = asm_code.find("<func_name>");
 
 						if (pos != std::string::npos) {
+							delite_tag(asm_code, "<func_name>", pos);
 							asm_code.insert(pos, "print_newline");
 							//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_push_arg], true);
 						}
+
+						pos = asm_code.find("<arg>");
+						if (pos != std::string::npos){
+							delite_tag(asm_code, "<arg>", pos);
+						}
+					
 					}
 					else if (strcmp(curent->symbol, "?") == 0)
 					{

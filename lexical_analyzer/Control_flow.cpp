@@ -100,7 +100,7 @@ namespace Constrol_flow {
 	{
 
 		
-		if (!curent->is_returnable) {
+		if (curent&&!curent->is_returnable) {
 
 
 			branch* new_branch = new  branch();
