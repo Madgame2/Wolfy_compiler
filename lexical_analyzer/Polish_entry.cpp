@@ -36,6 +36,7 @@ namespace POL {
 		std::cout << '\n';
 
 		bool is_func = false;
+		bool first_param = false;
 		std::stack<LT::Entry> buffer;
 		std::list<LT::Entry> polish_entry;
 		std::stack<ID::Entry*> last_func;
@@ -44,9 +45,6 @@ namespace POL {
 
 			if (strcmp( elem.lexema , ",")==0) {
 				if (is_func) {
-					if (last_func.top()->arg_count == 0) {
-						last_func.top()->arg_count = 1;
-					}
 					last_func.top()->arg_count++;
 				}
 				 
@@ -72,7 +70,10 @@ namespace POL {
 				}
 
 				if (!buffer.empty() && !last_func.empty() && buffer.top().lexema[0] == '(') {
-					last_func.top()->arg_count = 1;
+					if (!first_param) {
+						last_func.top()->arg_count = 1;
+						first_param = true;
+					}
 				}
 			}
 			else {

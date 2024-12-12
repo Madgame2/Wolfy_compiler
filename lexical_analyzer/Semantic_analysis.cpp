@@ -218,6 +218,10 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 	std::vector<data::Func_sign> inited_func_sign;
 	std::vector<info> info_for_sign;
 
+	for (auto& elem : global) {
+		inited_func_sign.push_back(elem.function);
+	}
+
 	bool is_params = false;
 
 	bool is_expresion = false;
@@ -502,7 +506,9 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 		bool find = false;
 		for (auto& referens : inited_func_sign) {
 			if (elem == referens) {
-				*elem.func_unick_id = *referens.func_unick_id;
+				if (referens.func_unick_id) {
+					*elem.func_unick_id = *referens.func_unick_id;
+				}
 				*elem.ref_returnable_type = referens.returable_type;
 				find = true;
 				break;
@@ -562,11 +568,12 @@ std::list<semantic::data::global_elem> semantic::Parse_Global(AST::program_struc
 	bool is_new_func = false;
 	tree.Reset();
 
+	int unick_id = 0;
 	do {
 		curent = tree.DFS.Step();
 
 		if (curent&&is_func_declere(curent, buffer)) {
-			ID::Entry id = ID::getEntry(id_table, curent->table_id);
+			ID::Entry& id = ID::getEntry(id_table, curent->table_id);
 
 			data::Func_sign new_sign;
 			new_sign.function_name = id.name;
@@ -574,10 +581,14 @@ std::list<semantic::data::global_elem> semantic::Parse_Global(AST::program_struc
 
 			data::global_elem new_elem;
 			new_elem.function = new_sign;
+			id.func_unick_id = unick_id;
+			new_elem.function.func_unick_id = &id.func_unick_id;
 
 			result.push_back(new_elem);
 
 			is_new_func = true;
+
+			unick_id++;
 		}
 		else if (curent&&is_Var_declere(curent, buffer)) {
 			ID::Entry& id = ID::getEntry(id_table, curent->table_id);

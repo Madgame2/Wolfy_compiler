@@ -1,9 +1,2 @@
-void function foo (string a){
 
-	console<<a;
-
-	return;
-}
-
-
-foo("hello wolrd");
+int b = 2-2;

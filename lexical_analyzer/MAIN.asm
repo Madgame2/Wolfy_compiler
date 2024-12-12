@@ -8,7 +8,6 @@ includelib msvcprt.lib
 includelib WolfyConsoleLib.lib
 				
 
-foo0 PROTO 
 
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
@@ -19,46 +18,29 @@ print_newline PROTO
 			
 
 .CONST
-L0 db "hello wolrd", 0
 
 
 .DATA
-foo0a DWORD 0
+MAINb DWORD 0
 					
 
 .CODE					
 
-foo0 PROC
-
-    push ebp
-    mov ebp, esp
-
-    mov eax, [ebp+8]
-mov foo0a, eax
-
-
-    
-push foo0a
-
-call print_string
-mov eax, 0
-mov fooa, 0
-
-
-mov esp, ebp
-pop ebp
-ret 4
-
-
-
-foo0 ENDP
 					
 
 main PROC
 
-push offset L0
+push 2 
 
-call foo0
+push 2 
+
+pop eax
+pop ebx
+sub eax, edx
+ 
+push eax
+
+pop MAINb
 
 
 	push 0

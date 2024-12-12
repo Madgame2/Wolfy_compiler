@@ -11,10 +11,11 @@
 #include"AST.h"
 #include"Identification_table.h"
 #include"Litetral_table.h"
+#include"Semantic_analysis.h"
 
 namespace CODE {
 
-	void generate_code(std::wstring name, AST::program_struct tree,ID::ID_table id_table, Lit_table::Literal_table lit_table);
+	void generate_code(std::wstring name, AST::program_struct tree,ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions);
 
 	struct templates {
 		std::map<RULE::CODE::comand, RULE::CODE::templates> template_asm;

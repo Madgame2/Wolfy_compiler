@@ -155,8 +155,10 @@ namespace RULE {
 			Assign_to_var,
 			pop_value,
 
-
+			Exression_div_rem,
+			Expression_div,
 			Expression_plus,
+			Expression_minus,
 			Expression_mul,
 			Expression_push,
 
@@ -174,7 +176,9 @@ namespace RULE {
 			while_init,
 			while_expresion,
 
-			Const_declare
+			Const_declare,
+
+			Global_init
 		};
 
 		struct templates {

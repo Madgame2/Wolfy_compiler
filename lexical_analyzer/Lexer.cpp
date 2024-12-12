@@ -279,7 +279,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 		if (LT_files.find(L"GLOBAL") == LT_files.end()) {
 			LT::Lexem_table new_table;
-			LT::create_Lexem_table(new_table, words.size());
+			LT::create_Lexem_table(new_table, 1000);
 			LT_files[L"GLOBAL"] = new_table;
 
 			ID::ID_table new_id_table;
@@ -693,9 +693,6 @@ int wmain(int argc, wchar_t* argv[]) {
 
 			AST::program_struct tree = parser::Parse(elem.second, ID_files[L"MAIN"], MAIN);
 			file_structs[L"MAIN"] = tree;
-
-			//semantic::Parse(tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
-			//CODE::generate_code(elem.first,tree, ID_files[L"MAIN"], Lit_files[L"MAIN"]);
 		}
 		else {
 			AST::program_struct tree = parser::Parse(elem.second, ID_files[elem.first], GENERAl);
@@ -723,7 +720,7 @@ int wmain(int argc, wchar_t* argv[]) {
 			continue;
 		}
 
-		CODE::generate_code(elem.first, elem.second, ID_files[elem.first], Lit_files[elem.first]);
+		CODE::generate_code(elem.first, elem.second, ID_files[elem.first], Lit_files[elem.first], global_functions);
 	}
 
 	Param::delete_all(param);

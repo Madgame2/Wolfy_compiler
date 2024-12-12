@@ -308,7 +308,7 @@ namespace CODE {
 
 
 
-	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table)
+	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions)
 	{
 		func_id = -1;
 
@@ -334,6 +334,13 @@ namespace CODE {
 				write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::MAIN_INIT], true);
 
 			}
+		}
+
+		for (auto& elem : global_functions) {
+			write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Global_init], false);
+
+			std::string  name = wstring_to_string(elem.function.function_name + std::to_wstring(*elem.function.func_unick_id));
+			insert_function_names(asm_code, name);
 		}
 
 		bool varr_init = false;
@@ -808,8 +815,14 @@ namespace CODE {
 						}
 					}
 					else if (strcmp(curent->symbol, "-") == 0) {
-						befor_minus = true;
-						continue;
+						if (curent->links.size() > 1) {
+							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
+							insert_operationn(asm_code, curent, prefabs);
+						}
+						else {
+							befor_minus = true;
+							continue;
+						}
 					}
 					else if (strcmp(curent->symbol, "r") == 0) {
 						write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_ret], false);
