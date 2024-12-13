@@ -26,7 +26,7 @@ namespace semantic {
 
 			std::wstring function_name;
 			DataType::Type returable_type = DataType::Type::None;
-			DataType::Type* ref_returnable_type = &returable_type;
+			//DataType::Type* ref_returnable_type = &returable_type;
 
 			std::vector<DataType::Type> params_definded;
 			std::vector<DataType::Type*> params;
@@ -37,6 +37,7 @@ namespace semantic {
 			Func_sign(std::wstring name, DataType::Type returable_type, std::list<DataType::Type> param) {
 				this->function_name = name;
 				this->returable_type = returable_type;
+				//ref_returnable_type = &this->returable_type;
 				for (auto& elem : param) {
 					this->params_definded.push_back(elem);
 				}
@@ -110,7 +111,7 @@ namespace semantic {
 			void add_new_var(ID::Entry var);
 
 			void add_new_functoin(ID::Entry& func);
-			void add_param_to_last_func(ID::Entry param, data::Func_sign* function);
+			void add_param_to_last_func(ID::Entry& param, data::Func_sign* function);
 
 			void pop_scope();
 

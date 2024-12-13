@@ -249,7 +249,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 	
 	std::stack<data::Func_sign> buffer_sing;
 	std::vector<data::Func_sign> sign_for_checking;
-	std::vector<data::Func_sign> inited_func_sign;
+	std::list<data::Func_sign> inited_func_sign;
 	std::vector<info> info_for_sign;
 
 	int size = 0;
@@ -548,7 +548,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 				if (referens.func_unick_id) {
 					*elem.func_unick_id = *referens.func_unick_id;
 				}
-				*elem.ref_returnable_type = referens.returable_type;
+				elem.returable_type = referens.returable_type;
 				find = true;
 				break;
 			}
@@ -697,8 +697,9 @@ void semantic::scope::scope::add_new_functoin(ID::Entry& func)
 	last_scope.top()->objects.functions.push_back(new_function);
 }
 
-void semantic::scope::scope::add_param_to_last_func(ID::Entry param, data::Func_sign* function)
+void semantic::scope::scope::add_param_to_last_func(ID::Entry& param, data::Func_sign* function)
 {
+
 	function->params.push_back(&param.d_type);
 }
 
