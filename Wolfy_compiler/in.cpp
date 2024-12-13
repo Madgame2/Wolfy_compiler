@@ -4,6 +4,12 @@
 
 using namespace in;
 
+std::wstring to_lowercase(std::wstring str) {
+	std::transform(str.begin(), str.end(), str.begin(), std::towlower);
+
+	return str;
+}
+
 int get_file_size(std::ifstream& file) {
 	if (!file.is_open()) return -1;
 
@@ -14,12 +20,6 @@ int get_file_size(std::ifstream& file) {
 	file.seekg(0, std::ios::beg);
 
 	return file_size;
-}
-
-std::wstring to_lowercase(std::wstring str) {
-	std::transform(str.begin(), str.end(), str.begin(), std::towlower);
-
-	return str;
 }
 
 IN in::get_IN(Param::Params param)
@@ -144,7 +144,7 @@ IN in::get_IN(Param::Params param)
 			new_in.FILES[i].is_main = true;
 		}
 
-		delete[] code;
+		delete[] code; //ÏÎÒÎÌ ÓÄÀËÈÒÜ
 		file.close();
 	}
 

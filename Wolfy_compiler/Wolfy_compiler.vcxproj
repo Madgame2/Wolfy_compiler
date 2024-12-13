@@ -19,26 +19,42 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AST.cpp" />
+    <ClCompile Include="Code_generator.cpp" />
+    <ClCompile Include="Control_flow.cpp" />
     <ClCompile Include="Error.cpp" />
+    <ClCompile Include="Graibach.cpp" />
     <ClCompile Include="Identification_table.cpp" />
     <ClCompile Include="in.cpp" />
     <ClCompile Include="Lexem_table.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="Litetral_table.cpp" />
+    <ClCompile Include="MFST.cpp" />
     <ClCompile Include="Params.cpp" />
+    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Polish_entry.cpp" />
     <ClCompile Include="Rule.cpp" />
+    <ClCompile Include="Semantic_analysis.cpp" />
     <ClCompile Include="Wolfy.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AST.h" />
+    <ClInclude Include="Code_generator.h" />
     <ClInclude Include="comon.h" />
+    <ClInclude Include="Control_flow.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="Graibach.h" />
     <ClInclude Include="Identification_table.h" />
     <ClInclude Include="in.h" />
     <ClInclude Include="Lexem_table.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="Litetral_table.h" />
+    <ClInclude Include="MFST.h" />
     <ClInclude Include="Params.h" />
+    <ClInclude Include="Parser.h" />
+    <ClInclude Include="Polish_entry.h" />
     <ClInclude Include="Rules.h" />
+    <ClInclude Include="Semantic_analysis.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="file.wolf" />

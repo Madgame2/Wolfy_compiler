@@ -31,3 +31,23 @@
             None
         };
     }
+
+    namespace notations {
+        enum class notation{
+            Dec,
+            Bin,
+            oct,
+            Hex,
+            None
+        };
+    }
+
+    namespace operatoion_prioritet {
+        enum class operations {
+            PLUS = 2,
+            MINUS = 2,
+            MULTIPLY = 3,
+            DIV = 3,
+            EQUAL = 1, 
+        };
+    }

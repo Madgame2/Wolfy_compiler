@@ -80,8 +80,8 @@ Params Param::getParams(int argc, wchar_t* argv[])
 				wchar_t* begin = argv[i];
 
 				size_t param_size = wcslen(argv[i]);
-				if (end_of_key != nullptr && param_size!= end_of_key - begin+1) {
-					wchar_t* argv = end_of_key+1; //new wchar_t[size+1];
+				if (end_of_key != nullptr && param_size != end_of_key - begin + 1) {
+					wchar_t* argv = end_of_key + 1; //new wchar_t[size+1];
 
 					in.push_back(argv);
 
@@ -96,11 +96,11 @@ Params Param::getParams(int argc, wchar_t* argv[])
 
 			break;
 		}
-		
+
 	}
 
 	int count_main = 0;
-	for (int i = 0; i < in.size();i++) {
+	for (int i = 0; i < in.size(); i++) {
 		std::wstring temp = std::wstring(in[i]);
 		to_lowercase(temp);
 		if (temp == L"main.wolf") {
@@ -124,7 +124,6 @@ Params Param::getParams(int argc, wchar_t* argv[])
 
 	return params;
 }
-
 
 
 bool Param::checking_in_params(Params& params)

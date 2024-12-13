@@ -36,6 +36,8 @@ namespace LT {
 		int IT_index = -1;
 		int Lit_index = -1;
 
+		bool is_double_oeration = false;
+		bool console_operations = false;
 
 		Entry() {
 			lexema[0] = '\0';
@@ -57,6 +59,6 @@ namespace LT {
 	void Delete(Lexem_table& table);
 
 	void add(Lexem_table& table, Entry ent);
-	Entry getEntry(Lexem_table& table, int id);
+	Entry& getEntry(Lexem_table& table, int id);
 }
 
