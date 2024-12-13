@@ -390,7 +390,22 @@ namespace CODE {
 			}
 
 			if (strcmp(curent->symbol, ";") == 0) {
+
+				if (!curent->is_expression && !varr_init && !is_if_expreson && !is_while) {
+					size_t pos = asm_code.find("<expresion>");
+
+					if (pos != std::string::npos) {
+						delite_tag(asm_code, "<expresoin>", pos);
+					}
+				}
+
+				size_t poss = asm_code.find("<arg>");
+				if (poss != std::string::npos) {
+					delite_tag(asm_code, "<arg>", poss);
+				}
+
 				varr_defoult_value(asm_code);
+
 				if (varr_init) {
 					varr_init = false;
 
@@ -446,6 +461,8 @@ namespace CODE {
 					is_if_expreson = false;
 				}
 
+
+
 			}
 			else if (strcmp(curent->symbol, "}") == 0) {
 				if (!local_vars.empty()) local_vars.pop();
@@ -467,14 +484,6 @@ namespace CODE {
 			}
 			else if (strcmp(curent->symbol, "s") == 0) {
 				continue;
-			}
-
-			if (!curent->is_expression && !varr_init && !is_if_expreson && !is_while) {
-				size_t pos = asm_code.find("<expresion>");
-
-				if (pos != std::string::npos) {
-					delite_tag(asm_code, "<expresoin>", pos);
-				}
 			}
 			if (!curent->is_param && !is_functon_params&&!console_func) {
 				//is_functon_params = false;
@@ -632,6 +641,30 @@ namespace CODE {
 							if (!curent->is_param) {
 								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
 								insert_function_names(asm_code, wstring_to_string(func.name) + std::to_string(func.func_unick_id));
+
+								size_t pos = asm_code.find("<expresion>");
+
+								if (pos != std::string::npos) {
+									delite_tag(asm_code, "<expresion>", pos);
+								}
+
+								if (buffer->type == AST::node_type::ID) {
+									ID::Entry elem = ID::getEntry(id_table, buffer->table_id);
+
+									if (elem.id_type == IDType::Type::Var) {
+										
+										pos = asm_code.find("<value>");
+
+										if (pos != std::string::npos) {
+											delite_tag(asm_code, "<value>", pos);
+											asm_code.insert(pos, "eax");
+										}
+
+									}
+
+								}
+
+
 								is_functon_params = true;
 								params_count = curent->argv_count;
 							}
@@ -793,9 +826,12 @@ namespace CODE {
 								asm_code.insert(pos, "offset " + l);
 							}
 
-							pos = asm_code.find("<arg>");
-							if (pos != std::string::npos)
-								delite_tag(asm_code, "<arg>", pos);
+							//pos = asm_code.find("<arg>");
+							//if (pos != std::string::npos)
+							//	delite_tag(asm_code, "<arg>", pos);
+
+							LITERAL_count++;
+
 						}
 						else {
 							insert_value(asm_code, curent, befor_minus, id_table, lit_table);

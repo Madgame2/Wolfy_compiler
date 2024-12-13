@@ -1,1 +1,2 @@
+<expresion>
 mov <var>, <value> 

@@ -11,8 +11,8 @@ includelib Wolfy_standart_lib.lib
 
 <function_proto>
 
-is_equal PROTO: DWORD, : DWORD
-save_is_equal PROTO: DWORD, :DWORD, :DWORD
+extern is_equal0:proc
+extern save_is_equal0:proc
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD

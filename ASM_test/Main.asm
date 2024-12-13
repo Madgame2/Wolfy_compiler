@@ -12,8 +12,8 @@ includelib Wolfy_standart_lib.lib
 print_massage0 PROTO 
 
 
-is_equal PROTO: DWORD, : DWORD
-save_is_equal PROTO: DWORD, :DWORD, :DWORD
+extern is_equal0:proc
+extern save_is_equal0:proc
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD
@@ -26,11 +26,14 @@ print_newline PROTO
 L0 db "Hello wolrd", 0
 L1 db "how working if block :", 0
 L2 db "hello wolrd", 0
+L3 db "hello", 0
+L4 db "hello", 0
 
 
 .DATA
 MAINa DWORD 0
 print_massage0str DWORD 0
+MAINb DWORD 0
 					
 
 .CODE					
@@ -48,6 +51,8 @@ mov print_massage0str, eax
 push print_massage0str
 
 call print_string
+
+call print_newline
 mov eax, 0
 mov print_massage0str, 0
 
@@ -108,6 +113,7 @@ pop MAINa
 jmp while_start0
 
 while_end0:
+
 mov MAINa, 0  
 
 push offset L1
@@ -179,6 +185,18 @@ while_end1:
 push offset L2
 
 call print_massage0
+
+push offset L4
+
+push offset L3
+
+call is_equal0
+
+mov MAINb, eax 
+
+push MAINb
+
+call print_int
 
 
 	push 0

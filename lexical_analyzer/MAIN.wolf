@@ -1,4 +1,4 @@
-/*
+
 console<<"Hello  wolrd";
 
 console<<endl;
@@ -32,27 +32,17 @@ if(a%2 == 0 ){
 
 	a = a+1;
 }
-*/
+
 void function print_massage(string str){
-	//console<<str;
-	//console<<endl;
+	console<<str;
+	console<<endl;
 	return;
 }
 
 
 print_massage("hello wolrd");
 
+int b;
+b = is_equal("hello","hello");
 
-void function test(int a){
-	/*
-	if(a>=50){
-		console<<"more than 50";
-		console<<endl;
-
-		return;
-	}
-	console<<"less than 50";
-	console<<endl;
-	*/
-	return;
-}
+console<<b;
