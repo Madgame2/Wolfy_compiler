@@ -18,6 +18,7 @@ extern save_is_equal0:proc
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD
+print_short PROTO: WORD
 print_newline PROTO
 
 .stack 4096				
@@ -36,6 +37,7 @@ L5 db "hi", 0
 MAINa DWORD 0
 print_massage1str DWORD 0
 MAINb DWORD 0
+MAINnew WORD 0
 					
 
 .CODE					
@@ -196,6 +198,12 @@ skip2:
 
 
 call foo0
+
+mov MAINnew, ax 
+
+push MAINnew
+
+call print_short
 
 
 	push 0

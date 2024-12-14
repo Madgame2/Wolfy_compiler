@@ -571,6 +571,8 @@ namespace CODE {
 									asm_code.insert(pos, "print_string");
 									break;
 								case DataType::Type::Short:
+									asm_code.insert(pos, "print_short");
+
 									break;
 								case DataType::Type::None:
 									break;
@@ -686,11 +688,13 @@ namespace CODE {
 
 									if (elem.id_type == IDType::Type::Var) {
 										
+										std::string reg = RULE::CODE::DataType_AsmCode[elem.d_type].asm_register;
+
 										pos = asm_code.find("<value>");
 
 										if (pos != std::string::npos) {
 											delite_tag(asm_code, "<value>", pos);
-											asm_code.insert(pos, "eax");
+											asm_code.insert(pos, reg);
 										}
 
 									}

@@ -493,6 +493,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						{
 						case L'|':
 							line++;
+							word_index = 0;
 							cout << '\n';   // ÄËß ÎÒËÀÄÊÈ 
 							continue;
 

@@ -1,4 +1,3 @@
-
 console<<"Hello  wolrd";
 console<<endl;
 console<<12;
@@ -38,4 +37,8 @@ if(2+2){
 	console<<endl;
 }
 
-foo();
+short new;
+
+new = foo();
+
+console<< new;

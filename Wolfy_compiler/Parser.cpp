@@ -116,8 +116,11 @@ namespace parser {
 
 
 			int chain_size;
+			int error;
 			GRBALPHABET GRB_buffer = mfst.buffer.top();
 			MFST::Results res = mfst.step(data.error, chain_size);
+
+
 
 			int error_count = 0;
 			switch (res)

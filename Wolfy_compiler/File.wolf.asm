@@ -18,6 +18,7 @@ extern save_is_equal0:proc
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD
+print_short PROTO: WORD
 print_newline PROTO
 
 .stack 4096				
