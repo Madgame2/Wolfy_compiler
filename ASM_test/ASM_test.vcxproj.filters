@@ -15,11 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="Main.asm">
+    <MASM Include="..\Wolfy_compiler\MAIN.asm">
+      <Filter>Файлы ресурсов</Filter>
+    </MASM>
+    <MASM Include="..\Wolfy_compiler\File.wolf.asm">
+      <Filter>Файлы ресурсов</Filter>
+    </MASM>
+    <MASM Include="MAIN.asm">
       <Filter>Исходные файлы</Filter>
     </MASM>
-    <MASM Include="..\lexical_analyzer\MAIN.asm">
-      <Filter>Файлы ресурсов</Filter>
+    <MASM Include="File.wolf.asm">
+      <Filter>Исходные файлы</Filter>
     </MASM>
   </ItemGroup>
 </Project>

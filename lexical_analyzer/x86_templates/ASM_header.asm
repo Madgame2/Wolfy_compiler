@@ -11,6 +11,7 @@ includelib Wolfy_standart_lib.lib
 
 <function_proto>
 
+extern factorial0:proc
 extern is_equal0:proc
 extern save_is_equal0:proc
 ExitProcess PROTO :DWORD
@@ -32,3 +33,6 @@ print_newline PROTO
 <code>					
 
 <main>
+
+
+END

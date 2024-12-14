@@ -228,6 +228,20 @@ namespace CODE {
 
 	}
 
+	void insert_params_to_proto_type(std::string& asm_code, DataType::Type type, int argv_count) {
+		size_t pos  = asm_code.find("<data_type_proto>");
+
+		if (pos != std::string::npos) {
+
+			if (argv_count == 0) {
+				asm_code.insert(pos, ": " + RULE::CODE::DataType_AsmCode[type].asm_data_type);
+			}
+			else {
+				asm_code.insert(pos, ", :" + RULE::CODE::DataType_AsmCode[type].asm_data_type);
+			}
+		}
+	}
+
 	void insert_cleaner_local_vars(std::string& source_code, templates prefabs, std::vector<std::wstring> names) {
 		for (auto& elem : names) {
 			write_by_template(source_code, prefabs.template_asm[RULE::CODE::comand::Func_clear], false);
@@ -326,7 +340,14 @@ namespace CODE {
 		}
 	}
 
+	void insert_defoult_flag(std::string& asm_code) {
+		size_t pos = asm_code.find("<flag>");
 
+		if (pos != std::string::npos) {
+			delite_tag(asm_code, "<flag>", pos);
+			asm_code.insert(pos, "je");
+		}
+	}
 
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions)
 	{
@@ -357,10 +378,22 @@ namespace CODE {
 		}
 
 		for (auto& elem : global_functions) {
-			write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Global_init], false);
+			write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
 
 			std::string  name = wstring_to_string(elem.function.function_name + std::to_wstring(*elem.function.func_unick_id));
 			insert_function_names(asm_code, name);
+
+			int count = 0;
+			for (auto& data_type : elem.function.params) {
+				insert_params_to_proto_type(asm_code, *data_type, count);
+				count++;
+			}
+			
+			size_t pos = asm_code.find("<data_type_proto>");
+
+			if (pos != std::string::npos) {
+				delite_tag(asm_code, "<data_type_proto>", pos);
+			}
 		}
 
 		bool varr_init = false;
@@ -627,7 +660,7 @@ namespace CODE {
 							funct_arg_size = 0;
 
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
-							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
+							//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
 
 							insert_function_names(asm_code, wstring_to_string(func.name)+std::to_string(func.func_unick_id));
 
@@ -955,6 +988,9 @@ namespace CODE {
 
 						is_while = true;
 					}
+					else if (strcmp(curent->symbol, "(") == 0) {
+						continue;
+					}
 					else if (curent->is_expression) {
 
 
@@ -968,6 +1004,19 @@ namespace CODE {
 
 						}
 						else if (!curent->is_double_operation) {
+							if (is_if_expreson) {
+
+								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Expression_push], true);
+
+								size_t pos = asm_code.find("<value>");
+
+								if (pos != std::string::npos) {
+									delite_tag(asm_code, "<value>", pos);
+									asm_code.insert(pos, "0");
+								}
+								insert_defoult_flag(asm_code);
+							}
+
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::ASSIGN_EXPRESSION], true);
 							insert_register(asm_code, curent);
 							insert_operationn(asm_code, curent, prefabs);

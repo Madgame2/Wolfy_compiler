@@ -91,6 +91,15 @@ namespace RULE {
                     Rule::Chain(1,TS(">")),
 
             }),
+            Rule(NS("A"),GRB_ERROR + 4,{
+                Rule::Chain(1,TS("i")),
+                Rule::Chain(3,TS("i"),TS("("),TS(")")),
+                Rule::Chain(4,TS("i"),TS("("),NS("A"),TS(")")),
+                Rule::Chain(1,TS("l")),
+                Rule::Chain(3,TS("i"),TS(","),NS("A")),
+                Rule::Chain(3,TS("l"),TS(","),NS("A")),
+                Rule::Chain(1,NS("E"))
+            }),
         };
 
         std::list<Rule> main_rules = {
@@ -190,7 +199,7 @@ namespace RULE {
             std::map<DataType::Type, std::list<DataType::Type>> save_convertable = {
                 {DataType::Type::Int, {DataType::Type::Short}},
                 {DataType::Type::String, {}},
-                {DataType::Type::Short,{}}
+                {DataType::Type::Short,{DataType::Type::Int}}
             };
         }
     }

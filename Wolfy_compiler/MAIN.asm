@@ -7,15 +7,14 @@ includelib vcruntime.lib
 includelib msvcprt.lib
 includelib WolfyConsoleLib.lib
 includelib Wolfy_standart_lib.lib
-		
-		
-foo0 PROTO
-print_massage1 PROTO 
+				
+
+foo0 PROTO 
 
 
+extern factorial0:proc
 extern is_equal0:proc
 extern save_is_equal0:proc
-extern factorial0: proc
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD
@@ -206,5 +205,7 @@ call foo0
 main ENDP
 
 END main
+
+
 
 END

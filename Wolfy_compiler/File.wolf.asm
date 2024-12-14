@@ -7,9 +7,10 @@ includelib vcruntime.lib
 includelib msvcprt.lib
 includelib WolfyConsoleLib.lib
 includelib Wolfy_standart_lib.lib
-<include>				
+				
 
-<function_proto>
+foo0 PROTO 
+
 
 extern factorial0:proc
 extern is_equal0:proc
@@ -20,19 +21,48 @@ print_int PROTO: DWORD
 print_newline PROTO
 
 .stack 4096				
-<stack>			
+			
 
 .CONST
-<const>
+
 
 .DATA
-<data>					
+foo0result DWORD 0
+					
 
 .CODE					
 
-<code>					
+foo0 PROC
 
-<main>
+    push ebp
+    mov ebp, esp
+
+    
+
+    
+push 10 
+
+call factorial0
+
+mov foo0result, eax 
+
+push foo0result
+
+call print_int
+mov eax, 25 
+mov foo0result, 0
+
+
+mov esp, ebp
+pop ebp
+ret 0
+
+
+
+foo0 ENDP
+					
+
+
 
 
 END

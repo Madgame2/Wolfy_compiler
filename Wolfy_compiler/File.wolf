@@ -1,1 +1,15 @@
-int a = 25;
+Global{
+	
+	short function foo ();
+}
+
+short function foo(){
+
+	int result;
+
+	result = factorial(10);
+	
+	console<< result;
+
+	return 25;
+}

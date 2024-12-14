@@ -10,7 +10,7 @@ namespace Error {
 
 	ERROR errors[ERROR_MAX_ENTRY] =
 	{
-		ERROR_ENTRY(0,"invalid error code"),
+		ERROR_ENTRY(0,"invalid error"),
 		ERROR_ENTRY(1,"System error"),
 		ERROR_ENTRY(2,"Lexem table overcrowded"),
 		ERROR_ENTRY(3,"Error in lexem id"),

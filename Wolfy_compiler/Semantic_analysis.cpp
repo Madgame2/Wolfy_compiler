@@ -4,13 +4,14 @@
 
 
 semantic::data::Func_sign* defoult_functions_sign(int& size) {
-	semantic::data::Func_sign* sign = new semantic::data::Func_sign[2];
+	semantic::data::Func_sign* sign = new semantic::data::Func_sign[3];
 
 
 	sign[0] = semantic::data::Func_sign(L"is_equal", DataType::Type::Int, { DataType::Type::String, DataType::Type::String });
 	sign[1] = semantic::data::Func_sign(L"save_is_equal", DataType::Type::Int, { DataType::Type::String, DataType::Type::String, DataType::Type::Int});
-	
-	size = 2;
+	sign[2] = semantic::data::Func_sign(L"factorial", DataType::Type::Int, { DataType::Type::Int});
+
+	size = 3;
 	return sign;
 }
 
@@ -504,7 +505,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 						}
 
 
-						if (retyrnable_type != type) {
+						if (!is_convertable_types(retyrnable_type, type)) {
 							throw Error::get_error_in(305, curent->line, curent->index);
 						}
 					}

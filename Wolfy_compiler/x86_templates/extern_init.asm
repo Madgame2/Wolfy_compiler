@@ -1,1 +1,1 @@
-extern  <func_name>
+extern  <func_name>: proc

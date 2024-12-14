@@ -1,0 +1,41 @@
+
+console<<"Hello  wolrd";
+console<<endl;
+console<<12;
+console<<endl;
+int a;
+
+console<<"how working if block: ";
+console<<endl;
+
+while(a<10){
+
+if(a%2 == 0 ){
+	console<<a;
+	console<<endl;
+}
+
+
+	a = a+1;
+}
+
+void function print_massage(string str){
+	console<<str;
+	console<<endl;
+	return;
+}
+
+
+print_massage("hello wolrd");
+
+int b;
+b = is_equal("hello","hello");
+
+console<<b;
+
+if(2+2){
+	console<<"hi";
+	console<<endl;
+}
+
+foo();
