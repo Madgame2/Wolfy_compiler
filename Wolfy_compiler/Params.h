@@ -19,10 +19,11 @@ namespace Param {
         };
 
         // Инициализация массива ключей
-        Key keys[1] = { 
-            Key(L"-in", 0) 
+        Key keys[2] = { 
+            Key(L"-in", 0),
+            Key(L"-log:",1)
         }; 
-        int lenght = 1;
+        int lenght = 2;
     };
 
 
@@ -37,6 +38,8 @@ namespace Param {
         param in;
 		//std::wstring* param_in =nullptr;
 		//wchar_t** 
+        param log;
+
 	};
 
 	Params getParams(int argc, wchar_t* argv[]);

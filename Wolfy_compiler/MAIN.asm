@@ -12,9 +12,12 @@ includelib Wolfy_standart_lib.lib
 foo0 PROTO 
 
 
-extern factorial0:proc
-extern is_equal0:proc
-extern save_is_equal0:proc
+;extern factorial0:proc
+;extern is_equal0:proc
+;extern save_is_equal0:proc
+is_equal0 PROTO: DWORD, :DWORD
+save_is_equal0 PROTO: DWORD, :DWORD, :DWORD
+factorial0 PROTO: DWORD
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD
@@ -34,31 +37,31 @@ L5 db "hi", 0
 
 
 .DATA
-MAINa DWORD 0
-print_massage1str DWORD 0
+MAIN0a DWORD 0
+print_massage0str DWORD 0
 MAINb DWORD 0
 MAINnew WORD 0
 					
 
 .CODE					
 
-print_massage1 PROC
+print_massage0 PROC
 
     push ebp
     mov ebp, esp
 
     mov eax, [ebp+8]
-mov print_massage1str, eax
+mov print_massage0str, eax
 
 
     
-push print_massage1str
+push print_massage0str
 
 call print_string
 
 call print_newline
 mov eax, 0
-mov print_massage1str, 0
+mov print_massage0str, 0
 
 
 mov esp, ebp
@@ -67,7 +70,7 @@ ret 4
 
 
 
-print_massage1 ENDP
+print_massage0 ENDP
 					
 
 main PROC
@@ -93,7 +96,7 @@ while_start0:
 
 push 10 
 
-push MAINa
+push MAIN0a
 
 pop eax
 pop ebx
@@ -105,7 +108,7 @@ push 0
 
 push 2 
 
-push MAINa
+push MAIN0a
 
 pop eax
 pop ebx
@@ -124,7 +127,7 @@ cmp eax, ebx
 jne skip0
 
 
-push MAINa
+push MAIN0a
 
 call print_int
 
@@ -137,7 +140,7 @@ skip0:
 
 push 1 
 
-push MAINa
+push MAIN0a
 
 pop eax
 pop ebx
@@ -145,7 +148,7 @@ add eax, ebx
  
 push eax
 
-pop MAINa
+pop MAIN0a
 
 
 jmp while_start0

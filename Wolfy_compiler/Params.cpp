@@ -60,11 +60,21 @@ Params Param::getParams(int argc, wchar_t* argv[])
 	Params params;
 	int mode = -1;
 	std::vector<wchar_t*> in;
+	std::wstring log = L"";
 	for (int i = 0; i < argc; i++) {
 
 		//Найден новый ключ
-		if (argv[i][0] == '-') {
+		if (argv[i][0] == '-'&& mode==-1) {
 			Read_new_key(argv[i], mode);
+		}
+		else {
+			switch (mode)
+			{
+			case 1:
+				throw Error::get_error(108);
+			default:
+				break;
+			}
 		}
 
 		switch (mode)
@@ -94,6 +104,32 @@ Params Param::getParams(int argc, wchar_t* argv[])
 
 			in.push_back(argv[i]);
 
+			break;
+		case 1:
+			if (argv[i][0] == '-' && argv[i][wcslen(argv[i] - 1)] != L':') {
+				wchar_t* end_of_key = wcschr(argv[i], L':');
+				wchar_t* begin = argv[i];
+
+				size_t param_size = wcslen(argv[i]);
+				if (end_of_key != nullptr && param_size != end_of_key - begin + 1) {
+					wchar_t* argv = end_of_key + 1; //new wchar_t[size+1];
+
+					if (log == L"") {
+						log = std::wstring(argv);
+						mode = -1;
+					}
+					else {
+						throw Error::get_error(109);
+					}
+				}
+				else {
+					//throw Error::get_error(103);
+				}
+				continue;
+			}
+
+			log = std::wstring(argv[i]);
+			mode = -1;
 			break;
 		}
 
@@ -152,6 +188,7 @@ bool Param::checking_in_params(Params& params)
 void Param::delete_all(Params& param)
 {
 	delete[] param.in.data;
+	delete[] param.log.data;
 }
 
 

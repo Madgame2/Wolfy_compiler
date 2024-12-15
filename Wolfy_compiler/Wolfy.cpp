@@ -11,6 +11,7 @@
 #include"Parser.h"
 #include"Semantic_analysis.h"
 #include"Code_generator.h"
+#include"Log.h"
 
 
 using namespace std;
@@ -80,6 +81,8 @@ void write_bat_file(const std::vector<std::wstring>& files) {
 
 int wmain(int argc, wchar_t* argv[]) {
 
+
+	LOG::LOG log_file;
 	try
 	{
 		Param::Params params = Param::getParams(argc, argv);
@@ -87,6 +90,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
 
 		in::IN input_files = in::get_IN(params);
+		log_file = LOG::init_LOG(params);
 
 		key_words::Key_words_table key_words;
 		key_words::Key_words_table::create_table(key_words);
@@ -94,6 +98,8 @@ int wmain(int argc, wchar_t* argv[]) {
 		map<wstring, LT::Lexem_table> LT_files;				//файл -> таблица лексем
 		map<wstring, ID::ID_table> ID_files;				//файл -> таблица индефикаторов
 		map<wstring, Lit_table::Literal_table> Lit_files;	//файл -> таблица литералов
+
+		LOG::WriteLog(log_file.stream);
 
 		lexer::parse(input_files, key_words,LT_files,ID_files,Lit_files);
 
@@ -138,6 +144,10 @@ int wmain(int argc, wchar_t* argv[]) {
 			}
 		}
 
+		for (auto& tree : file_structs) {
+			AST::delete_node(tree.second.root);
+		}
+
 		write_bat_file(out_file);
 
 		Param::delete_all(params);
@@ -152,5 +162,5 @@ int wmain(int argc, wchar_t* argv[]) {
 			cout << err.error_masage;
 		}
 	}
-
+	log_file.close_all();
 }

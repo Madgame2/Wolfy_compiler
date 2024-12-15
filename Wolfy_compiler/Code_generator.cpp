@@ -351,7 +351,8 @@ namespace CODE {
 
 	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions)
 	{
-		func_id = -1;
+		func_id = 0;
+		func_params = true;
 
 		std::ofstream out_file(name + L".asm");
 
@@ -413,6 +414,7 @@ namespace CODE {
 		std::stack<std::vector<std::wstring>> local_vars;
 		while (true)
 		{
+			func_id = 0;
 
 			curent = tree.DFS.Step();
 
@@ -664,7 +666,7 @@ namespace CODE {
 							write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_init], false);
 							//write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_proto], false);
 
-							insert_function_names(asm_code, wstring_to_string(func.name)+std::to_string(func.func_unick_id));
+							insert_function_names(asm_code, wstring_to_string(func.name)+'0');
 
 							local_vars.push(std::vector<std::wstring>());
 							is_functon_params = true;

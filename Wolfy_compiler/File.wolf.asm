@@ -12,9 +12,12 @@ includelib Wolfy_standart_lib.lib
 foo0 PROTO 
 
 
-extern factorial0:proc
-extern is_equal0:proc
-extern save_is_equal0:proc
+;extern factorial0:proc
+;extern is_equal0:proc
+;extern save_is_equal0:proc
+is_equal0 PROTO: DWORD, :DWORD
+save_is_equal0 PROTO: DWORD, :DWORD, :DWORD
+factorial0 PROTO: DWORD
 ExitProcess PROTO :DWORD
 print_string PROTO: DWORD
 print_int PROTO: DWORD

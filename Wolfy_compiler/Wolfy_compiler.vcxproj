@@ -29,6 +29,7 @@
     <ClCompile Include="Lexem_table.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="Litetral_table.cpp" />
+    <ClCompile Include="LOG.cpp" />
     <ClCompile Include="MFST.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="Parser.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="Lexem_table.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="Litetral_table.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="MFST.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Parser.h" />
