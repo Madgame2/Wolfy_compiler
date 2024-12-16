@@ -4,13 +4,17 @@ using namespace std;
 
 namespace LOG {
 
-	LOG init_LOG(Param::Params param)
+	LOG init_LOG(Param::Params& param)
 	{
 		LOG new_log;
 
 		new_log.file = param.log.data ? *param.log.data+L".log" : L"project_log.log";
 		new_log.stream = new std::ofstream(new_log.file);
 
+		if (!param.log.data) {
+			param.log.data = new wstring[1];
+			param.log.data[0] = new_log.file;
+		}
 		if (!new_log.stream->is_open()) {
 			throw Error::get_error(112);
 		}
@@ -78,7 +82,7 @@ namespace LOG {
 		log = converter.to_bytes(*parm.log.data);
 
 		for (int i = 0; i < parm.in.size; i++) {
-			in += converter.to_bytes(parm.in.data[i]);
+			in += converter.to_bytes(parm.in.data[i])+" ";
 		}
 
 		*stream << "----- Параметры -----" << endl <<

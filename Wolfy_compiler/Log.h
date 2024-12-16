@@ -18,7 +18,7 @@ namespace LOG {
 		void close_all();
 	};
 
-	LOG init_LOG(Param::Params param);
+	LOG init_LOG(Param::Params& param);
 	
 	void WriteLine(std::ostream* stream, string msg);		// Вывода одной строки в протокол char
 	void WriteLine(std::ostream* stream, wstring msg);	// Вывода одной строки в протокол wchar_t

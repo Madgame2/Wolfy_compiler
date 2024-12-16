@@ -3,6 +3,8 @@
 #include"Error.h"
 #include<string>
 #include<list>
+#include <locale>
+#include <codecvt>
 
 namespace Lit_table {
 	struct Element {
@@ -24,4 +26,6 @@ namespace Lit_table {
 
 	void add(Literal_table& table, Element elem);
 	Element& find(Literal_table& table, int id);
+
+	std::string to_string(Literal_table table);
 }

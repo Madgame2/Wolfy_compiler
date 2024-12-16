@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <list>
+#include <locale>
+#include <codecvt>
 #include"comon.h"
 #include"Error.h"
 
@@ -30,5 +32,6 @@ namespace ID {
     void add(ID_table& table ,Entry entry);
     Entry& getEntry(ID_table& table, int  id);
     int isId(ID_table& table, std::wstring name, std::wstring function_name);
+    std::string to_string(ID_table table);
 
 }

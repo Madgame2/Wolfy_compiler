@@ -100,8 +100,29 @@ int wmain(int argc, wchar_t* argv[]) {
 		map<wstring, Lit_table::Literal_table> Lit_files;	//файл -> таблица литералов
 
 		LOG::WriteLog(log_file.stream);
+		LOG::WriteParm(log_file.stream, params);
 
-		lexer::parse(input_files, key_words,LT_files,ID_files,Lit_files);
+
+		LOG::WriteLine(log_file.stream, "\nBEGINIGN LEXER");
+		lexer::parse(input_files, key_words,LT_files,ID_files,Lit_files,log_file.stream);
+
+		LOG::WriteLine(log_file.stream, "\nID tables:");
+		for (auto ID_table : ID_files) {
+			LOG::WriteLine(log_file.stream, ID_table.first);
+
+			std::string result = ID::to_string(ID_table.second);
+
+			LOG::WriteLine(log_file.stream, result);
+		}
+
+		LOG::WriteLine(log_file.stream, "\nLIT tables:");
+		for (auto Lit_table : Lit_files) {
+			LOG::WriteLine(log_file.stream, Lit_table.first);
+
+			std::string result = Lit_table::to_string(Lit_table.second);
+
+			LOG::WriteLine(log_file.stream, result);
+		}
 
 		map<std::wstring, AST::program_struct> file_structs;
 		for (auto& elem : LT_files) {
@@ -161,6 +182,7 @@ int wmain(int argc, wchar_t* argv[]) {
 		else {
 			cout << err.error_masage;
 		}
+		LOG::WriteError(log_file.stream, err);
 	}
 	log_file.close_all();
 }

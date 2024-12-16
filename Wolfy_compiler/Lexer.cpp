@@ -85,7 +85,7 @@ list<wstring> divid_str(wstring source_code) {
 
 	//for (auto elem : words) {
 	//	wcout << elem;
-	//	cout << '\n';
+	//	*log << '\n';
 	//}
 
 	return words;
@@ -170,7 +170,8 @@ void  clear_context(stack<wstring>& context) {
 		context.pop();
 	}
 }
-void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line) {
+
+void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, ofstream* log) {
 	LT::Entry new_entry;
 	memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)lexem, sizeof(new_entry.lexema) - 1);
 	new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
@@ -180,11 +181,11 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line) {
 	//table.size++;
 
 #ifdef DEBUG
-	cout << new_entry.lexema;
+	*log << new_entry.lexema;
 #endif // DEBUG
 
 }
-void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, int id, int key) {
+void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, int id, int key, ofstream* log) {
 	LT::Entry new_entry;
 	memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)lexem, sizeof(new_entry.lexema) - 1);
 	new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
@@ -202,11 +203,11 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, in
 	//table.size++;
 
 #ifdef DEBUG
-	cout << new_entry.lexema;
+	*log << new_entry.lexema;
 #endif // DEBUG
 
 }
-void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
+void create_LexT_element(LT::Lexem_table& table, char lexem, int line, ofstream* log) {
 	LT::Entry new_entry;
 
 	new_entry.lexema[0] = lexem;
@@ -217,7 +218,7 @@ void create_LexT_element(LT::Lexem_table& table, char lexem, int line) {
 
 
 #ifdef DEBUG
-	cout << new_entry.lexema;
+	*log << new_entry.lexema;
 #endif // DEBUG
 
 }
@@ -234,7 +235,7 @@ bool is_global = false;
 void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 	std::map<wstring, LT::Lexem_table>& LT_files,
 	std::map<wstring, ID::ID_table>& ID_files,
-	std::map<wstring, Lit_table::Literal_table>& Lit_files) {
+	std::map<wstring, Lit_table::Literal_table>& Lit_files, ofstream* log) {
 
 
 	std::unordered_set<wchar_t> specialChars = {
@@ -311,7 +312,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 					last_lit_id++;
 
 					create_LitT_lement(Lit_files[file_name], lit_buffer, DataType::Type::String);
-					create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY);
+					create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY, log);
 
 					lit_buffer.clear();
 					is_word_leteral = false;
@@ -346,7 +347,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 						context_stack.push(word);
 
-						create_LexT_element(LT_files[file_name], key_words.get_element(id).lexem, line);
+						create_LexT_element(LT_files[file_name], key_words.get_element(id).lexem, line, log);
 
 					}
 					else if (word == L"==") {
@@ -362,7 +363,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.source_code_line = line;
 
 #ifdef DEBUG
-						cout << new_entry.lexema;
+						*log << new_entry.lexema;
 #endif // DEBUG
 
 						LT::add(LT_files[file_name], new_entry);
@@ -381,7 +382,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.source_code_line = line;
 
 #ifdef DEBUG
-						cout << new_entry.lexema;
+						*log << new_entry.lexema;
 #endif // DEBUG
 
 						LT::add(LT_files[file_name], new_entry);
@@ -400,7 +401,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.source_code_line = line;
 
 #ifdef DEBUG
-						cout << new_entry.lexema;
+						*log << new_entry.lexema;
 #endif // DEBUG
 
 						LT::add(LT_files[file_name], new_entry);
@@ -419,7 +420,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.source_code_line = line;
 
 #ifdef DEBUG
-						cout << new_entry.lexema;
+						*log << new_entry.lexema;
 #endif // DEBUG
 
 						LT::add(LT_files[file_name], new_entry);
@@ -438,7 +439,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.source_code_line = line;
 
 #ifdef DEBUG
-						cout << new_entry.lexema;
+						*log << new_entry.lexema;
 #endif // DEBUG
 
 						LT::add(LT_files[file_name], new_entry);
@@ -494,7 +495,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						case L'|':
 							line++;
 							word_index = 0;
-							cout << '\n';   // ƒÀﬂ Œ“À¿ƒ » 
+							*log << '\n';   // ƒÀﬂ Œ“À¿ƒ » 
 							continue;
 
 							break;
@@ -558,7 +559,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							clear_context(context_stack);
 							break;
 						case '}':
-							create_LexT_element(LT_files[file_name], word[0], line);
+							create_LexT_element(LT_files[file_name], word[0], line,log);
 							if (is_global) {
 								is_global = false;
 								file_name = buffer_name;
@@ -572,7 +573,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							clear_context(context_stack);
 							break;
 						}
-						create_LexT_element(LT_files[file_name], word[0], line);
+						create_LexT_element(LT_files[file_name], word[0], line,log);
 
 						context_stack.push(word);
 					}
@@ -583,7 +584,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							last_lit_id++;
 
 							create_LitT_lement(Lit_files[file_name], word, DataType::Type::Int);
-							create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY);
+							create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY,log);
 
 							get_litContext(Lit_files[file_name].table.back(), context_stack, key_words);
 						}
@@ -629,7 +630,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 						LT::add(LT_files[file_name], new_entry);
 
-						cout << new_entry.lexema;
+						*log << new_entry.lexema;
 						continue;
 					}
 
@@ -655,7 +656,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 //
 //	in::IN input_files = in::get_IN(param);
 //
-//	cout << '\n';
+//	*log << '\n';
 //
 //	key_words::Key_words_table key_words;
 //	key_words::Key_words_table::create_table(key_words);
@@ -665,7 +666,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 //	map<wstring, Lit_table::Literal_table> Lit_files;	//Ù‡ÈÎ -> Ú‡·ÎËˆ‡ ÎËÚÂ‡ÎÓ‚
 //
 //	lexer::parse(input_files, key_words, LT_files, ID_files, Lit_files);
-//	cout << "\n";
+//	*log << "\n";
 //	//parser::Parse(LT_files[L"file1.wolf"]);
 //
 //	for (auto elem : LT_files) {
@@ -673,13 +674,13 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 //		
 //		for (int i = 0; i < elem.second.size; i++) {
 //			if (elem.second.table[i].lexema[0] == '|') {
-//				cout << endl;
+//				*log << endl;
 //			}
 //			else {
-//				cout << elem.second.table[i].lexema;
+//				*log << elem.second.table[i].lexema;
 //			}
 //		}
-//		cout << endl;
+//		*log << endl;
 //
 //	}
 //
