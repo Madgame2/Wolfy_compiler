@@ -124,16 +124,18 @@ int wmain(int argc, wchar_t* argv[]) {
 			LOG::WriteLine(log_file.stream, result);
 		}
 
+		LOG::WriteLine(log_file.stream, "\nBEGINIGN PARSER");
 		map<std::wstring, AST::program_struct> file_structs;
 		for (auto& elem : LT_files) {
+			LOG::WriteLine(log_file.stream, elem.first);
 			if (elem.first == L"MAIN") {
 
 
-				AST::program_struct tree = parser::Parse(elem.second, ID_files[L"MAIN"], MAIN);
+				AST::program_struct tree = parser::Parse(elem.second, ID_files[L"MAIN"], MAIN, log_file.stream);
 				file_structs[L"MAIN"] = tree;
 			}
 			else {
-				AST::program_struct tree = parser::Parse(elem.second, ID_files[elem.first], GENERAl);
+				AST::program_struct tree = parser::Parse(elem.second, ID_files[elem.first], GENERAl, log_file.stream);
 				file_structs[elem.first] = tree;
 			}
 		}
@@ -153,11 +155,14 @@ int wmain(int argc, wchar_t* argv[]) {
 			}
 		}
 
+		LOG::WriteLine(log_file.stream, "CODE GENERATION");
 		std::vector<std::wstring> out_file;
 		for (auto& elem : file_structs) {
+
 			if (elem.first == L"GLOBAL") {
 				continue;
 			}
+			LOG::WriteLine(log_file.stream, elem.first+L".asm");
 
 			if (elem.second.root != nullptr) {
 				CODE::generate_code(elem.first, elem.second, ID_files[elem.first], Lit_files[elem.first], global_functions);
@@ -173,6 +178,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
 		Param::delete_all(params);
 
+		std::cout << "compilation was successful";
 	}
 	catch (Error::ERROR& err)
 	{

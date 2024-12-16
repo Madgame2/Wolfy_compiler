@@ -34,7 +34,7 @@ namespace MFST {
 		mfst.buffer.push(grb.end);
 		mfst.buffer.push(grb.Start);
 	}
-	Results MFST::step(int& error_code, int& chain_size)
+	Results MFST::step(int& error_code, int& chain_size, std::string& log)
 	{
 
 		if (lenta_size == 0) return Results::FILE_EMPTY;
@@ -102,6 +102,19 @@ namespace MFST {
 				}
 			};
 
+			short NT = buffer.top();
+
+			std::string  chain_s = "";
+
+			chain_s += (char)-NT;
+			chain_s += " -> ";
+
+			for (auto elem : chain.elements) {
+				chain_s += elem > 0 ? (char)elem : (char)-elem;
+			}
+
+			log += chain_s;
+
 			chain_size = chain.elements.size();
 			error_code = grb.getRule(this->buffer.top()).error_id;
 			make_save(this->lenta_position, this->buffer, chain_id,is_notTerm);
@@ -124,6 +137,8 @@ namespace MFST {
 				//Двишаем ленту 
 			}
 			else {
+
+				log = "RESET";
 				return Results::FRONG_SYMBOL;
 				//возрашаем ошибку: символы не совпадают
 			}

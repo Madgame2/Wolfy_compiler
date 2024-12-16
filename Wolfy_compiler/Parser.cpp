@@ -71,7 +71,7 @@ namespace parser {
 		return new_node;
 	}
 
-	AST::program_struct Parse(LT::Lexem_table table, ID::ID_table id_table, std::list<Rule> rules)
+	AST::program_struct Parse(LT::Lexem_table table, ID::ID_table id_table, std::list<Rule> rules, std::ofstream* log)
 	{
 		info data;
 
@@ -100,27 +100,45 @@ namespace parser {
 
 
 			//ќ“ладка
+			std::string stack_str;
 			while (!buffer_temp_mfst.empty()) {
-				std::cout << (grb.isT(buffer_temp_mfst.top()) ? (char)buffer_temp_mfst.top() : (char)(-(buffer_temp_mfst.top())));
+				stack_str +=(grb.isT(buffer_temp_mfst.top()) ? (char)buffer_temp_mfst.top() : (char)(-(buffer_temp_mfst.top())));
 				buffer_temp_mfst.pop();
 			}
-			std::cout << '\n';
+			//std::cout << '\n';
 
 			auto buffer_temp = NT_node_struct;
+			std::string nT_stack;
+			bool was_E = false;
 			while (!buffer_temp.empty())
 			{
-				std::cout << buffer_temp.top().curent_node->symbol << ' ' << buffer_temp.top().count_rules<<" is_expression: "<< buffer_temp.top().is_expression << std::endl;
+				if (buffer_temp.top().curent_node->symbol[0] == 'E'|| buffer_temp.top().curent_node->symbol[0] == 'O') {
+					if (!was_E) {
+						was_E = true;
+					}
+					else {
+						buffer_temp.pop();
+						continue;
+					}
+				}
+				nT_stack += std::string(buffer_temp.top().curent_node->symbol);
+				nT_stack += ' ' + std::to_string(buffer_temp.top().count_rules);
+				nT_stack += " is_expression: ";
+				nT_stack += buffer_temp.top().is_expression ? "True" : "False";
+				nT_stack += '\n';
 				buffer_temp.pop();
 			}
-			std::cout << "---------------------------" << std::endl;
 
 
 			int chain_size;
 			int error;
 			GRBALPHABET GRB_buffer = mfst.buffer.top();
-			MFST::Results res = mfst.step(data.error, chain_size);
+			std::string selected_rule;
+			MFST::Results res = mfst.step(data.error, chain_size,selected_rule);
 
-
+			*log << "\n----------------------------------------------------------------------\n";
+			*log << selected_rule<< "\t\t" << stack_str << '\n';
+			*log << nT_stack<<'\n';
 
 			int error_count = 0;
 			switch (res)
@@ -286,20 +304,24 @@ namespace parser {
 
 		}
 
-		std::cout << "------------------------------------------------------" << std::endl;
+
+		*log << "\nBEGINIG POLISH ENTRY\n";
 		for (auto& elem : data.expressions) {
-			std::cout << elem.first->symbol << std::endl;
 
-
+			*log << "expresion:  ";
 			std::list<LT::Entry> temp;
 			for (int i = elem.second.begin; i <= elem.second.end; i++) {
-				std::cout << table.table[i].lexema;
+				*log << table.table[i].lexema;
 				temp.push_back(table.table[i]);
 			}
 			
+
 			AST::node** ref = AST::get_node_ref(elem.second.prerent_node, elem.first);
 			AST::delete_node(elem.first);
-			*ref = POL::build_tree(temp, id_table);
+			*log << " poland: ";
+			*ref = POL::build_tree(temp, id_table,log);
+
+			*log << '\n';
 		}
 
 

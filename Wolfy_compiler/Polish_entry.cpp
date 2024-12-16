@@ -173,15 +173,15 @@ namespace POL {
 	}
 
 
-	AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table& table) {
+	AST::node* build_tree(std::list<LT::Entry> expression, ID::ID_table& table, std::ofstream* log) {
 		// ѕреобразуем выражение в обратную польскую запись
 		std::list<LT::Entry> polish_expr = build_polish_entry(expression,table);
-		std::cout << "End build polish entry\n";
+
 
 		for (auto elem : polish_expr) {
-			std::cout << elem.lexema;
+			*log << elem.lexema;
 		}
-		std::cout << std::endl;
+		*log << std::endl;
 
 		// ѕреобразуем в список узлов
 		std::list<AST::node*> node_list = refactor_list(polish_expr);
@@ -261,7 +261,7 @@ namespace POL {
 			}
 		}
 
-		std::cout << '\n';
+		*log << '\n';
 		return buffer.top();
 	}
 }

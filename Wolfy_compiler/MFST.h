@@ -28,7 +28,7 @@ namespace MFST {
 
 		bool is_notTerm = false;
 
-		Results step(int& error_code, int& chain_size);
+		Results step(int& error_code, int& chain_size,std::string& log);
 
 		void make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer);
 		void make_save(unsigned int lenta, std::stack<GRBALPHABET> buffer, unsigned int n_chain, bool mode);

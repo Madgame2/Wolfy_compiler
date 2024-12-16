@@ -6,6 +6,7 @@
 #include <sstream>
 #include <codecvt>
 #include <stdexcept>
+#include <fstream>
 #include<map>
 #include"Rules.h"
 #include"AST.h"
