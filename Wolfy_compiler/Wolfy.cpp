@@ -165,7 +165,7 @@ int wmain(int argc, wchar_t* argv[]) {
 			LOG::WriteLine(log_file.stream, elem.first+L".asm");
 
 			if (elem.second.root != nullptr) {
-				CODE::generate_code(elem.first, elem.second, ID_files[elem.first], Lit_files[elem.first], global_functions);
+				CODE::generate_code(elem.first, elem.second, ID_files[elem.first], Lit_files[elem.first], global_functions, log_file.stream);
 				out_file.push_back(elem.first);
 			}
 		}

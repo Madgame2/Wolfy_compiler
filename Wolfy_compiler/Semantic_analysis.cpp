@@ -278,8 +278,6 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 			break;
 		}
 
-		std::cout << curent->symbol << std::endl;
-
 
 		if (curent->is_expression) {
 

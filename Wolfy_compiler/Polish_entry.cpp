@@ -1,5 +1,4 @@
 #include"Polish_entry.h"
-#include<iostream>
 
 namespace POL {
 
@@ -28,12 +27,6 @@ namespace POL {
 	}
 
 	std::list<LT::Entry> build_polish_entry(std::list<LT::Entry> expression, ID::ID_table& id_table) {
-
-		std::cout << "build polish entry:\n";
-		for (auto& elem : expression) {
-			std::cout << elem.lexema;
-		}
-		std::cout << '\n';
 
 		bool is_func = false;
 		bool first_param = false;

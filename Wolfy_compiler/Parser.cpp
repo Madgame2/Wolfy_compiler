@@ -146,11 +146,6 @@ namespace parser {
 			case MFST::Results::OK_RESUULT:
 				
 			{
-				//if (table.table[data.index].IT_index != -1) {
-				//	if (ID::getEntry(id_table, table.table[data.index].IT_index).id_type == IDType::Type::Func) {
-				//		last_func_id = &ID::getEntry(id_table, table.table[data.index].IT_index);
-				//	}
-				//}
 
 				while (NT_node_struct.top().count_rules <= 0) {
 					bool buffer = NT_node_struct.top().is_expression;
@@ -161,10 +156,6 @@ namespace parser {
 					if (buffer == true && NT_node_struct.top().is_expression == false) {
 						//тут строим польскую запись
 						data.expressions[buffer_node].end = data.index-1;
-						
-
-						std::cout << "build poland" << std::endl;
-						std::cout << data.expressions[buffer_node].begin << " - " << data.expressions[buffer_node].end << std::endl;
 					}
 				}
 
@@ -186,10 +177,6 @@ namespace parser {
 					if (buffer == true && NT_node_struct.top().is_expression == false) {
 						//тут строим польскую запись
 						data.expressions[buffer_node].end = data.index;
-
-
-						std::cout << "build poland" << std::endl;
-						std::cout << data.expressions[buffer_node].begin << " - " << data.expressions[buffer_node].end << std::endl;
 					}
 				}
 

@@ -349,7 +349,7 @@ namespace CODE {
 		}
 	}
 
-	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions)
+	void generate_code(std::wstring name, AST::program_struct tree, ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions, std::ofstream* log)
 	{
 		func_id = 0;
 		func_params = true;
@@ -1032,8 +1032,7 @@ namespace CODE {
 						buffer = curent;
 					}
 
-					std::cout << "------------------------------------------------------------------------------" << std::endl;
-					std::cout << asm_code << std::endl;
+
 					befor_minus = false;
 				}
 
@@ -1048,6 +1047,9 @@ namespace CODE {
 			}
 		}
 		clear_all_tags(asm_code);
+
+		*log << "------------------------------------------------------------------------------" << std::endl;
+		*log << asm_code << std::endl;
 
 		out_file << asm_code;
 

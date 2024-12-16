@@ -3,10 +3,10 @@
 #include<list>
 #include<string>
 #include<fstream>
-#include <sstream>
-#include <codecvt>
-#include <stdexcept>
-#include <fstream>
+#include<sstream>
+#include<codecvt>
+#include<stdexcept>
+#include<fstream>
 #include<map>
 #include"Rules.h"
 #include"AST.h"
@@ -16,7 +16,7 @@
 
 namespace CODE {
 
-	void generate_code(std::wstring name, AST::program_struct tree,ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions);
+	void generate_code(std::wstring name, AST::program_struct tree,ID::ID_table id_table, Lit_table::Literal_table lit_table, std::list<semantic::data::global_elem> global_functions, std::ofstream* log);
 
 	struct templates {
 		std::map<RULE::CODE::comand, RULE::CODE::templates> template_asm;
