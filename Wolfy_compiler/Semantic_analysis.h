@@ -49,10 +49,9 @@ namespace semantic {
 			}
 
 			bool operator ==(Func_sign referens) {
-				if (this->function_name == referens.function_name) {
-					return true;
+				if (this->function_name != referens.function_name) {
+					return false;
 				}
-				return false;
 				if (this->params.size() != referens.params.size()) {
 					return false;
 				}

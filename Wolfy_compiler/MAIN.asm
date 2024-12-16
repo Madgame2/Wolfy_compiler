@@ -159,6 +159,10 @@ push offset L2
 
 call print_massage0
 
+push 123 
+
+call print_massage0
+
 push offset L4
 
 push offset L3

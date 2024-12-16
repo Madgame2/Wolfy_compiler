@@ -122,28 +122,28 @@ void check_lit_struct(Lit_table::Element& lit,AST::node*curent) {
 	case notations::notation::Dec:
 		
 		if (!is_only_dec(lit.value)) {
-			throw Error::get_error_in(605, curent->line, curent->index);
+			throw Error::get_error_in(605, lit.line, lit.pos);
 		}
 
 		break;
 	case notations::notation::Bin:
 
 		if (!is_only_bin(lit.value)) {
-			throw Error::get_error_in(605, curent->line, curent->index);
+			throw Error::get_error_in(605, lit.line, lit.pos);
 		}
 
 		break;
 	case notations::notation::oct:
 
 		if (!is_only_oct(lit.value)) {
-			throw Error::get_error_in(605, curent->line, curent->index);
+			throw Error::get_error_in(605, lit.line, lit.pos);
 		}
 
 		break;
 	case notations::notation::Hex:
 
 		if (!is_only_Hex(lit.value)) {
-			throw Error::get_error_in(605, curent->line, curent->index);
+			throw Error::get_error_in(605, lit.line, lit.pos);
 		}
 
 		break;
@@ -445,12 +445,12 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 				}
 				else if ((strcmp(curent->symbol, "l") == 0) || (strcmp(curent->symbol, "i") == 0)) {
 					if(curent->is_param){
-						DataType::Type type;
+						DataType::Type* type;
 						int id = curent->table_id;
 						if (curent->type == AST::node_type::ID) {
 
 							try {
-								type = *area_visibilyty.getvar(ID::getEntry(id_table, id).name).d_type;
+								type = area_visibilyty.getvar(ID::getEntry(id_table, id).name).d_type;
 								get_conntext(ID::getEntry(id_table, curent->table_id), area_visibilyty);
 							}
 							catch(...){
@@ -461,14 +461,14 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 						}
 						else if(curent->type == AST::node_type::Lit)
 						{
-							type = Lit_table::find(lit_table, id).d_type;
+							type = &Lit_table::find(lit_table, id).d_type;
 
 							check_lit_struct(Lit_table::find(lit_table, id),curent);
 
 						}
 
 
-						buffer_sing.top().params.push_back(&type);
+						buffer_sing.top().params.push_back(type);
 					}
 					else if ((strcmp(buffer->symbol, "i") == 0)) {
 
@@ -762,7 +762,7 @@ bool semantic::scope::scope::has_this_var(std::wstring name)
 }
 
 bool equal_sign(semantic::data::Func_sign elem1, semantic::data::Func_sign elem2) {
-	if (elem1 == elem2) {
+	if (elem1.function_name == elem2.function_name) {
 		return true;
 	}
 	return false;
