@@ -171,11 +171,12 @@ void  clear_context(stack<wstring>& context) {
 	}
 }
 
-void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, ofstream* log) {
+void create_LexT_element(LT::Lexem_table& table, const char* lexem,int pos, int line, ofstream* log) {
 	LT::Entry new_entry;
 	memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)lexem, sizeof(new_entry.lexema) - 1);
 	new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
 	new_entry.source_code_line = line;
+	new_entry.pos = pos;
 
 	LT::add(table, new_entry);
 	//table.size++;
@@ -185,11 +186,12 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, of
 #endif // DEBUG
 
 }
-void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, int id, int key, ofstream* log) {
+void create_LexT_element(LT::Lexem_table& table, const char* lexem, int pos, int line, int id, int key, ofstream* log) {
 	LT::Entry new_entry;
 	memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)lexem, sizeof(new_entry.lexema) - 1);
 	new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
 	new_entry.source_code_line = line;
+	new_entry.pos = pos;
 
 	if (key == LIT_KEY) {
 		new_entry.Lit_index = id;
@@ -207,11 +209,13 @@ void create_LexT_element(LT::Lexem_table& table, const char* lexem, int line, in
 #endif // DEBUG
 
 }
-void create_LexT_element(LT::Lexem_table& table, char lexem, int line, ofstream* log) {
+void create_LexT_element(LT::Lexem_table& table, char lexem, int pos, int line, ofstream* log) {
 	LT::Entry new_entry;
 
 	new_entry.lexema[0] = lexem;
 	new_entry.lexema[1] = '\0';
+	new_entry.pos = pos;
+	new_entry.source_code_line = line;
 
 	LT::add(table, new_entry);
 	//table.size++;
@@ -314,7 +318,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 					last_lit_id++;
 
 					create_LitT_lement(Lit_files[file_name], lit_buffer, DataType::Type::String,line,word_index);
-					create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY, log);
+					create_LexT_element(LT_files[file_name], LEX_LET,word_index, line, last_lit_id, LIT_KEY, log);
 
 					lit_buffer.clear();
 					is_word_leteral = false;
@@ -349,7 +353,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 						context_stack.push(word);
 
-						create_LexT_element(LT_files[file_name], key_words.get_element(id).lexem, line, log);
+						create_LexT_element(LT_files[file_name], key_words.get_element(id).lexem, word_index,line, log);
 
 					}
 					else if (word == L"==") {
@@ -382,6 +386,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.lexema[1] = '\0';
 						new_entry.is_double_oeration = true;
 						new_entry.source_code_line = line;
+						new_entry.pos = word_index;
 
 #ifdef DEBUG
 						*log << new_entry.lexema;
@@ -401,6 +406,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.lexema[1] = '\0';
 						new_entry.is_double_oeration = true;
 						new_entry.source_code_line = line;
+						new_entry.pos = word_index;
 
 #ifdef DEBUG
 						*log << new_entry.lexema;
@@ -420,6 +426,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.lexema[1] = '\0';
 						new_entry.console_operations = true;
 						new_entry.source_code_line = line;
+						new_entry.pos = word_index;
 
 #ifdef DEBUG
 						*log << new_entry.lexema;
@@ -439,6 +446,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						new_entry.lexema[1] = '\0';
 						new_entry.console_operations = true;
 						new_entry.source_code_line = line;
+						new_entry.pos = word_index;
 
 #ifdef DEBUG
 						*log << new_entry.lexema;
@@ -561,7 +569,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							clear_context(context_stack);
 							break;
 						case '}':
-							create_LexT_element(LT_files[file_name], word[0], line,log);
+							create_LexT_element(LT_files[file_name], word[0], word_index,line,log);
 							if (is_global) {
 								is_global = false;
 								file_name = buffer_name;
@@ -575,7 +583,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							clear_context(context_stack);
 							break;
 						}
-						create_LexT_element(LT_files[file_name], word[0], line,log);
+						create_LexT_element(LT_files[file_name], word[0], word_index, line,log);
 
 						context_stack.push(word);
 					}
@@ -586,7 +594,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 							last_lit_id++;
 
 							create_LitT_lement(Lit_files[file_name], word, DataType::Type::Int,line,word_index);
-							create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY,log);
+							create_LexT_element(LT_files[file_name], LEX_LET, word_index,line, last_lit_id, LIT_KEY,log);
 
 							get_litContext(Lit_files[file_name].table.back(), context_stack, key_words);
 						}

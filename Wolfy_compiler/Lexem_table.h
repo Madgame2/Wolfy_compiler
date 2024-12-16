@@ -33,6 +33,7 @@ namespace LT {
 	struct Entry {
 		char lexema[LEXEMA_SIZE+1];
 		unsigned int source_code_line = 0;
+		int pos = 0;
 		int IT_index = -1;
 		int Lit_index = -1;
 

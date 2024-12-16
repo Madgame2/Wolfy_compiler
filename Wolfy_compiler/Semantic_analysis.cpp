@@ -787,24 +787,10 @@ bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func, std:
 
 	int index = 0;
 	for (auto& func : list) {
-		if (func.function_name == last_func->function_name) {
+		if (index != list.size() - 1) {
+			if (func.function_name == last_func->function_name) {
 
-			if (func.params.size() == last_func->params.size()) {
-
-				if (index != list.size()-1) {
-					if (func.params.empty()) return true;
-
-					int param_size = func.params.size();
-					for (int i = 0; i < param_size; i++) {
-						if (func.params[i] != last_func->params[i]) {
-							return false;
-						}
-					}
-					return true;
-				}
-				else {
-					return false;
-				}
+				return true;
 			}
 		}
 		index++;
