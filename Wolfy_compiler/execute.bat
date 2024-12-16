@@ -26,7 +26,7 @@ if %errorlevel% neq 0 (
 
 rem Линковка
 echo linking object files
-%linker% %linker_flags% "File.wolf.obj" "MAIN.obj" "WolfyConsoleLib.lib" "Wolfy_standart_lib.lib" /out:main.exe
+%linker% %linker_flags% "File.wolf.obj" "MAIN.obj" "WolfyConsoleLib.lib" "Wolfy_standart_lib.lib" /out:program.exe
 if %errorlevel% neq 0 (
     echo Linking error!
     pause

@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void write_bat_file(const std::vector<std::wstring>& files) {
+void write_bat_file(const std::vector<std::wstring>& files, std::wstring out) {
 	// Открываем файл для записи
 	setlocale(LC_ALL, "rus");
 
@@ -55,6 +55,8 @@ void write_bat_file(const std::vector<std::wstring>& files) {
 		out_bat << "\"" << file_str << ".asm\" ";
 		object_files += "\"" + file_str + ".obj\" ";
 	}
+	std::string s_out(out.begin(), out.end());
+
 	out_bat << "\n";
 	out_bat << "if %errorlevel% neq 0 (\n";
 	out_bat << "    pause\n";
@@ -64,7 +66,7 @@ void write_bat_file(const std::vector<std::wstring>& files) {
 	out_bat << "rem Линковка\n";
 	out_bat << "echo linking object files\n";
 	out_bat << "%linker% %linker_flags% " << object_files;
-	out_bat << "\"WolfyConsoleLib.lib\" \"Wolfy_standart_lib.lib\" /out:main.exe\n";
+	out_bat << "\"WolfyConsoleLib.lib\" \"Wolfy_standart_lib.lib\" /out:"<< s_out <<"\n";
 	out_bat << "if %errorlevel% neq 0 (\n";
 	out_bat << "    echo Linking error!\n";
 	out_bat << "    pause\n";
@@ -179,7 +181,7 @@ int wmain(int argc, wchar_t* argv[]) {
 			AST::delete_node(tree.second.root);
 		}
 
-		write_bat_file(out_file);
+		write_bat_file(out_file,*params.out.data);
 
 		Param::delete_all(params);
 

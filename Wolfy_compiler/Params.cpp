@@ -61,6 +61,7 @@ Params Param::getParams(int argc, wchar_t* argv[])
 	int mode = -1;
 	std::vector<wchar_t*> in;
 	std::wstring log = L"";
+	std::wstring out = L"";
 	for (int i = 0; i < argc; i++) {
 
 		//Найден новый ключ
@@ -70,6 +71,9 @@ Params Param::getParams(int argc, wchar_t* argv[])
 		else {
 			switch (mode)
 			{
+			case 2:
+				throw Error::get_error(107);
+				break;
 			case 1:
 				throw Error::get_error(108);
 			default:
@@ -131,6 +135,33 @@ Params Param::getParams(int argc, wchar_t* argv[])
 			log = std::wstring(argv[i]);
 			mode = -1;
 			break;
+
+		case 2:
+			if (argv[i][0] == '-' && argv[i][wcslen(argv[i] - 1)] != L':') {
+				wchar_t* end_of_key = wcschr(argv[i], L':');
+				wchar_t* begin = argv[i];
+
+				size_t param_size = wcslen(argv[i]);
+				if (end_of_key != nullptr && param_size != end_of_key - begin + 1) {
+					wchar_t* argv = end_of_key + 1; //new wchar_t[size+1];
+
+					if (out == L"") {
+						out = std::wstring(argv);
+						mode = -1;
+					}
+					else {
+						throw Error::get_error(106);
+					}
+				}
+				else {
+					//throw Error::get_error(103);
+				}
+				continue;
+			}
+
+			out = std::wstring(argv[i]);
+			mode = -1;
+			break;
 		}
 
 	}
@@ -158,6 +189,9 @@ Params Param::getParams(int argc, wchar_t* argv[])
 	params.in.data = in_str;
 	params.in.size = in.size();
 
+	params.log.data = new std::wstring(log);
+	params.out.data = new std::wstring(out);
+
 	return params;
 }
 
@@ -166,6 +200,8 @@ bool Param::checking_in_params(Params& params)
 {
 
 	param& in = params.in;
+	param& log = params.log;
+	param& out = params.out;
 
 	if (in.size == 0) throw Error::get_error(102);
 
@@ -181,6 +217,13 @@ bool Param::checking_in_params(Params& params)
 		}
 	}
 
+	if (*log.data == L"") {
+		*log.data = L"program.log";
+	}
+
+	if (*out.data == L"") {
+		*out.data = L"program.exe";
+	}
 
 	return true;
 }
@@ -188,7 +231,8 @@ bool Param::checking_in_params(Params& params)
 void Param::delete_all(Params& param)
 {
 	delete[] param.in.data;
-	delete[] param.log.data;
+	delete param.log.data;
+	delete param.out.data;
 }
 
 
