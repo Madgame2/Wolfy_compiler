@@ -1,6 +1,7 @@
 #pragma once
 #include<string>
 #include<vector>
+#include <limits>
 #include"AST.h"
 #include"Identification_table.h"
 #include"Litetral_table.h"

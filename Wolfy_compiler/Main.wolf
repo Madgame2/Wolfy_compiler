@@ -1,5 +1,6 @@
-short new_short = 6234;
+Global{
 
+}
 console<<"Hello  wolrd";
 console<<endl;
 console<<12;
@@ -19,6 +20,9 @@ if(a%2 == 0 ){
 
 	a = a+1;
 }
+
+
+
 
 void function print_massage(string str){
 	console<<str;

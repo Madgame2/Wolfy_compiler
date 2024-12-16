@@ -7,7 +7,7 @@
 
 namespace CODE {
 
-	int func_id = -1;
+	int func_id = 0;
 	bool func_params = false;
 
 	std::string wstring_to_string(const std::wstring& wstr) {
@@ -82,7 +82,7 @@ namespace CODE {
 		size_t var_name_pos = source_code.find("<var>");
 		if (var_name_pos != std::string::npos) {
 			delite_tag(source_code, "<var>", var_name_pos);
-			std::wstring area = func_params ? varr.area + std::to_wstring(func_id) : varr.area;
+			std::wstring area = func_params ? varr.area + std::to_wstring(0) : varr.area;
 			source_code.insert(var_name_pos, wstring_to_string(area  + varr.name));
 		}
 
@@ -156,7 +156,7 @@ namespace CODE {
 			if (pos != std::string::npos) {
 				delite_tag(source_code, "<value>", pos);
 
-				std::wstring area = func_params ? id.area + std::to_wstring(func_id) : id.area;
+				std::wstring area = func_params ? id.area + std::to_wstring(0) : id.area;
 				if (negative) {
 					//негатива добавит 
 
@@ -600,7 +600,7 @@ namespace CODE {
 							varr_init = true;
 
 							if (!local_vars.empty()) {
-								local_vars.top().push_back(id.area+ std::to_wstring(func_id) + id.name);
+								local_vars.top().push_back(id.area+ std::to_wstring(0) + id.name);
 							}
 
 							if (id.d_type == DataType::Type::String) {
@@ -670,14 +670,14 @@ namespace CODE {
 
 							local_vars.push(std::vector<std::wstring>());
 							is_functon_params = true;
-							func_id = func.func_unick_id;
+							func_id = 0; //func.func_unick_id;
 
 							func_params = true;
 						}
 						else {
 							if (!curent->is_param) {
 								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_call], false);
-								insert_function_names(asm_code, wstring_to_string(func.name) + std::to_string(func.func_unick_id));
+								insert_function_names(asm_code, wstring_to_string(func.name) + std::to_string(0));
 
 								size_t pos = asm_code.find("<expresion>");
 
@@ -709,7 +709,7 @@ namespace CODE {
 							}
 							else {
 								write_by_template(asm_code, prefabs.template_asm[RULE::CODE::comand::Func_as_a_arg], true);
-								insert_function_names(asm_code, wstring_to_string(func.name) + std::to_string(func.func_unick_id));
+								insert_function_names(asm_code, wstring_to_string(func.name) + std::to_string(0));
 							}
 						}
 					}
@@ -748,7 +748,7 @@ namespace CODE {
 						}
 
 						if (!local_vars.empty()) {
-							local_vars.top().push_back(id.area+std::to_wstring(func_id) + id.name);
+							local_vars.top().push_back(id.area+std::to_wstring(0) + id.name);
 						}
 					}
 					break;

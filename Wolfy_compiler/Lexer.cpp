@@ -222,10 +222,12 @@ void create_LexT_element(LT::Lexem_table& table, char lexem, int line, ofstream*
 #endif // DEBUG
 
 }
-void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType::Type type) {
+void create_LitT_lement(Lit_table::Literal_table& table, wstring value, DataType::Type type, int line, int pos) {
 	Lit_table::Element elem;
 	elem.d_type = type;
 	elem.value = value;
+	elem.pos = pos;
+	elem.line = line;
 
 	table.table.push_back(elem);
 	table.size++;
@@ -311,7 +313,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 					//Добавляем ЛИТЕРАЛ строки
 					last_lit_id++;
 
-					create_LitT_lement(Lit_files[file_name], lit_buffer, DataType::Type::String);
+					create_LitT_lement(Lit_files[file_name], lit_buffer, DataType::Type::String,line,word_index);
 					create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY, log);
 
 					lit_buffer.clear();
@@ -583,7 +585,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 						if (!is_joint) {
 							last_lit_id++;
 
-							create_LitT_lement(Lit_files[file_name], word, DataType::Type::Int);
+							create_LitT_lement(Lit_files[file_name], word, DataType::Type::Int,line,word_index);
 							create_LexT_element(LT_files[file_name], LEX_LET, line, last_lit_id, LIT_KEY,log);
 
 							get_litContext(Lit_files[file_name].table.back(), context_stack, key_words);
@@ -605,7 +607,7 @@ void  lexer::parse(in::IN in_files, key_words::Key_words_table& key_words,
 
 						memcpy_s(new_entry.lexema, sizeof(new_entry.lexema), (const char*)LEX_ID, sizeof(new_entry.lexema) - 1);
 						new_entry.lexema[sizeof(new_entry.lexema) - 1] = '\0';
-
+						new_entry.source_code_line = line;
 
 						//Таблица индефикаторов 
 

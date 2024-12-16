@@ -91,10 +91,6 @@ namespace parser {
 		ID::Entry* last_func_id = nullptr;
 		while (is_active)
 		{
-			if (table.table[data.index].lexema == "|") {
-				data.index++;
-				data.line++;
-			}
 
 			auto buffer_temp_mfst = mfst.buffer;
 
@@ -180,6 +176,8 @@ namespace parser {
 					}
 				}
 
+				
+				data.line = LT::getEntry(table, data.index).source_code_line;
 				data.index++;
 			}
 				break;

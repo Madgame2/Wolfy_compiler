@@ -37,7 +37,6 @@ L5 db "hi", 0
 
 
 .DATA
-MAIN0new_short WORD 6234 
 MAIN0a DWORD 0
 print_massage0str DWORD 0
 MAINb DWORD 0
@@ -158,7 +157,7 @@ while_end0:
 
 push offset L2
 
-call print_massage1
+call print_massage0
 
 push offset L4
 

@@ -106,6 +106,11 @@ int wmain(int argc, wchar_t* argv[]) {
 		LOG::WriteLine(log_file.stream, "\nBEGINIGN LEXER");
 		lexer::parse(input_files, key_words,LT_files,ID_files,Lit_files,log_file.stream);
 
+		//for (int i = 0; i < LT_files[L"GLOBAL"].size; i++) {
+		//	cout << LT_files[L"GLOBAL"].table[i].lexema;
+		//}
+
+
 		LOG::WriteLine(log_file.stream, "\nID tables:");
 		for (auto ID_table : ID_files) {
 			LOG::WriteLine(log_file.stream, ID_table.first);

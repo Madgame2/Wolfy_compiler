@@ -12,6 +12,9 @@ namespace Lit_table {
 		std::wstring value;
 		notations::notation my_notation = notations::notation::None;
 
+		int pos = -1;
+		int line = -1;
+
 		Element(){}
 		Element(std::wstring value, DataType::Type type) {
 			this->value = value;

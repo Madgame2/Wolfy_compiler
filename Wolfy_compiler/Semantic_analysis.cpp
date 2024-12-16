@@ -558,6 +558,45 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 		}
 		i++;
 	}
+
+
+	for (auto liteal : lit_table.table) {
+		DataType::Type data_type = liteal.d_type;
+
+		switch (data_type)
+		{
+		case DataType::Type::Int:
+		{
+			try {
+				int value = stoi(liteal.value);
+			}
+			catch(...) {
+				throw Error::get_error_in(309, liteal.line, liteal.pos);
+			}
+
+			
+		}
+			break;
+		case DataType::Type::Float:
+			break;
+		case DataType::Type::String:
+			break;
+		case DataType::Type::Short:
+		{
+			try {
+				short value = stoi(liteal.value);
+			}
+			catch (...) {
+				throw Error::get_error_in(309, liteal.line, liteal.pos);
+			}
+		}
+			break;
+		case DataType::Type::None:
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 
