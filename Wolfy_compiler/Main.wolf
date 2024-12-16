@@ -1,3 +1,5 @@
+short new_short = 6234;
+
 console<<"Hello  wolrd";
 console<<endl;
 console<<12;

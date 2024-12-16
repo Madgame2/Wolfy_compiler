@@ -13,7 +13,7 @@ namespace semantic {
 
 		struct var {
 			std::wstring name;
-			DataType::Type d_type = DataType::Type::None;
+			DataType::Type* d_type = nullptr;
 			IDType::Type id_type = IDType::Type::None;
 
 			bool is_array = false;
@@ -48,9 +48,10 @@ namespace semantic {
 			}
 
 			bool operator ==(Func_sign referens) {
-				if (this->function_name != referens.function_name) {
-					return false;
+				if (this->function_name == referens.function_name) {
+					return true;
 				}
+				return false;
 				if (this->params.size() != referens.params.size()) {
 					return false;
 				}
@@ -108,7 +109,7 @@ namespace semantic {
 			std::stack<node* > last_scope;
 
 			void add_new_scope(std::wstring name);
-			void add_new_var(ID::Entry var);
+			void add_new_var(ID::Entry& var);
 
 			void add_new_functoin(ID::Entry& func);
 			void add_param_to_last_func(ID::Entry& param, data::Func_sign* function);
@@ -119,7 +120,7 @@ namespace semantic {
 			bool has_this_var(std::wstring name);
 			bool has_this_func_sign(data::Func_sign* last_func, std::list<semantic::data::global_elem>& global, AST::node* curent);
 
-			data::var getvar(std::wstring name);
+			data::var& getvar(std::wstring name);
 			data::Func_sign get_last_Func();
 			node& get_area(data::var);
 		};

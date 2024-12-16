@@ -186,7 +186,7 @@ DataType::Type getExpressinType(AST::program_struct& tree, AST::node* curent, se
 
 				try
 				{
-					elem.d_type = area_visibilyty.getvar(elem.name).d_type;
+					elem.d_type = *area_visibilyty.getvar(elem.name).d_type;
 					get_conntext(elem, area_visibilyty);
 					
 				}
@@ -288,7 +288,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 
 				data::var varr = area_visibilyty.getvar(elem.name);
 
-				if (!is_convertable_types(varr.d_type, expression)) {
+				if (!is_convertable_types(*varr.d_type, expression)) {
 					throw Error::get_error_in(302, curent->line, curent->index);
 				}
 
@@ -427,7 +427,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 						throw Error::get_error_in(302, curent->line, curent->index);
 					}
 
-					var.d_type = area_visibilyty.getvar(var.name).d_type;
+					var.d_type = *area_visibilyty.getvar(var.name).d_type;
 					get_conntext(var, area_visibilyty);
 				}
 				else if (id_type == IDType::Type::Param) {
@@ -450,7 +450,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 						if (curent->type == AST::node_type::ID) {
 
 							try {
-								type = area_visibilyty.getvar(ID::getEntry(id_table, id).name).d_type;
+								type = *area_visibilyty.getvar(ID::getEntry(id_table, id).name).d_type;
 								get_conntext(ID::getEntry(id_table, curent->table_id), area_visibilyty);
 							}
 							catch(...){
@@ -473,20 +473,20 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 					else if ((strcmp(buffer->symbol, "i") == 0)) {
 
 						std::wstring name = ID::getEntry(id_table, buffer->table_id).name;
-						data::var varyable = area_visibilyty.getvar(name);
+						data::var& varyable = area_visibilyty.getvar(name);
 
 						int id = curent->table_id;
-						DataType::Type type;
+						DataType::Type* type;
 						if (curent->type == AST::node_type::ID) {
 							std::wstring name = ID::getEntry(id_table, curent->table_id).name;
 							type = area_visibilyty.getvar(name).d_type;
 						}
 						else {
-							type = Lit_table::find(lit_table, curent->table_id).d_type;
+							type = &Lit_table::find(lit_table, curent->table_id).d_type;
 						}
 
 
-						if (varyable.d_type != type) {
+						if (!is_convertable_types(*varyable.d_type, *type)) {
 							throw Error::get_error_in(304, curent->line, curent->index);
 						}
 					}
@@ -496,7 +496,7 @@ void semantic::Parse(AST::program_struct tree, std::list<semantic::data::global_
 						DataType::Type type;
 						if (curent->type == AST::node_type::ID) {
 							std::wstring name = ID::getEntry(id_table, curent->table_id).name;
-							type = area_visibilyty.getvar(name).d_type;
+							type = *area_visibilyty.getvar(name).d_type;
 						}
 						else {
 							type = Lit_table::find(lit_table, curent->table_id).d_type;
@@ -669,12 +669,12 @@ void semantic::scope::scope::add_new_scope(std::wstring name)
 
 }
 
-void semantic::scope::scope::add_new_var(ID::Entry var)
+void semantic::scope::scope::add_new_var(ID::Entry& var)
 {
 	data::var new_var;
 
 	new_var.id_type = var.id_type;
-	new_var.d_type = var.d_type;
+	new_var.d_type = &var.d_type;
 	new_var.name = var.name;
 
 	new_var.is_array = var.is_array;
@@ -774,13 +774,13 @@ bool semantic::scope::scope::has_this_func_sign(data::Func_sign* last_func, std:
 	return false;
 }
 
-semantic::data::var semantic::scope::scope::getvar(std::wstring name)
+semantic::data::var& semantic::scope::scope::getvar(std::wstring name)
 {
 	std::stack<node*> stack = last_scope;
 
 	while (!stack.empty()) {
 
-		std::list<data::var> list = stack.top()->objects.vareiables;
+		std::list<data::var>& list = stack.top()->objects.vareiables;
 
 		for (auto& elem : list) {
 			if (elem.name == name) {

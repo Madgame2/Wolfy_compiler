@@ -37,6 +37,7 @@ L5 db "hi", 0
 
 
 .DATA
+MAIN0new_short WORD 6234 
 MAIN0a DWORD 0
 print_massage0str DWORD 0
 MAINb DWORD 0
